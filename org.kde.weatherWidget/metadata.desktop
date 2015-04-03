@@ -1,0 +1,20 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Weather Widget
+Comment=Plasmoid showing weather information from yr.no server
+Type=Service
+X-KDE-ParentApp=
+X-KDE-PluginInfo-Author=Kotelnik
+X-KDE-PluginInfo-Email=clearmartin@seznam.cz
+X-KDE-PluginInfo-License=GPL2
+X-KDE-PluginInfo-Name=org.kde.weatherWidget
+X-KDE-PluginInfo-Version=1.0
+X-KDE-PluginInfo-Website=https://github.com/kotelnik/plasma-applet-weather-widget
+X-KDE-ServiceTypes=Plasma/Applet
+X-Plasma-API=declarativeappletscript
+X-Plasma-MainScript=ui/main.qml
+X-Plasma-RemoteLocation=
+X-KDE-PluginInfo-Category=Environment and Weather
+Icon=color-picker
+#prefix for Icon is: /usr/share/icons/breeze/actions/toolbar/
+#copy this file into ~/.local/share/kservices5
