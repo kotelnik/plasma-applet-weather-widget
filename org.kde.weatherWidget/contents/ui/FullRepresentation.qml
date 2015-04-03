@@ -66,7 +66,8 @@ Item {
         hoverEnabled: true
         
         onClicked: {
-            Qt.openUrlExternally(overviewLink)
+            print('opening: ', overviewLink)
+            Qt.openUrlExternally(overviewLink) //overviewLink
         }
         
         onEntered: {

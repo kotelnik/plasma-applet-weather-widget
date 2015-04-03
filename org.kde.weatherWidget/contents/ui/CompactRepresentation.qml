@@ -16,12 +16,13 @@
  */
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
-import org.kde.plasma.plasmoid 2.0
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.kcoreaddons 1.0 as KCoreAddons
 import QtQuick.XmlListModel 2.0
 import QtQuick.Controls 1.0
 import QtGraphicalEffects 1.0
+import org.kde.plasma.plasmoid 2.0
+import org.kde.plasma.core 2.0 as PlasmaCore
+import org.kde.kcoreaddons 1.0 as KCoreAddons
+import org.kde.plasma.components 2.0 as PlasmaComponents
 import "../code/icons.js" as IconTools
 
 Item {
@@ -82,7 +83,7 @@ Item {
                     anchors.centerIn: parent
                     
                     font.family: 'weathericons'
-                    text: IconTools.getIconCode(iconName)
+                    text: IconTools.getIconCode(iconName, true)
                     
                     color: theme.textColor
                     font.pointSize: fontPointSize
@@ -90,6 +91,56 @@ Item {
             }
         }
     }
+    
+    PlasmaComponents.BusyIndicator {
+        id: busyIndicator
+        anchors.fill: parent
+        visible: false
+        running: false
+    }
+    
+    states: [
+        State {
+            name: "loading"
+            when: xmlModel.status == XmlListModel.Loading
+            
+            PropertyChanges {
+                target: busyIndicator
+                visible: true
+                running: true
+            }
+            
+            PropertyChanges {
+                target: mainView
+                opacity: 0.5
+            }
+        },
+        State {
+            name: "error"
+            when: xmlModel.status == XmlListModel.Error
+            
+            StateChangeScript {
+                //name:"stateScript11"
+                script: {
+                    main.reloadData()
+                }
+            }
+        },
+        State {
+            name: "ready"
+            when: xmlModel.status == XmlListModel.Ready
+            
+            StateChangeScript {
+                //name:"stateScript11"
+                script: {
+                    overviewImageSource = ''
+                    overviewImageSource = 'http://www.yr.no/place/' + townString + '/meteogram.png'
+                    overviewLink = 'http://www.yr.no/place/' + townString + '/'
+                    main.reloaded()
+                }
+            }
+        }
+    ]
     
     Text {
         id: lastReloadedNotifier
@@ -122,8 +173,7 @@ Item {
         
         onClicked: {
             if (mouse.button == Qt.MiddleButton) {
-                xmlModel.reload()
-                lastReloadedText = '⬇ 0m ago'
+                main.reloadData()
             } else {
                 plasmoid.expanded = !plasmoid.expanded
             }

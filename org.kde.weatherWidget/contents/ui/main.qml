@@ -26,12 +26,12 @@ import "../code/reloader.js" as Reloader
 Item {
     id: main
     
-    property double lat: plasmoid.configuration.lat
-    property double lon: plasmoid.configuration.lon
-    property string town: plasmoid.configuration.town
+    property string townString: plasmoid.configuration.townString
     
-    property string overviewImageSource: 'http://www.yr.no/place/' + town + '/meteogram.png'
-    property string overviewLink: 'http://www.yr.no/place/' + town + '/'
+//     property string overviewImageSource: 'http://www.yr.no/place/' + townString + '/meteogram.png'
+//     property string overviewLink: 'http://www.yr.no/place/' + townString + '/'
+    property string overviewImageSource
+    property string overviewLink
     property int reloadIntervalMin: plasmoid.configuration.reloadIntervalMin
     property int reloadIntervalMs: reloadIntervalMin * 60 * 1000
     
@@ -53,17 +53,32 @@ Item {
     
     XmlListModel {
         id: xmlModel
-        source: 'http://api.yr.no/weatherapi/locationforecastlts/1.2/?lat=' + lat + ';lon=' + lon
-        query: '/weatherdata/product'
+        source: 'http://www.yr.no/place/' + townString + '/forecast.xml'
+        query: '/weatherdata/forecast/tabular/time[1]'
 
         XmlRole {
             name: 'temperature'
-            query: '(time[location/temperature])[2]/location/temperature/@value/string()'
+            query: 'temperature/@value/string()'
         }
         XmlRole {
             name: 'iconName'
-            query: '(time[location/temperature])[2]/following-sibling::time[1]/location/symbol/@id/string()'
+            query: 'symbol/@number/string()'
         }
+    }
+    
+    function reloadData() {
+        if (xmlModel.status == XmlListModel.Loading) {
+            print('still loading')
+            return
+        }
+        xmlModel.reload()
+        
+        print('reload called')
+    }
+    
+    function reloaded() {
+        Reloader.setReloaded()
+        print('reloaded')
     }
     
     Timer {
@@ -71,17 +86,9 @@ Item {
         running: true
         repeat: true
         onTriggered: {
-            var ready = Reloader.isReadyToReload(reloadIntervalMs)
-            if (ready) {
-                Reloader.setReloaded()
-                
-                xmlModel.reload()
-                
-                var mem = overviewImageSource
-                overviewImageSource = ''
-                overviewImageSource = mem
-                
-                print('reloaded')
+            
+            if (Reloader.isReadyToReload(reloadIntervalMs)) {
+                reloadData()
             }
             
             lastReloadedText = '⬇ ' + Reloader.getLastReloadedMins() + 'm ago'

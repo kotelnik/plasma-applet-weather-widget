@@ -1,19 +1,18 @@
 # Maintainer: Martin Kostolný <clearmartin at zoho dot com>
 
-pkgname=plasma-applet-weatger-widget-git
-_pkgname=plasma-applet-weatger-widget
-pkgver=TODO
+pkgname=plasma-applet-weather-widget-git
+_pkgname=plasma-applet-weather-widget
+pkgver=r3.d1f5f75
 pkgrel=1
 pkgdesc="Plasmoid for Plasma 5. Shows weather information from yr.no server."
 arch=('any')
-url="https://github.com/kotelnik/plasma-applet-weatger-widget"
+url="https://github.com/kotelnik/$_pkgname"
 license=('GPL')
 depends=('plasma-workspace' 'extra-cmake-modules')
 makedepends=('git')
 conflicts=("${pkgname%-*}")
 provides=("${pkgname%-*}")
-install=${pkgname%-*}.install
-source=('git://github.com/kotelnik/plasma-applet-weatger-widget.git')
+source=("git://github.com/kotelnik/$_pkgname.git")
 md5sums=('SKIP')
 
 pkgver() {

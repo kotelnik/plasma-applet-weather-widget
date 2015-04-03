@@ -4,9 +4,7 @@ import QtQuick.Layouts 1.0
 
 Item {
 
-    property alias cfg_lat: lat.text
-    property alias cfg_lon: lon.text
-    property alias cfg_town: town.text
+    property alias cfg_townString: townString.text
     property alias cfg_reloadIntervalMin: reloadIntervalMin.value
     
     property int textfieldWidth: theme.defaultFont.pointSize * 30
@@ -26,40 +24,12 @@ Item {
         }
         
         Label {
-            text: i18n('Latitude:')
-            Layout.alignment: Qt.AlignRight
-        }
-        
-        TextField {
-            id: lat
-            validator: DoubleValidator {
-                bottom: -90
-                top: 90
-            }
-            Layout.preferredWidth: textfieldWidth
-        }
-        
-        Label {
-            text: i18n('Longitude:')
-            Layout.alignment: Qt.AlignRight
-        }
-        
-        TextField {
-            id: lon
-            validator: DoubleValidator {
-                bottom: -180
-                top: 180
-            }
-            Layout.preferredWidth: textfieldWidth
-        }
-        
-        Label {
             text: i18n('Town string:')
             Layout.alignment: Qt.AlignRight
         }
         
         TextField {
-            id: town
+            id: townString
             placeholderText: 'Town'
             Layout.preferredWidth: textfieldWidth
         }

@@ -6,14 +6,8 @@
     <kcfgfile name=""/>
 
     <group name="General">
-        <entry name="lat" type="Double">
-            <default>49.7767667</default>
-        </entry>
-        <entry name="lon" type="Double">
-            <default>16.9270758</default>
-        </entry>
-        <entry name="town" type="String">
-            <default>Czech_Republic/Prague/Prague</default>
+        <entry name="townString" type="String">
+            <default>Germany/North_Rhine-Westphalia/Bonn</default>
         </entry>
         <entry name="reloadIntervalMin" type="Int">
             <default>60</default>
