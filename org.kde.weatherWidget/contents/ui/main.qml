@@ -81,6 +81,11 @@ Item {
         print('reloaded')
     }
     
+    function handleLoadError() {
+        print('Error getting weather data. Scheduling data reload...')
+        Reloader.scheduleDataReload()
+    }
+    
     Timer {
         interval: 1000 * 5
         running: true

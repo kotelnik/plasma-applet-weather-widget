@@ -120,9 +120,8 @@ Item {
             when: xmlModel.status == XmlListModel.Error
             
             StateChangeScript {
-                //name:"stateScript11"
                 script: {
-                    main.reloadData()
+                    main.handleLoadError()
                 }
             }
         },
@@ -131,7 +130,6 @@ Item {
             when: xmlModel.status == XmlListModel.Ready
             
             StateChangeScript {
-                //name:"stateScript11"
                 script: {
                     overviewImageSource = ''
                     overviewImageSource = 'http://www.yr.no/place/' + townString + '/meteogram.png'
