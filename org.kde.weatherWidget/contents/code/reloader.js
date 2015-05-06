@@ -1,27 +1,32 @@
-var lastReloaded = new Date().getTime()
-var wasErrorReloading = false
-var scheduledDataReload = new Date().getTime()
+var scheduledDataReload = null
 
-function isReadyToReload(reloadIntervalMs) {
+function isReadyToReload(reloadIntervalMs, lastReloaded) {
+    print('is ready to reload - lastReloaded: ' + lastReloaded)
     var now = new Date().getTime()
-    if (wasErrorReloading && scheduledDataReload < now) {
-        return true
+    if (loadingError && scheduledDataReload !== null) {
+        return scheduledDataReload < now
+    }
+    if (!lastReloaded) {
+        lastReloaded = 0
     }
     return now - lastReloaded > reloadIntervalMs
 }
 
 function setReloaded() {
-    wasErrorReloading = false
-    lastReloaded = new Date().getTime()
+    loadingError = false
+    return new Date().getTime()
 }
 
-function getLastReloadedMins() {
+function getLastReloadedMins(lastReloaded) {
+    if (!lastReloaded) {
+        lastReloaded = 0
+    }
     var reloadedAgoMs = new Date().getTime() - lastReloaded
     return Math.round(reloadedAgoMs / 1000 / 60)
 }
 
 function scheduleDataReload() {
     var now = new Date().getTime()
-    wasErrorReloading = true
+    loadingError = true
     scheduledDataReload = now + 1000 * 15
 }

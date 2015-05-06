@@ -16,14 +16,11 @@
  */
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
-import QtQuick.XmlListModel 2.0
 import QtQuick.Controls 1.0
-import QtGraphicalEffects 1.0
 import org.kde.plasma.plasmoid 2.0
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.kcoreaddons 1.0 as KCoreAddons
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import "../code/icons.js" as IconTools
+import "../code/temperature-utils.js" as TemperatureUtils
 
 Item {
     id: compactRepresentation
@@ -42,7 +39,7 @@ Item {
     ListView {
         id: mainView
         
-        model: xmlModel
+        model: actualWeatherModel
         delegate: Item {
             id: mainViewDelegate
             
@@ -64,7 +61,7 @@ Item {
                     horizontalAlignment: Text.AlignRight
                     verticalAlignment: Text.AlignVCenter
                     
-                    text: Math.round(parseFloat(temperature)) + '°'
+                    text: TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
                     color: theme.textColor
                     font.pointSize: fontPointSize
                 }
@@ -83,7 +80,7 @@ Item {
                     anchors.centerIn: parent
                     
                     font.family: 'weathericons'
-                    text: IconTools.getIconCode(iconName, true)
+                    text: IconTools.getIconCode(iconName, true, period === '0' || period === '3' ? 1 : 0)
                     
                     color: theme.textColor
                     font.pointSize: fontPointSize
@@ -102,7 +99,7 @@ Item {
     states: [
         State {
             name: "loading"
-            when: xmlModel.status == XmlListModel.Loading
+            when: loadingData
             
             PropertyChanges {
                 target: busyIndicator
@@ -114,29 +111,6 @@ Item {
                 target: mainView
                 opacity: 0.5
             }
-        },
-        State {
-            name: "error"
-            when: xmlModel.status == XmlListModel.Error
-            
-            StateChangeScript {
-                script: {
-                    main.handleLoadError()
-                }
-            }
-        },
-        State {
-            name: "ready"
-            when: xmlModel.status == XmlListModel.Ready
-            
-            StateChangeScript {
-                script: {
-                    overviewImageSource = ''
-                    overviewImageSource = 'http://www.yr.no/place/' + townString + '/meteogram.png'
-                    overviewLink = 'http://www.yr.no/place/' + townString + '/'
-                    main.reloaded()
-                }
-            }
         }
     ]
     
@@ -145,6 +119,7 @@ Item {
         
         anchors.left: parent.left
         anchors.bottom: parent.bottom
+        anchors.bottomMargin: - partHeight * 0.05
         
         font.pointSize: partHeight * 0.2
         color: theme.highlightColor
@@ -162,7 +137,7 @@ Item {
         hoverEnabled: true
         
         onEntered: {
-            lastReloadedNotifier.visible = true
+            lastReloadedNotifier.visible = !plasmoid.expanded
         }
         
         onExited: {
@@ -174,8 +149,17 @@ Item {
                 main.reloadData()
             } else {
                 plasmoid.expanded = !plasmoid.expanded
+                lastReloadedNotifier.visible = !plasmoid.expanded
             }
         }
     }
+    
+    //TODO this code blocks MouseArea in compactRepresentation (probably like in SystemLoadViewer)
+//     PlasmaCore.ToolTipArea {
+//         anchors.fill: parent
+//         active: true
+//         mainText: i18n('Weather')
+//         subText: lastReloadedText
+//     }
     
 }

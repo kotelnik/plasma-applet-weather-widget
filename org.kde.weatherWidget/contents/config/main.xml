@@ -9,12 +9,29 @@
         <entry name="townString" type="String">
             <default>Germany/North_Rhine-Westphalia/Bonn</default>
         </entry>
+        <entry name="townStrings" type="String">
+            <default>Germany/North_Rhine-Westphalia/Bonn,USA/New_York/New_York</default>
+        </entry>
         <entry name="reloadIntervalMin" type="Int">
             <default>60</default>
+        </entry>
+        
+        
+        <entry name="xmlCacheJson" type="String">
+            <default></default>
+        </entry>
+        <entry name="townStringIndex" type="Int">
+            <default>0</default>
+        </entry>
+        <entry name="lastReloadedMsJson" type="String">
+            <default></default>
         </entry>
     </group>
     
     <group name="Appearance">
+        <entry name="fahrenheitEnabled" type="Bool">
+            <default>false</default>
+        </entry>
         <entry name="compactLayout" type="Bool">
             <default>false</default>
         </entry>

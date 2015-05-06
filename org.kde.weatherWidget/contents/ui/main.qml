@@ -22,24 +22,34 @@ import org.kde.kcoreaddons 1.0 as KCoreAddons
 import QtQuick.XmlListModel 2.0
 import QtQuick.Controls 1.0
 import "../code/reloader.js" as Reloader
+import "../code/model-utils.js" as ModelUtils
+import "../code/config-utils.js" as ConfigUtils
 
 Item {
     id: main
     
-    property string townString: plasmoid.configuration.townString
+    property string townString
+    property string xmlCacheKey
+    property var xmlCacheMap: {}
+    property var lastReloadedMsMap: {}
+    property bool fahrenheitEnabled: plasmoid.configuration.fahrenheitEnabled
     
-//     property string overviewImageSource: 'http://www.yr.no/place/' + townString + '/meteogram.png'
-//     property string overviewLink: 'http://www.yr.no/place/' + townString + '/'
     property string overviewImageSource
     property string overviewLink
     property int reloadIntervalMin: plasmoid.configuration.reloadIntervalMin
     property int reloadIntervalMs: reloadIntervalMin * 60 * 1000
+    
+    property bool loadingData: false
+    property bool loadingError: false
+    property bool imageLoadingError: true
     
     property string lastReloadedText: '⬇ 0m ago'
     
     property bool verticalAlignment: plasmoid.configuration.compactLayout
     
     property bool vertical: (plasmoid.formFactor == PlasmaCore.Types.Vertical)
+    
+    property int nextDaysCount: 8
     
     anchors.fill: parent
     
@@ -53,9 +63,20 @@ Item {
     
     XmlListModel {
         id: xmlModel
-        source: 'http://www.yr.no/place/' + townString + '/forecast.xml'
-        query: '/weatherdata/forecast/tabular/time[1]'
+        query: '/weatherdata/forecast/tabular/time'
 
+        XmlRole {
+            name: 'from'
+            query: '@from/string()'
+        }
+        XmlRole {
+            name: 'to'
+            query: '@to/string()'
+        }
+        XmlRole {
+            name: 'period'
+            query: '@period/string()'
+        }
         XmlRole {
             name: 'temperature'
             query: 'temperature/@value/string()'
@@ -64,26 +85,195 @@ Item {
             name: 'iconName'
             query: 'symbol/@number/string()'
         }
+        XmlRole {
+            name: 'windDirection'
+            query: 'windDirection/@code/string()'
+        }
+        XmlRole {
+            name: 'windSpeedMps'
+            query: 'windSpeed/@mps/string()'
+        }
+        XmlRole {
+            name: 'pressureHpa'
+            query: 'pressure/@value/string()'
+        }
+    }
+    
+    ListModel {
+        id: actualWeatherModel
+    }
+    
+    ListModel {
+        id: nextDaysModel
+    }
+    
+    Component.onCompleted: {
+        
+        //fill xml cache xml
+        var xmlCache = plasmoid.configuration.xmlCacheJson
+        if (xmlCache) {
+            xmlCacheMap = JSON.parse(xmlCache)
+        }
+        xmlCacheMap = xmlCacheMap || {}
+        
+        //fill last reloaded
+        var lastReloadedMsJson = plasmoid.configuration.lastReloadedMsJson
+        if (lastReloadedMsJson) {
+            lastReloadedMsMap = JSON.parse(lastReloadedMsJson)
+        }
+        lastReloadedMsMap = lastReloadedMsMap || {}
+        
+        //get town string
+        setNextTownString(true)
+    }
+    
+    function showData() {
+        print('init: plasmoid.configuration.lastReloadedMs = ' + getLastReloadedMs())
+        var ok = loadFromCache()
+        if (!ok) {
+            reloadData()
+        }
+        updateLastReloadedText()
+        reloadImage()
+    }
+    
+    function setNextTownString(initial) {
+        var townStrings = ConfigUtils.getTownStringArray()
+        print('townStrings count', townStrings.length, plasmoid.configuration.townStringIndex)
+        var townStringIndex = plasmoid.configuration.townStringIndex
+        if (!initial) {
+            townStringIndex++
+        }
+        if (townStringIndex > townStrings.length - 1) {
+            townStringIndex = 0
+        }
+        plasmoid.configuration.townStringIndex = townStringIndex
+        print('townStringIndex now', plasmoid.configuration.townStringIndex)
+        townString = townStrings[townStringIndex]
+        print('next town string is: ' + townString)
+        xmlCacheKey = generateXmlCacheKey(townString)
+        print('next xmlCacheKey is: ' + xmlCacheKey)
+        
+        showData()
+    }
+    
+    function generateXmlCacheKey(townStr) {
+        var hash = 0
+        if (townStr.length !== 0) {
+            for (var i = 0; i < townStr.length; i++) {
+                var ch = townStr.charCodeAt(i);
+                hash = ((hash << 5) - hash) + ch
+                hash = hash & hash // Convert to 32bit integer
+            }
+        }
+        return 'xmlCache_' + hash
     }
     
     function reloadData() {
-        if (xmlModel.status == XmlListModel.Loading) {
+        if (loadingData) {
             print('still loading')
             return
         }
-        xmlModel.reload()
         
-        print('reload called')
+        var xhr = new XMLHttpRequest()
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                
+                loadingData = false
+                
+                if (xhr.status !== 200) {
+                    handleLoadError()
+                    return
+                }
+                
+                // success
+                print('successfully loaded from the internet')
+                xmlCacheMap[xmlCacheKey] = xhr.responseText
+                plasmoid.configuration.xmlCacheJson = JSON.stringify(xmlCacheMap)
+                
+                reloadImage()
+                overviewLink = 'http://www.yr.no/place/' + townString + '/'
+                reloaded()
+                
+                loadFromCache()
+            }
+        }
+        xhr.open('GET', 'http://www.yr.no/place/' + townString + '/forecast.xml', true)
+        loadingData = true
+        xhr.send()
+        
+        print('reload called, xmlCacheKey is: ' + xmlCacheKey)
+    }
+    
+    function reloadImage() {
+        print('reloading image')
+        overviewImageSource = ''
+        overviewImageSource = 'http://www.yr.no/place/' + townString + '/meteogram.png'
+    }
+    
+    function setLastReloadedMs(lastReloadedMs) {
+        lastReloadedMsMap[xmlCacheKey] = lastReloadedMs
+        plasmoid.configuration.lastReloadedMsJson = JSON.stringify(lastReloadedMsMap)
+    }
+    
+    function getLastReloadedMs() {
+        return lastReloadedMsMap[xmlCacheKey]
     }
     
     function reloaded() {
-        Reloader.setReloaded()
+        setLastReloadedMs(Reloader.setReloaded())
+        updateLastReloadedText()
         print('reloaded')
     }
+    
+    function loadFromCache() {
+        print('loading from cache, config key: ', xmlCacheKey)
+        if (!xmlCacheMap[xmlCacheKey]) {
+            print('cache not available')
+            return false
+        }
+        
+        xmlModel.xml = xmlCacheMap[xmlCacheKey]
+        return true
+    }
+    
+    states: [
+        State {
+            name: "ready"
+            when: xmlModel.status == XmlListModel.Ready
+            
+            StateChangeScript {
+                script: {
+                    ModelUtils.updateCurrentWeatherModel(actualWeatherModel, xmlModel)
+                    ModelUtils.updateNextDaysWeatherModel(nextDaysModel, xmlModel)
+                }
+            }
+        }
+    ]
     
     function handleLoadError() {
         print('Error getting weather data. Scheduling data reload...')
         Reloader.scheduleDataReload()
+        
+        loadFromCache()
+    }
+    
+    function updateLastReloadedText() {
+        lastReloadedText = '⬇ ' + Reloader.getLastReloadedMins(getLastReloadedMs()) + 'm ago'
+    }
+    
+    function tryReload() {
+        updateLastReloadedText()
+        
+        print('image loading error: ', imageLoadingError)
+        if (imageLoadingError && !loadingError) {
+            reloadImage()
+            imageLoadingError = false
+        }
+        
+        if (Reloader.isReadyToReload(reloadIntervalMs, getLastReloadedMs())) {
+            reloadData()
+        }
     }
     
     Timer {
@@ -91,12 +281,7 @@ Item {
         running: true
         repeat: true
         onTriggered: {
-            
-            if (Reloader.isReadyToReload(reloadIntervalMs)) {
-                reloadData()
-            }
-            
-            lastReloadedText = '⬇ ' + Reloader.getLastReloadedMins() + 'm ago'
+            tryReload()
         }
     }
     

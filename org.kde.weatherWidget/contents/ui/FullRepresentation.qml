@@ -15,37 +15,182 @@
  * along with this program.  If not, see <http: //www.gnu.org/licenses/>.
  */
 import QtQuick 2.2
-import QtQuick.Layouts 1.1
 import org.kde.plasma.plasmoid 2.0
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.kcoreaddons 1.0 as KCoreAddons
-import QtQuick.XmlListModel 2.0
-import QtQuick.Controls 1.0
 
 Item {
-    id: compactRepresentation
+    id: fullRepresentation
     
     property int imageWidth: 828
     property int imageHeight: 272
     
+    property double footerHeight: theme.defaultFont.pointSize * 3
+    
+    property int nextDayItemSpacing: 5
+    property int nextDaysHeight: imageHeight * 0.4
+    property int nextDaysVerticalMargin: 10
+    property double nextDayItemWidth: (imageWidth / nextDaysCount) - nextDayItemSpacing
+    property int headingHeight: 20
+    
     width: imageWidth
-    height: imageHeight + theme.defaultFont.pointSize * 3
+    height: headingHeight + imageHeight + footerHeight + nextDaysHeight + nextDaysVerticalMargin * 2
+    
+    Text {
+        id: currentLocationText
+        
+        anchors.left: parent.left
+        anchors.top: parent.top
+        
+        color: theme.textColor
+        font.pointSize: theme.defaultFont.pointSize
+        
+        text: main.townString
+    }
+    
+    Text {
+        id: nextLocationText
+        
+        anchors.right: parent.right
+        anchors.top: parent.top
+        
+        color: theme.textColor
+        font.pointSize: theme.defaultFont.pointSize
+        
+        text: 'Next Location'
+    }
+    
+    MouseArea {
+        cursorShape: Qt.PointingHandCursor
+        anchors.fill: nextLocationText
+        
+        hoverEnabled: true
+        
+        onClicked: {
+            print('clicked next location')
+            main.setNextTownString()
+        }
+        
+        onEntered: {
+            nextLocationText.font.underline = true
+        }
+        
+        onExited: {
+            nextLocationText.font.underline = false
+        }
+    }
+    
+    Text {
+        id: noImageText
+        width: imageWidth
+        height: imageHeight
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        anchors.top: parent.top
+        anchors.topMargin: headingHeight
+        
+        text: loadingError ? 'Offline mode' : 'Loading image...'
+        font.pointSize: theme.defaultFont.pointSize
+        color: theme.textColor
+    }
     
     Image {
         id: overviewImage
         cache: false
         source: overviewImageSource
+        anchors.top: parent.top
+        anchors.topMargin: headingHeight
     }
     
-    Text {
+    states: [
+        State {
+            name: "error"
+            when: overviewImage.status == Image.Error || overviewImage.status == Image.Null
+
+            StateChangeScript {
+                script: {
+                    imageLoadingError = true
+                }
+            }
+        }
+    ]
+    
+    /*
+     * 
+     * NEXT DAYS
+     * 
+     */
+    ListView {
+        id: nextDaysView
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: footerHeight + nextDaysVerticalMargin
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: nextDaysHeight
+        
+        model: nextDaysModel
+        orientation: Qt.Horizontal
+        spacing: nextDayItemSpacing
+        interactive: false
+        
+        delegate: NextDayItem {
+            width: nextDayItemWidth
+            height: nextDaysHeight
+        }
+    }
+    
+    
+    /*
+     * 
+     * FOOTER
+     * 
+     */
+    MouseArea {
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         
-        color: theme.textColor
-        font.pointSize: theme.defaultFont.pointSize
+        width: lastReloadedTextComponent.contentWidth
+        height: lastReloadedTextComponent.contentHeight
+
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
         
-        text: lastReloadedText
+        Text {
+            id: lastReloadedTextComponent
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            
+            color: theme.textColor
+            font.pointSize: theme.defaultFont.pointSize
+            
+            text: lastReloadedText
+        }
+        
+        Text {
+            id: reloadTextComponent
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            
+            color: theme.textColor
+            font.pointSize: theme.defaultFont.pointSize
+            
+            text: '\u21bb Reload'
+            visible: false
+        }
+        
+        onEntered: {
+            lastReloadedTextComponent.visible = false
+            reloadTextComponent.visible = true
+        }
+        
+        onExited: {
+            lastReloadedTextComponent.visible = true
+            reloadTextComponent.visible = false
+        }
+        
+        onClicked: {
+            main.reloadData()
+        }
     }
+    
     
     Text {
         id: creditText
