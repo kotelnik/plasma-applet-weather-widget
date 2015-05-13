@@ -86,6 +86,25 @@ var iconIdByIconName = {
     'HeavySnow': '50'
 }
 
+var iconCodeByWindDirectionCode = {
+    'N'  : '\uf05c',
+    'NNE': '\uf05c',
+    'NE' : '\uf05a',
+    'ENE': '\uf059',
+    'E'  : '\uf059',
+    'ESE': '\uf059',
+    'SE' : '\uf05d',
+    'SSE': '\uf060',
+    'S'  : '\uf060',
+    'SSW': '\uf060',
+    'SW' : '\uf05e',
+    'WSW': '\uf061',
+    'W'  : '\uf061',
+    'WNW': '\uf061',
+    'NW' : '\uf05b',
+    'NNW': '\uf05c'
+}
+
 function getIconCode(iconName, byIdFlag, partOfDay) {
     print('iconName: ' + iconName)
     var iconCodeParts = null
@@ -98,4 +117,21 @@ function getIconCode(iconName, byIdFlag, partOfDay) {
         return '\uf073';
     }
     return iconCodeParts[partOfDay];
+}
+
+function getWindDirectionIconCode(code) {
+    print('wind direction: ' + code)
+    var iconCode = iconCodeByWindDirectionCode[code]
+    if (!iconCode) {
+        return '\uf073'
+    }
+    return iconCode
+}
+
+function getSunriseIcon() {
+    return '\uf052'
+}
+
+function getSunsetIcon() {
+    return '\uf051'
 }

@@ -24,6 +24,8 @@ import QtQuick.Controls 1.0
 import "../code/reloader.js" as Reloader
 import "../code/model-utils.js" as ModelUtils
 import "../code/config-utils.js" as ConfigUtils
+import "../code/icons.js" as IconTools
+import "../code/temperature-utils.js" as TemperatureUtils
 
 Item {
     id: main
@@ -44,6 +46,7 @@ Item {
     property bool imageLoadingError: true
     
     property string lastReloadedText: '⬇ 0m ago'
+    property string tooltipSubText: ''
     
     property bool verticalAlignment: plasmoid.configuration.compactLayout
     
@@ -246,6 +249,7 @@ Item {
                 script: {
                     ModelUtils.updateCurrentWeatherModel(actualWeatherModel, xmlModel)
                     ModelUtils.updateNextDaysWeatherModel(nextDaysModel, xmlModel)
+                    refreshTooltipSubText()
                 }
             }
         }
@@ -260,6 +264,19 @@ Item {
     
     function updateLastReloadedText() {
         lastReloadedText = '⬇ ' + Reloader.getLastReloadedMins(getLastReloadedMs()) + 'm ago'
+    }
+    
+    function refreshTooltipSubText() {
+        print('refreshing sub text')
+        var futureWeatherIcon = IconTools.getIconCode(xmlModel.get(1).iconName, true, xmlModel.get(1).period === '0' || xmlModel.get(1).period === '3' ? 1 : 0)
+        var windDirectionIcon = IconTools.getWindDirectionIconCode(xmlModel.get(0).windDirection)
+        var subText = ''
+        subText += '<br /><font size="4"><font style="font-family: weathericons">' + windDirectionIcon + '</font></font><font size="4"> ' + xmlModel.get(0).windSpeedMps + ' M/s</font>'
+        subText += '<br /><font size="4">' + xmlModel.get(0).pressureHpa + ' hPa</font>'
+        subText += '<br /><br />'
+        subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(xmlModel.get(1).temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
+        subText += '<font color="transparent">__</font><font style="font-family: weathericons">' + futureWeatherIcon + '</font></b></font>'
+        tooltipSubText = subText
     }
     
     function tryReload() {
@@ -283,6 +300,10 @@ Item {
         onTriggered: {
             tryReload()
         }
+    }
+    
+    onFahrenheitEnabledChanged: {
+        refreshTooltipSubText()
     }
     
 }

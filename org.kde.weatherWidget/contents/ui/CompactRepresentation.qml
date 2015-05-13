@@ -18,6 +18,7 @@ import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.0
 import org.kde.plasma.plasmoid 2.0
+import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import "../code/icons.js" as IconTools
 import "../code/temperature-utils.js" as TemperatureUtils
@@ -35,7 +36,7 @@ Item {
     
     Layout.maximumWidth: partWidth * 2
     Layout.maximumHeight: partHeight
-
+    
     ListView {
         id: mainView
         
@@ -129,6 +130,8 @@ Item {
         visible: false
     }
     
+    
+    
     MouseArea {
         anchors.fill: parent
         
@@ -152,14 +155,17 @@ Item {
                 lastReloadedNotifier.visible = !plasmoid.expanded
             }
         }
+        
+        
+        PlasmaCore.ToolTipArea {
+            id: toolTipArea
+            anchors.fill: parent
+            active: !plasmoid.expanded
+            interactive: true
+            mainText: townString.substring(townString.lastIndexOf('/') + 1)
+            subText: tooltipSubText
+            textFormat: Text.StyledText
+        }
     }
-    
-    //TODO this code blocks MouseArea in compactRepresentation (probably like in SystemLoadViewer)
-//     PlasmaCore.ToolTipArea {
-//         anchors.fill: parent
-//         active: true
-//         mainText: i18n('Weather')
-//         subText: lastReloadedText
-//     }
     
 }

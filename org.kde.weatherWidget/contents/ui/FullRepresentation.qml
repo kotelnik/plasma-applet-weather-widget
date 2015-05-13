@@ -110,6 +110,16 @@ Item {
                     imageLoadingError = true
                 }
             }
+        },
+        State {
+            name: "loading"
+            when: overviewImage.status == Image.Loading || overviewImage.status == Image.Ready
+
+            StateChangeScript {
+                script: {
+                    imageLoadingError = false
+                }
+            }
         }
     ]
     
