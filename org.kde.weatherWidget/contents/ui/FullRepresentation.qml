@@ -21,7 +21,7 @@ Item {
     id: fullRepresentation
     
     property int imageWidth: 828
-    property int imageHeight: 272
+    property int imageHeight: 302
     
     property double footerHeight: theme.defaultFont.pointSize * 3
     

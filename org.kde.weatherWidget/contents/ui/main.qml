@@ -211,7 +211,7 @@ Item {
     function reloadImage() {
         print('reloading image')
         overviewImageSource = ''
-        overviewImageSource = 'http://www.yr.no/place/' + townString + '/meteogram.png'
+        overviewImageSource = 'http://www.yr.no/place/' + townString + '/avansert_meteogram.png'
     }
     
     function setLastReloadedMs(lastReloadedMs) {

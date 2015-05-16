@@ -2,8 +2,8 @@
 
 pkgname=plasma-applet-weather-widget-git
 _pkgname=plasma-applet-weather-widget
-pkgver=r7.f406950
-pkgrel=3
+pkgver=r8.d419b21
+pkgrel=1
 pkgdesc="Plasmoid for Plasma 5. Shows weather information from yr.no server."
 arch=('any')
 url="https://github.com/kotelnik/$_pkgname"
