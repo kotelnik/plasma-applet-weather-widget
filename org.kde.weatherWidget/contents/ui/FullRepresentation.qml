@@ -28,7 +28,8 @@ Item {
     property int nextDayItemSpacing: 5
     property int nextDaysHeight: imageHeight * 0.4
     property int nextDaysVerticalMargin: 10
-    property double nextDayItemWidth: (imageWidth / nextDaysCount) - nextDayItemSpacing
+    property int hourLegendMargin: 20
+    property double nextDayItemWidth: (imageWidth / nextDaysCount) - nextDayItemSpacing - hourLegendMargin / nextDaysCount
     property int headingHeight: 20
     
     width: imageWidth
@@ -133,6 +134,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: footerHeight + nextDaysVerticalMargin
         anchors.left: parent.left
+        anchors.leftMargin: hourLegendMargin
         anchors.right: parent.right
         height: nextDaysHeight
         
@@ -144,6 +146,42 @@ Item {
         delegate: NextDayItem {
             width: nextDayItemWidth
             height: nextDaysHeight
+        }
+    }
+    
+    Item {
+        id: hourLegend
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: footerHeight
+        width: theme.defaultFont.pointSize * 2.4
+        height: nextDaysHeight - 15
+        
+        Text {
+            text: '0h'
+            anchors.top: parent.top
+            anchors.right: parent.right
+            font.pointSize: theme.defaultFont.pointSize * 0.8
+            color: theme.textColor
+            opacity: 0.6
+        }
+        Text {
+            text: '.\n.\n.\n.'
+            anchors.fill: parent
+            anchors.topMargin: - theme.defaultFont.pointSize * 0.5
+            anchors.leftMargin: hourLegendMargin * 0.4
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.pointSize: theme.defaultFont.pointSize
+            color: theme.textColor
+            opacity: 0.6
+        }
+        Text {
+            text: '24h'
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            font.pointSize: theme.defaultFont.pointSize * 0.8
+            color: theme.textColor
+            opacity: 0.6
         }
     }
     

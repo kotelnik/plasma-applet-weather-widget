@@ -1,5 +1,5 @@
 var iconCodeById = {
-     '1': ['\uf00d', '\uf095'],
+     '1': ['\uf00d', '\uf0ae'], // was uf095, candidate uf0a3
      '2': ['\uf00c', '\uf083'],
      '3': ['\uf002', '\uf031'],
      '4': ['\uf013', '\uf013'],
