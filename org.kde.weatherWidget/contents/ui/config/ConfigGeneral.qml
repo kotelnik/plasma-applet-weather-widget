@@ -176,12 +176,14 @@ Item {
         Text {
             font.italic: true
             text: 'Find your town string in yr.no (english version)\nand use the URL from your browser to add a new location. E.g. paste this:\nhttp://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/'
+            color: theme.textColor
             Layout.preferredWidth: textfieldWidth
             Layout.columnSpan: 2
         }
         
         Text {
             text: 'NOTE: This will get automated in future versions.'
+            color: theme.textColor
             Layout.preferredWidth: textfieldWidth
             Layout.columnSpan: 2
         }

@@ -2,7 +2,7 @@
 
 pkgname=plasma-applet-weather-widget-git
 _pkgname=plasma-applet-weather-widget
-pkgver=r9.ebab762
+pkgver=r11.cca1207
 pkgrel=1
 pkgdesc="Plasmoid for Plasma 5. Shows weather information from yr.no server."
 arch=('any')

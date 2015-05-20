@@ -7,7 +7,7 @@ Item {
     height: childrenRect.height
 
     property alias cfg_compactLayout: compactLayout.checked
-    property int cfg_fahrenheitEnabled
+    property bool cfg_fahrenheitEnabled
 
     onCfg_fahrenheitEnabledChanged: {
         if (cfg_fahrenheitEnabled) {
@@ -15,6 +15,10 @@ Item {
         } else {
             temperatureTypeGroup.current = temperatureCelsius
         }
+    }
+    
+    Component.onCompleted: {
+        cfg_fahrenheitEnabledChanged()
     }
     
     ExclusiveGroup {
