@@ -6,11 +6,11 @@
     <kcfgfile name=""/>
 
     <group name="General">
-        <entry name="townString" type="String">
-            <default>Germany/North_Rhine-Westphalia/Bonn</default>
+        <entry name="townStringIndex" type="Int">
+            <default>0</default>
         </entry>
         <entry name="townStrings" type="String">
-            <default>Germany/North_Rhine-Westphalia/Bonn,USA/New_York/New_York</default>
+            <default>[{ "townString": "Germany/North_Rhine-Westphalia/Bonn", "placeAlias":"Bonn" }, { "townString": "USA/New_York/New_York", "placeAlias": "New York" }]</default>
         </entry>
         <entry name="reloadIntervalMin" type="Int">
             <default>60</default>

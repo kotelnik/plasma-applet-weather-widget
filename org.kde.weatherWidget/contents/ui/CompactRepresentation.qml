@@ -162,7 +162,7 @@ Item {
             anchors.fill: parent
             active: !plasmoid.expanded
             interactive: true
-            mainText: townString.substring(townString.lastIndexOf('/') + 1)
+            mainText: placeAlias
             subText: tooltipSubText
             textFormat: Text.StyledText
         }

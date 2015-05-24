@@ -31,6 +31,7 @@ Item {
     id: main
     
     property string townString
+    property string placeAlias
     property string xmlCacheKey
     property var xmlCacheMap: {}
     property var lastReloadedMsMap: {}
@@ -152,7 +153,8 @@ Item {
         }
         plasmoid.configuration.townStringIndex = townStringIndex
         print('townStringIndex now', plasmoid.configuration.townStringIndex)
-        townString = townStrings[townStringIndex]
+        townString = townStrings[townStringIndex].townString
+        placeAlias = townStrings[townStringIndex].placeAlias
         print('next town string is: ' + townString)
         xmlCacheKey = generateXmlCacheKey(townString)
         print('next xmlCacheKey is: ' + xmlCacheKey)

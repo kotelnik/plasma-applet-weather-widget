@@ -44,7 +44,7 @@ Item {
         color: theme.textColor
         font.pointSize: theme.defaultFont.pointSize
         
-        text: main.townString
+        text: main.placeAlias
     }
     
     Text {

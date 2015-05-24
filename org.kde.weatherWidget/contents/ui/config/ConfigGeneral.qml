@@ -10,7 +10,7 @@ Item {
     property alias cfg_reloadIntervalMin: reloadIntervalMin.value
     property string cfg_townStrings
     
-    property int textfieldWidth: theme.defaultFont.pointSize * 50
+    property int textfieldWidth: theme.defaultFont.pointSize * 55
 
     ListModel {
         id: townStringsModel
@@ -20,21 +20,23 @@ Item {
         var townStrings = ConfigUtils.getTownStringArray()
         for (var i = 0; i < townStrings.length; i++) {
             townStringsModel.append({
-                townString: townStrings[i]
+                townString: townStrings[i].townString,
+                placeAlias: townStrings[i].placeAlias
             })
         }
     }
     
     function townStringsModelChanged() {
-        var newTownStrings = ''
+        var newTownStringsArray = []
         for (var i = 0; i < townStringsModel.count; i++) {
             var townString = townStringsModel.get(i).townString
-            if (i > 0) {
-                newTownStrings += ','
-            }
-            newTownStrings += townString
+            var placeAlias = townStringsModel.get(i).placeAlias
+            newTownStringsArray.push({
+                townString: townString,
+                placeAlias: placeAlias
+            })
         }
-        cfg_townStrings = newTownStrings
+        cfg_townStrings = JSON.stringify(newTownStringsArray)
         print('townStrings: ' + cfg_townStrings)
     }
     
@@ -43,7 +45,7 @@ Item {
         id: addTownStringDialog
         title: "Add Place"
         
-        width: 300
+        width: 500
         height: 100
 
         contentItem: Item {
@@ -76,8 +78,11 @@ Item {
                             return
                         }
                         
+                        var placeAlias = resultString.substring(resultString.lastIndexOf('/') + 1)
+                        
                         townStringsModel.append({
-                            townString: decodeURI(resultString)
+                            townString: decodeURI(resultString),
+                            placeAlias: decodeURI(placeAlias)
                         })
                         townStringsModelChanged()
                         addTownStringDialog.close()
@@ -87,6 +92,44 @@ Item {
         }
     }
     
+    Dialog {
+        id: changePlaceAliasDialog
+        title: "Change Alias"
+        
+        width: 300
+        height: 100
+        
+        property int tableIndex: 0
+
+        contentItem: Item {
+            
+            GridLayout {
+                columns: 1
+                
+                TextField {
+                    id: newPlaceAliasField
+                    placeholderText: 'Enter place alias'
+                    Layout.preferredWidth: changePlaceAliasDialog.width
+                    Layout.preferredHeight: changePlaceAliasDialog.height / 2
+                }
+                
+                Button {
+                    text: 'Change'
+                    width: changePlaceAliasDialog.width
+                    Layout.preferredHeight: changePlaceAliasDialog.height / 2
+                    onClicked: {
+                        
+                        var newPlaceAlias = newPlaceAliasField.text
+                        
+                        townStringsModel.setProperty(changePlaceAliasDialog.tableIndex, 'placeAlias', newPlaceAlias)
+                        
+                        townStringsModelChanged()
+                        changePlaceAliasDialog.close()
+                    }
+                }
+            }
+        }
+    }
     
     GridLayout {
         columns: 2
@@ -109,7 +152,35 @@ Item {
             TableViewColumn {
                 role: 'townString'
                 title: "Town String"
-                width: textfieldWidth * 0.7
+                width: textfieldWidth * 0.5
+            }
+            
+            TableViewColumn {
+                role: 'placeAlias'
+                title: 'Place Alias'
+                width: textfieldWidth * 0.2 - 4
+                
+                delegate: MouseArea {
+                    
+                    anchors.fill: parent
+                    
+                    Text {
+                        id: placeAliasText
+                        text: styleData.value
+                        color: theme.textColor
+                        verticalAlignment: Text.AlignVCenter
+                        height: parent.height
+                    }
+                    
+                    cursorShape: Qt.PointingHandCursor
+                    
+                    onClicked: {
+                        changePlaceAliasDialog.open()
+                        changePlaceAliasDialog.tableIndex = styleData.row
+                        newPlaceAliasField.text = placeAliasText.text
+                        newPlaceAliasField.focus = true
+                    }
+                }
             }
             
             TableViewColumn {
@@ -164,6 +235,8 @@ Item {
             Layout.columnSpan: 2
             onClicked: {
                 addTownStringDialog.open()
+                newTownStringField.text = ''
+                newTownStringField.focus = true
             }
         }
         
