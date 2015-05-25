@@ -68,7 +68,7 @@ Item {
                         
                         //http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/
                         var url = newTownStringField.text
-                        var match = /https?:\/\/www\.yr\.no\/[a-zA-Z]+\/([^\/ ]+\/[^\/ ]+\/[^\/ ]+)(\/.*)?/.exec(url)
+                        var match = /https?:\/\/www\.yr\.no\/[a-zA-Z]+\/(([^\/ ]+\/){2,}[^\/ ]+)\/[^\/ ]*/.exec(url)
                         var resultString = null
                         if (match !== null) {
                             resultString = match[1]
