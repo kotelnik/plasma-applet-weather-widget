@@ -182,28 +182,38 @@ Item {
         
         var xhr = new XMLHttpRequest()
         xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                
-                loadingData = false
-                
-                if (xhr.status !== 200) {
-                    handleLoadError()
-                    return
-                }
-                
-                // success
-                print('successfully loaded from the internet')
-                xmlCacheMap[xmlCacheKey] = xhr.responseText
-                plasmoid.configuration.xmlCacheJson = JSON.stringify(xmlCacheMap)
-                
-                reloadImage()
-                overviewLink = 'http://www.yr.no/place/' + townString + '/'
-                reloaded()
-                
-                loadFromCache()
+            if (xhr.readyState !== XMLHttpRequest.DONE) {
+                return
             }
+            
+            loadingData = false
+                
+            if (xhr.status !== 200) {
+                handleLoadError()
+                return
+            }
+            
+            // success
+            print('successfully loaded from the internet')
+            
+            var xmlString = xhr.responseText;
+            if (!ModelUtils.isXmlStringValid(xmlString)) {
+                print('incomming xmlString is not valid: ' + xmlString)
+                return
+            }
+            print('incomming text seems to be valid')
+            
+            xmlCacheMap[xmlCacheKey] = xmlString
+            plasmoid.configuration.xmlCacheJson = JSON.stringify(xmlCacheMap)
+            
+            reloadImage()
+            overviewLink = 'http://www.yr.no/place/' + townString + '/'
+            reloaded()
+            
+            loadFromCache()
         }
         xhr.open('GET', 'http://www.yr.no/place/' + townString + '/forecast.xml', true)
+        
         loadingData = true
         xhr.send()
         

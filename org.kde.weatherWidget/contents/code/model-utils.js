@@ -105,3 +105,9 @@ function updateNextDaysWeatherModel(nextDaysWeatherModel, originalXmlModel) {
     
     print('2w model: ', nextDaysWeatherModel.count)
 }
+
+function isXmlStringValid(xmlString) {
+    
+    return xmlString.indexOf('<?xml ') === 0
+    
+}

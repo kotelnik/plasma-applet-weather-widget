@@ -164,7 +164,7 @@ Item {
             interactive: true
             mainText: placeAlias
             subText: tooltipSubText
-            textFormat: Text.StyledText
+            textFormat: Text.RichText
         }
     }
     
