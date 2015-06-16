@@ -36,6 +36,7 @@ Item {
     property var xmlCacheMap: {}
     property var lastReloadedMsMap: {}
     property bool fahrenheitEnabled: plasmoid.configuration.fahrenheitEnabled
+    property string townStringsJsonStr: plasmoid.configuration.townStrings
     
     property string overviewImageSource
     property string overviewLink
@@ -128,6 +129,10 @@ Item {
         lastReloadedMsMap = lastReloadedMsMap || {}
         
         //get town string
+        setNextTownString(true)
+    }
+    
+    onTownStringsJsonStrChanged: {
         setNextTownString(true)
     }
     
