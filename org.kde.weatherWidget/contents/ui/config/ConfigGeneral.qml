@@ -268,7 +268,7 @@ Item {
         }
         
         Label {
-            text: i18n('Miscelaneous')
+            text: i18n('Miscellaneous')
             font.bold: true
             Layout.alignment: Qt.AlignLeft
         }
