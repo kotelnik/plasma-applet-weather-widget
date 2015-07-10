@@ -30,6 +30,8 @@ import "../code/temperature-utils.js" as TemperatureUtils
 Item {
     id: main
     
+    property string yrnoUrlPreifx: 'http://www.yr.no/place/'
+    
     property string townString
     property string placeAlias
     property string xmlCacheKey
@@ -46,6 +48,7 @@ Item {
     property bool loadingData: false
     property bool loadingError: false
     property bool imageLoadingError: true
+    property bool alreadyLoadedFromCache: false
     
     property string lastReloadedText: '⬇ 0m ago'
     property string tooltipSubText: ''
@@ -63,7 +66,7 @@ Item {
     Plasmoid.fullRepresentation: FullRepresentation { }
     
     FontLoader {
-        source: 'plasmapackage:/fonts/weathericons-regular-webfont.ttf'
+        source: '../fonts/weathericons-regular-webfont.ttf'
     }
     
     XmlListModel {
@@ -209,15 +212,16 @@ Item {
             print('incomming text seems to be valid')
             
             xmlCacheMap[xmlCacheKey] = xmlString
+            alreadyLoadedFromCache = false
             plasmoid.configuration.xmlCacheJson = JSON.stringify(xmlCacheMap)
             
             reloadImage()
-            overviewLink = 'http://www.yr.no/place/' + townString + '/'
+            overviewLink = yrnoUrlPreifx + townString + '/'
             reloaded()
             
             loadFromCache()
         }
-        xhr.open('GET', 'http://www.yr.no/place/' + townString + '/forecast.xml', true)
+        xhr.open('GET', yrnoUrlPreifx + townString + '/forecast.xml')
         
         loadingData = true
         xhr.send()
@@ -228,7 +232,7 @@ Item {
     function reloadImage() {
         print('reloading image')
         overviewImageSource = ''
-        overviewImageSource = 'http://www.yr.no/place/' + townString + '/avansert_meteogram.png'
+        overviewImageSource = yrnoUrlPreifx + townString + '/avansert_meteogram.png'
     }
     
     function setLastReloadedMs(lastReloadedMs) {
@@ -248,12 +252,19 @@ Item {
     
     function loadFromCache() {
         print('loading from cache, config key: ', xmlCacheKey)
+        
+        if (alreadyLoadedFromCache) {
+            print('already loaded from cache')
+            return true
+        }
+        
         if (!xmlCacheMap[xmlCacheKey]) {
             print('cache not available')
             return false
         }
         
         xmlModel.xml = xmlCacheMap[xmlCacheKey]
+        alreadyLoadedFromCache = true
         return true
     }
     
@@ -299,7 +310,7 @@ Item {
     function tryReload() {
         updateLastReloadedText()
         
-        print('image loading error: ', imageLoadingError)
+        print('image loading error: ' + imageLoadingError + ', loadingError: ' + loadingError)
         if (imageLoadingError && !loadingError) {
             reloadImage()
             imageLoadingError = false
@@ -311,7 +322,7 @@ Item {
     }
     
     Timer {
-        interval: 1000 * 5
+        interval: 5000
         running: true
         repeat: true
         onTriggered: {

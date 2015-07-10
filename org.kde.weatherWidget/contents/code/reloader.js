@@ -22,11 +22,11 @@ function getLastReloadedMins(lastReloaded) {
         lastReloaded = 0
     }
     var reloadedAgoMs = new Date().getTime() - lastReloaded
-    return Math.round(reloadedAgoMs / 1000 / 60)
+    return Math.round(reloadedAgoMs / 60000)
 }
 
 function scheduleDataReload() {
     var now = new Date().getTime()
     loadingError = true
-    scheduledDataReload = now + 1000 * 15
+    scheduledDataReload = now + 15000
 }
