@@ -18,7 +18,7 @@ import QtQuick 2.2
 import org.kde.plasma.plasmoid 2.0
 import QtQuick.Layouts 1.1
 import QtGraphicalEffects 1.0
-import QtQuick.Controls 1.4
+import QtQuick.Controls 1.0
 
 Item {
     id: fullRepresentation
