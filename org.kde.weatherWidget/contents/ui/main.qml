@@ -40,6 +40,11 @@ Item {
     property bool fahrenheitEnabled: plasmoid.configuration.fahrenheitEnabled
     property string townStringsJsonStr: plasmoid.configuration.townStrings
     
+    property string datetimeFormat: 'yyyy-MM-dd\'T\'hh:mm:ss'
+    property var locale: Qt.locale('en_GB')
+    property date sunRise: Date.fromLocaleString(locale, '2000-01-01T06:00:00', datetimeFormat)
+    property date sunSet: Date.fromLocaleString(locale, '2000-01-01T18:00:00', datetimeFormat)
+    
     property string overviewImageSource
     property string overviewLink
     property int reloadIntervalMin: plasmoid.configuration.reloadIntervalMin
@@ -56,14 +61,21 @@ Item {
     property bool verticalAlignment: plasmoid.configuration.compactLayout
     
     property bool vertical: (plasmoid.formFactor == PlasmaCore.Types.Vertical)
+    property bool inTray: (plasmoid.parent === null)
     
-    property int nextDaysCount: 8
+    property int nextDaysCount: inTray ? 3 : 8
     
     anchors.fill: parent
     
+    property Component crInTray: CompactRepresentationInTray { }
+    property Component cr: CompactRepresentation { }
+    
+    property Component frInTray: FullRepresentationInTray { }
+    property Component fr: FullRepresentation { }
+    
     Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
-    Plasmoid.compactRepresentation: CompactRepresentation { }
-    Plasmoid.fullRepresentation: FullRepresentation { }
+    Plasmoid.compactRepresentation: cr
+    Plasmoid.fullRepresentation: fr
     
     FontLoader {
         source: '../fonts/weathericons-regular-webfont.ttf'
@@ -107,6 +119,20 @@ Item {
         }
     }
     
+    XmlListModel {
+        id: xmlModelSunRiseSet
+        query: '/weatherdata/sun'
+
+        XmlRole {
+            name: 'rise'
+            query: '@rise/string()'
+        }
+        XmlRole {
+            name: 'set'
+            query: '@set/string()'
+        }
+    }
+    
     ListModel {
         id: actualWeatherModel
     }
@@ -116,6 +142,11 @@ Item {
     }
     
     Component.onCompleted: {
+        
+        if (inTray) {
+            Plasmoid.compactRepresentation = crInTray
+            Plasmoid.fullRepresentation = frInTray
+        }
         
         //fill xml cache xml
         var xmlCache = plasmoid.configuration.xmlCacheJson
@@ -166,6 +197,9 @@ Item {
         print('next town string is: ' + townString)
         xmlCacheKey = generateXmlCacheKey(townString)
         print('next xmlCacheKey is: ' + xmlCacheKey)
+        
+        alreadyLoadedFromCache = false
+        overviewLink = yrnoUrlPreifx + townString + '/'
         
         showData()
     }
@@ -264,6 +298,7 @@ Item {
         }
         
         xmlModel.xml = xmlCacheMap[xmlCacheKey]
+        xmlModelSunRiseSet.xml = xmlCacheMap[xmlCacheKey]
         alreadyLoadedFromCache = true
         return true
     }
@@ -278,6 +313,26 @@ Item {
                     ModelUtils.updateCurrentWeatherModel(actualWeatherModel, xmlModel)
                     ModelUtils.updateNextDaysWeatherModel(nextDaysModel, xmlModel)
                     refreshTooltipSubText()
+                }
+            }
+        },
+        
+        State {
+            name: "sunReady"
+            when: xmlModelSunRiseSet.status == XmlListModel.Ready
+            
+            StateChangeScript {
+                script: {
+                    sunRise = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
+                    sunSet = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
+                    var now = new Date()
+                    sunRise.setFullYear(now.getFulLYear())
+                    sunRise.setMonth(now.getMonth())
+                    sunRise.setDate(now.getDate())
+                    sunSet.setFullYear(now.getFulLYear())
+                    sunSet.setMonth(now.getMonth())
+                    sunSet.setDate(now.getDate())
+                    print('new sunRise: ' + sunRise + ', sunSet: ' + sunSet)
                 }
             }
         }
@@ -296,7 +351,7 @@ Item {
     
     function refreshTooltipSubText() {
         print('refreshing sub text')
-        var futureWeatherIcon = IconTools.getIconCode(xmlModel.get(1).iconName, true, xmlModel.get(1).period === '0' || xmlModel.get(1).period === '3' ? 1 : 0)
+        var futureWeatherIcon = IconTools.getIconCode(xmlModel.get(1).iconName, true, getPartOfDayIndex())
         var windDirectionIcon = IconTools.getWindDirectionIconCode(xmlModel.get(0).windDirection)
         var subText = ''
         subText += '<br /><font size="4"><font style="font-family: weathericons">' + windDirectionIcon + '</font></font><font size="4"> ' + xmlModel.get(0).windSpeedMps + ' M/s</font>'
@@ -305,6 +360,14 @@ Item {
         subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(xmlModel.get(1).temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
         subText += '<font color="transparent">__</font><font style="font-family: weathericons">' + futureWeatherIcon + '</font></b></font>'
         tooltipSubText = subText
+    }
+    
+    function getPartOfDayIndex() {
+        //return xmlModel.get(1).period === '0' || xmlModel.get(1).period === '3' ? 1 : 0
+        
+        var now = new Date()
+        print('determining part of day')
+        return sunRise < now && now < sunSet ? 0 : 1
     }
     
     function tryReload() {

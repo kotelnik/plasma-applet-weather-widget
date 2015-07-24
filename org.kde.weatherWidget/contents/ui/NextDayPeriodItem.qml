@@ -26,6 +26,7 @@ Item {
     property int temperature
     property int iconName
     property int partOfDay
+    property double fontPointSize: theme.defaultFont.pointSize
     
     Item {
         id: temperatureTextItem
@@ -43,7 +44,7 @@ Item {
             
             text: TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
             color: theme.textColor
-            font.pointSize: theme.defaultFont.pointSize
+            font.pointSize: fontPointSize
         }
     }
     
@@ -60,7 +61,7 @@ Item {
             text: IconTools.getIconCode(iconName, true, partOfDay)
             
             color: theme.textColor
-            font.pointSize: theme.defaultFont.pointSize
+            font.pointSize: fontPointSize
         }
     }
     

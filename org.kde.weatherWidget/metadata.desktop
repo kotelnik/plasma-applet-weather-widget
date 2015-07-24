@@ -11,6 +11,7 @@ X-KDE-PluginInfo-Name=org.kde.weatherWidget
 X-KDE-PluginInfo-Version=1.0
 X-KDE-PluginInfo-Website=https://github.com/kotelnik/plasma-applet-weather-widget
 X-KDE-ServiceTypes=Plasma/Applet
+X-Plasma-NotificationArea=true
 X-Plasma-API=declarativeappletscript
 X-Plasma-MainScript=ui/main.qml
 X-Plasma-RemoteLocation=

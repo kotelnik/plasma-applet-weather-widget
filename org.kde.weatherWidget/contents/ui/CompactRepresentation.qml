@@ -31,11 +31,8 @@ Item {
     
     property double fontPointSize: partHeight * 0.5
     
-    Layout.minimumWidth: Layout.maximumWidth
-    Layout.minimumHeight: Layout.maximumHeight
-    
-    Layout.maximumWidth: partWidth * 2
-    Layout.maximumHeight: partHeight
+    Layout.preferredWidth: partWidth * 2
+    Layout.preferredHeight: partHeight
     
     ListView {
         id: mainView
@@ -81,7 +78,7 @@ Item {
                     anchors.centerIn: parent
                     
                     font.family: 'weathericons'
-                    text: IconTools.getIconCode(iconName, true, period === '0' || period === '3' ? 1 : 0)
+                    text: IconTools.getIconCode(iconName, true, getPartOfDayIndex())
                     
                     color: theme.textColor
                     font.pointSize: fontPointSize
