@@ -275,6 +275,9 @@ Item {
     }
     
     function getLastReloadedMs() {
+        if (!lastReloadedMsMap) {
+            return new Date().getTime()
+        }
         return lastReloadedMsMap[xmlCacheKey]
     }
     
@@ -292,7 +295,7 @@ Item {
             return true
         }
         
-        if (!xmlCacheMap[xmlCacheKey]) {
+        if (!xmlCacheMap || !xmlCacheMap[xmlCacheKey]) {
             print('cache not available')
             return false
         }
@@ -305,38 +308,44 @@ Item {
     
     states: [
         State {
-            name: "ready"
+            name: 'ready'
             when: xmlModel.status == XmlListModel.Ready
             
             StateChangeScript {
                 script: {
+                    print('xmlModel ready')
                     ModelUtils.updateCurrentWeatherModel(actualWeatherModel, xmlModel)
                     ModelUtils.updateNextDaysWeatherModel(nextDaysModel, xmlModel)
                     refreshTooltipSubText()
                 }
             }
-        },
-        
-        State {
-            name: "sunReady"
-            when: xmlModelSunRiseSet.status == XmlListModel.Ready
-            
-            StateChangeScript {
-                script: {
-                    sunRise = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
-                    sunSet = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
-                    var now = new Date()
-                    sunRise.setFullYear(now.getFulLYear())
-                    sunRise.setMonth(now.getMonth())
-                    sunRise.setDate(now.getDate())
-                    sunSet.setFullYear(now.getFulLYear())
-                    sunSet.setMonth(now.getMonth())
-                    sunSet.setDate(now.getDate())
-                    print('new sunRise: ' + sunRise + ', sunSet: ' + sunSet)
-                }
-            }
         }
     ]
+    
+    Item {
+        states: [
+            State {
+                name: 'sunReady'
+                when: xmlModelSunRiseSet.status == XmlListModel.Ready
+                
+                StateChangeScript {
+                    script: {
+                        print('xmlModelSunRiseSet ready')
+                        sunRise = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
+                        sunSet = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
+                        var now = new Date()
+                        sunRise.setFullYear(now.getFullYear())
+                        sunRise.setMonth(now.getMonth())
+                        sunRise.setDate(now.getDate())
+                        sunSet.setFullYear(now.getFullYear())
+                        sunSet.setMonth(now.getMonth())
+                        sunSet.setDate(now.getDate())
+                        print('new sunRise: ' + sunRise + ', sunSet: ' + sunSet)
+                    }
+                }
+            }
+        ]
+    }
     
     function handleLoadError() {
         print('Error getting weather data. Scheduling data reload...')
@@ -373,7 +382,6 @@ Item {
     function tryReload() {
         updateLastReloadedText()
         
-        print('image loading error: ' + imageLoadingError + ', loadingError: ' + loadingError)
         if (imageLoadingError && !loadingError) {
             reloadImage()
             imageLoadingError = false
