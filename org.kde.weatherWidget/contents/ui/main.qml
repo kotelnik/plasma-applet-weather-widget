@@ -363,7 +363,7 @@ Item {
         var futureWeatherIcon = IconTools.getIconCode(xmlModel.get(1).iconName, true, getPartOfDayIndex())
         var windDirectionIcon = IconTools.getWindDirectionIconCode(xmlModel.get(0).windDirection)
         var subText = ''
-        subText += '<br /><font size="4"><font style="font-family: weathericons">' + windDirectionIcon + '</font></font><font size="4"> ' + xmlModel.get(0).windSpeedMps + ' M/s</font>'
+        subText += '<br /><font size="4"><font style="font-family: weathericons">' + windDirectionIcon + '</font></font><font size="4"> ' + xmlModel.get(0).windSpeedMps + ' m/s</font>'
         subText += '<br /><font size="4">' + xmlModel.get(0).pressureHpa + ' hPa</font>'
         subText += '<br /><br />'
         subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(xmlModel.get(1).temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
