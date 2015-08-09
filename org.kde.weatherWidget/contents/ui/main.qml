@@ -44,6 +44,8 @@ Item {
     property var locale: Qt.locale('en_GB')
     property date sunRise: Date.fromLocaleString(locale, '2000-01-01T06:00:00', datetimeFormat)
     property date sunSet: Date.fromLocaleString(locale, '2000-01-01T18:00:00', datetimeFormat)
+    property string sunRiseTime: '6:00'
+    property string sunSetTime: '18:00'
     
     property string overviewImageSource
     property string overviewLink
@@ -135,6 +137,10 @@ Item {
     
     ListModel {
         id: actualWeatherModel
+    }
+    
+    ListModel {
+        id: nextActualWeatherModel
     }
     
     ListModel {
@@ -314,7 +320,7 @@ Item {
             StateChangeScript {
                 script: {
                     print('xmlModel ready')
-                    ModelUtils.updateCurrentWeatherModel(actualWeatherModel, xmlModel)
+                    ModelUtils.updateCurrentWeatherModel(actualWeatherModel, nextActualWeatherModel, xmlModel)
                     ModelUtils.updateNextDaysWeatherModel(nextDaysModel, xmlModel)
                     refreshTooltipSubText()
                 }
@@ -330,7 +336,6 @@ Item {
                 
                 StateChangeScript {
                     script: {
-                        print('xmlModelSunRiseSet ready')
                         sunRise = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
                         sunSet = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
                         var now = new Date()
@@ -340,7 +345,9 @@ Item {
                         sunSet.setFullYear(now.getFullYear())
                         sunSet.setMonth(now.getMonth())
                         sunSet.setDate(now.getDate())
-                        print('new sunRise: ' + sunRise + ', sunSet: ' + sunSet)
+                        sunRiseTime = Qt.formatTime(sunRise, Qt.locale().timeFormat(Locale.ShortFormat))
+                        sunSetTime = Qt.formatTime(sunSet, Qt.locale().timeFormat(Locale.ShortFormat))
+                        refreshTooltipSubText()
                     }
                 }
             }
@@ -355,27 +362,25 @@ Item {
     }
     
     function updateLastReloadedText() {
-        lastReloadedText = '⬇ ' + Reloader.getLastReloadedMins(getLastReloadedMs()) + 'm ago'
+        lastReloadedText = '⬇ ' + Reloader.getLastReloadedTimeText(getLastReloadedMs()) + ' ago'
     }
     
     function refreshTooltipSubText() {
         print('refreshing sub text')
-        var futureWeatherIcon = IconTools.getIconCode(xmlModel.get(1).iconName, true, getPartOfDayIndex())
-        var windDirectionIcon = IconTools.getWindDirectionIconCode(xmlModel.get(0).windDirection)
+        var futureWeatherIcon = IconTools.getIconCode(nextActualWeatherModel.get(0).iconName, true, getPartOfDayIndex())
+        var windDirectionIcon = IconTools.getWindDirectionIconCode(actualWeatherModel.get(0).windDirection)
         var subText = ''
-        subText += '<br /><font size="4"><font style="font-family: weathericons">' + windDirectionIcon + '</font></font><font size="4"> ' + xmlModel.get(0).windSpeedMps + ' m/s</font>'
-        subText += '<br /><font size="4">' + xmlModel.get(0).pressureHpa + ' hPa</font>'
+        subText += '<br /><font size="4"><font style="font-family: weathericons">' + windDirectionIcon + '</font></font><font size="4"> ' + actualWeatherModel.get(0).windSpeedMps + ' m/s</font>'
+        subText += '<br /><font size="4">' + actualWeatherModel.get(0).pressureHpa + ' hPa</font>'
+        subText += '<br /><font size="4"><font style="font-family: weathericons">\uf051</font>&nbsp;' + sunRiseTime + '&nbsp;&nbsp;&nbsp;<font style="font-family: weathericons">\uf052</font>&nbsp;' + sunSetTime + '</font>'
         subText += '<br /><br />'
-        subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(xmlModel.get(1).temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
+        subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(nextActualWeatherModel.get(0).temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
         subText += '<font color="transparent">__</font><font style="font-family: weathericons">' + futureWeatherIcon + '</font></b></font>'
         tooltipSubText = subText
     }
     
     function getPartOfDayIndex() {
-        //return xmlModel.get(1).period === '0' || xmlModel.get(1).period === '3' ? 1 : 0
-        
         var now = new Date()
-        print('determining part of day')
         return sunRise < now && now < sunSet ? 0 : 1
     }
     

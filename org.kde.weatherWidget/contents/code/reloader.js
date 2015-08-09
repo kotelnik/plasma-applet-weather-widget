@@ -17,12 +17,28 @@ function setReloaded() {
     return new Date().getTime()
 }
 
-function getLastReloadedMins(lastReloaded) {
+function getLastReloadedTimeText(lastReloaded) {
     if (!lastReloaded) {
         lastReloaded = 0
     }
     var reloadedAgoMs = new Date().getTime() - lastReloaded
-    return Math.round(reloadedAgoMs / 60000)
+    var mins = reloadedAgoMs / 60000;
+    
+    if (mins <= 180) {
+        return Math.round(mins) + 'm'
+    }
+    
+    var hours = mins / 60
+    if (hours <= 48) {
+        return Math.round(hours) + 'h'
+    }
+    
+    var days = hours / 24
+    if (days <= 14) {
+        return Math.round(days) + 'd'
+    }
+    
+    return 'long'
 }
 
 function scheduleDataReload() {

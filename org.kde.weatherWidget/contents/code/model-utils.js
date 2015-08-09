@@ -1,9 +1,10 @@
 var wholeDayDurationMs = 1000 * 60 * 60 * 24
 
-function updateCurrentWeatherModel(currentWeatherModel, originalXmlModel) {
+function updateCurrentWeatherModel(currentWeatherModel, nextCurrentWeatherModel, originalXmlModel) {
     
     var now = new Date()
     var interestingTimeObj = null
+    var nextInterestingTimeObj = null
     
     print('orig', originalXmlModel.count)
     
@@ -17,14 +18,21 @@ function updateCurrentWeatherModel(currentWeatherModel, originalXmlModel) {
             || (dateFrom < now && now < dateTo)) {
             
             interestingTimeObj = timeObj
+            if (i + 1 < originalXmlModel.count) {
+                nextInterestingTimeObj = originalXmlModel.get(i + 1)
+            }
             break
         }
     }
     
     currentWeatherModel.clear()
+    nextCurrentWeatherModel.clear()
     
     if (interestingTimeObj !== null) {
         currentWeatherModel.append(interestingTimeObj)
+    }
+    if (nextInterestingTimeObj !== null) {
+        nextCurrentWeatherModel.append(nextInterestingTimeObj)
     }
     
     print('w model: ', currentWeatherModel.count)
