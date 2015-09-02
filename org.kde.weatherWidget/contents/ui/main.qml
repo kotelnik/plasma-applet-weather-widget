@@ -67,6 +67,8 @@ Item {
     
     property int nextDaysCount: inTray ? 3 : 8
     
+    property bool updatingPaused: true
+    
     anchors.fill: parent
     
     property Component crInTray: CompactRepresentationInTray { }
@@ -147,12 +149,21 @@ Item {
         id: nextDaysModel
     }
     
+    function action_toggleUpdatingPaused() {
+        updatingPaused = !updatingPaused
+        plasmoid.setAction('toggleUpdatingPaused', updatingPaused ? i18n('Resume Updating') : i18n('Pause Updating'), updatingPaused ? 'media-playback-start' : 'media-playback-pause');
+    }
+    
     Component.onCompleted: {
         
+        // systray settings
         if (inTray) {
             Plasmoid.compactRepresentation = crInTray
             Plasmoid.fullRepresentation = frInTray
         }
+        
+        // init contextMenu
+        action_toggleUpdatingPaused()
         
         //fill xml cache xml
         var xmlCache = plasmoid.configuration.xmlCacheJson
@@ -386,6 +397,10 @@ Item {
     
     function tryReload() {
         updateLastReloadedText()
+        
+        if (updatingPaused) {
+            return
+        }
         
         if (imageLoadingError && !loadingError) {
             reloadImage()
