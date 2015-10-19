@@ -78,7 +78,7 @@ Item {
                             return
                         }
                         
-                        var placeAlias = resultString.substring(resultString.lastIndexOf('/') + 1)
+                        var placeAlias = resultString.substring(resultString.lastIndexOf('/') + 1).replace(/_/g, ' ')
                         
                         townStringsModel.append({
                             townString: decodeURI(resultString),
