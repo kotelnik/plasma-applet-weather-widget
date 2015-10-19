@@ -43,91 +43,63 @@ Item {
     
     Dialog {
         id: addTownStringDialog
-        title: "Add Place"
+        title: 'Add Place'
         
         width: 500
-        height: 100
-
-        contentItem: Item {
-            
-            GridLayout {
-                columns: 1
-                
-                TextField {
-                    id: newTownStringField
-                    placeholderText: 'Paste URL here'
-                    Layout.preferredWidth: addTownStringDialog.width
-                    Layout.preferredHeight: addTownStringDialog.height / 2
-                }
-                
-                Button {
-                    text: 'Add'
-                    width: addTownStringDialog.width
-                    Layout.preferredHeight: addTownStringDialog.height / 2
-                    onClicked: {
-                        
-                        //http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/
-                        var url = newTownStringField.text
-                        var match = /https?:\/\/www\.yr\.no\/[a-zA-Z]+\/(([^\/ ]+\/){2,}[^\/ ]+)\/[^\/ ]*/.exec(url)
-                        var resultString = null
-                        if (match !== null) {
-                            resultString = match[1]
-                        }
-                        if (!resultString) {
-                            newTownStringField.text = 'Error parsing url.'
-                            return
-                        }
-                        
-                        var placeAlias = resultString.substring(resultString.lastIndexOf('/') + 1).replace(/_/g, ' ')
-                        
-                        townStringsModel.append({
-                            townString: decodeURI(resultString),
-                            placeAlias: decodeURI(placeAlias)
-                        })
-                        townStringsModelChanged()
-                        addTownStringDialog.close()
-                    }
-                }
+        
+        standardButtons: StandardButton.Ok | StandardButton.Cancel
+        
+        onAccepted: {
+            //http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/
+            var url = newTownStringField.text
+            var match = /https?:\/\/www\.yr\.no\/[a-zA-Z]+\/(([^\/ ]+\/){2,}[^\/ ]+)\/[^\/ ]*/.exec(url)
+            var resultString = null
+            if (match !== null) {
+                resultString = match[1]
             }
+            if (!resultString) {
+                newTownStringField.text = 'Error parsing url.'
+                return
+            }
+            
+            var placeAlias = resultString.substring(resultString.lastIndexOf('/') + 1).replace(/_/g, ' ')
+            
+            townStringsModel.append({
+                townString: decodeURI(resultString),
+                placeAlias: decodeURI(placeAlias)
+            })
+            townStringsModelChanged()
+            addTownStringDialog.close()
+        }
+        
+        TextField {
+            id: newTownStringField
+            placeholderText: 'Paste URL here'
+            width: parent.width
         }
     }
     
     Dialog {
         id: changePlaceAliasDialog
-        title: "Change Alias"
+        title: 'Change Alias'
         
-        width: 300
-        height: 100
+        standardButtons: StandardButton.Ok | StandardButton.Cancel
+        
+        onAccepted: {
+            var newPlaceAlias = newPlaceAliasField.text
+            
+            townStringsModel.setProperty(changePlaceAliasDialog.tableIndex, 'placeAlias', newPlaceAlias)
+            
+            townStringsModelChanged()
+            changePlaceAliasDialog.close()
+        }
         
         property int tableIndex: 0
-
-        contentItem: Item {
-            
-            GridLayout {
-                columns: 1
-                
-                TextField {
-                    id: newPlaceAliasField
-                    placeholderText: 'Enter place alias'
-                    Layout.preferredWidth: changePlaceAliasDialog.width
-                    Layout.preferredHeight: changePlaceAliasDialog.height / 2
-                }
-                
-                Button {
-                    text: 'Change'
-                    width: changePlaceAliasDialog.width
-                    Layout.preferredHeight: changePlaceAliasDialog.height / 2
-                    onClicked: {
-                        
-                        var newPlaceAlias = newPlaceAliasField.text
-                        
-                        townStringsModel.setProperty(changePlaceAliasDialog.tableIndex, 'placeAlias', newPlaceAlias)
-                        
-                        townStringsModelChanged()
-                        changePlaceAliasDialog.close()
-                    }
-                }
-            }
+        
+        TextField {
+            id: newPlaceAliasField
+            placeholderText: 'Enter place alias'
+            width: parent.width
         }
     }
     
@@ -164,10 +136,9 @@ Item {
                     
                     anchors.fill: parent
                     
-                    Text {
+                    Label {
                         id: placeAliasText
                         text: styleData.value
-                        verticalAlignment: Text.AlignVCenter
                         height: parent.height
                     }
                     
@@ -247,14 +218,14 @@ Item {
             Layout.columnSpan: 2
         }
         
-        Text {
+        Label {
             font.italic: true
             text: 'Find your town string in yr.no (english version)\nand use the URL from your browser to add a new location. E.g. paste this:\nhttp://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/'
             Layout.preferredWidth: textfieldWidth
             Layout.columnSpan: 2
         }
         
-        Text {
+        Label {
             text: 'NOTE: This will get automated in future versions.'
             Layout.preferredWidth: textfieldWidth
             Layout.columnSpan: 2
