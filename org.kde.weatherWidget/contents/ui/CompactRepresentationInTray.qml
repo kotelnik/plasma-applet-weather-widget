@@ -25,77 +25,57 @@ import "../code/temperature-utils.js" as TemperatureUtils
 
 Item {
     id: compactRepresentationInTray
-    
-    Layout.minimumWidth: units.iconSizes.small
-    Layout.minimumHeight: units.iconSizes.small
-    property real itemSize: compactRepresentationInTray.height
-    
+
     property double fontPointSize: height * 0.6
-    
+
     ListView {
         id: mainView
         
-        width: itemSize
-        height: itemSize
+        anchors.fill: parent
         
         model: actualWeatherModel
         delegate: Item {
             id: mainViewDelegate
             
-            width: itemSize
-            height: itemSize
-            
-            Item {
-                width: parent.width
-                height: parent.height
-                
-                opacity: 0.7
-                
-                Label {
-                    anchors.centerIn: parent
+            width: compactRepresentationInTray.width
+            height: compactRepresentationInTray.height
+
+            Label {
+                anchors.fill: parent
+
+                opacity: 0.8
+                font.family: 'weathericons'
+                text: IconTools.getIconCode(iconName, true, getPartOfDayIndex())
+
+                color: theme.textColor
+                font.pointSize: fontPointSize
+                fontSizeMode: Text.Fit
+            }
+
+            Text {
+                id: temperatureText
+
+                anchors.fill: parent
+
+                horizontalAlignment: Text.AlignRight
+                verticalAlignment: Text.AlignBottom
                     
-                    font.family: 'weathericons'
-                    text: IconTools.getIconCode(iconName, true, getPartOfDayIndex())
+                text: TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
+                color: theme.textColor
                     
-                    color: theme.textColor
-                    font.pointSize: fontPointSize
-                }
+                font.bold: true
+                font.pointSize: fontPointSize * 0.5
             }
             
             DropShadow {
-                anchors.fill: temperatureNumberItem
+                anchors.fill: temperatureText
                 radius: 3
                 samples: 16
                 spread: 0.9
                 fast: true
                 color: theme.backgroundColor
-                source: temperatureNumberItem
+                source: temperatureText
             }
-            
-            Item {
-                id: temperatureNumberItem
-                
-                width: parent.width
-                height: parent.height
-                
-                Text {
-                    id: temperatureText
-                    
-                    width: parent.width
-                    height: parent.height
-                    
-                    horizontalAlignment: Text.AlignRight
-                    verticalAlignment: Text.AlignBottom
-                    
-                    text: TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
-                    color: theme.textColor
-                    
-                    font.bold: true
-                    
-                    font.pointSize: fontPointSize * 0.5
-                }
-            }
-            
         }
     }
     
