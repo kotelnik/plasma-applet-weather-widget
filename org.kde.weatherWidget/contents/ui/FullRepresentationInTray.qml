@@ -90,6 +90,7 @@ Item {
      * 
      */
     ScrollView {
+        id: nextDays
         
         anchors.top: parent.top
         anchors.topMargin: headingHeight
@@ -225,8 +226,12 @@ Item {
      * 
      */
     MouseArea {
+        id: reloadMouseArea
+
+        anchors.top: nextDays.bottom
         anchors.left: parent.left
         anchors.bottom: parent.bottom
+        anchors.topMargin: units.smallSpacing
         
         width: lastReloadedTextComponent.contentWidth
         height: lastReloadedTextComponent.contentHeight
@@ -236,8 +241,7 @@ Item {
         
         Text {
             id: lastReloadedTextComponent
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
+            anchors.fill: parent
             
             color: theme.textColor
             font.pointSize: theme.defaultFont.pointSize
@@ -247,8 +251,7 @@ Item {
         
         Text {
             id: reloadTextComponent
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
+            anchors.fill: parent
             
             color: theme.textColor
             font.pointSize: theme.defaultFont.pointSize
@@ -276,13 +279,20 @@ Item {
     Text {
         id: creditText
         
+        anchors.top: nextDays.bottom
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+        anchors.left: reloadMouseArea.right
+        anchors.topMargin: units.smallSpacing
+        anchors.leftMargin: units.largeSpacing
         
         color: theme.textColor
         font.pointSize: theme.defaultFont.pointSize
         
-        text: 'Weather forecast from yr.no,delivered by the\nNorwegian Meteorological Institute and the NRK'
+        text: 'Weather forecast from yr.no, delivered by the Norwegian Meteorological Institute and the NRK'
+        wrapMode: Text.WordWrap
+        maximumLineCount: 3
+        elide: Text.ElideRight
     }
     
     MouseArea {
