@@ -1,7 +1,7 @@
 var scheduledDataReload = null
 
 function isReadyToReload(reloadIntervalMs, lastReloaded) {
-    print('is ready to reload - lastReloaded: ' + lastReloaded)
+    //print('is ready to reload - lastReloaded: ' + lastReloaded)
     var now = new Date().getTime()
     if (loadingError && scheduledDataReload !== null) {
         return scheduledDataReload < now

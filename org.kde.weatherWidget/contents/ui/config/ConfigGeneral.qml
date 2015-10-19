@@ -78,7 +78,7 @@ Item {
                             return
                         }
                         
-                        var placeAlias = resultString.substring(resultString.lastIndexOf('/') + 1)
+                        var placeAlias = resultString.substring(resultString.lastIndexOf('/') + 1).replace(/_/g, ' ')
                         
                         townStringsModel.append({
                             townString: decodeURI(resultString),
@@ -167,7 +167,6 @@ Item {
                     Text {
                         id: placeAliasText
                         text: styleData.value
-                        color: theme.textColor
                         verticalAlignment: Text.AlignVCenter
                         height: parent.height
                     }
@@ -190,11 +189,13 @@ Item {
                 delegate: Item {
                     
                     GridLayout {
+                        height: parent.height
                         columns: 3
+                        rowSpacing: 0
                         
                         Button {
                             iconName: 'go-up'
-                            Layout.preferredHeight: 23
+                            Layout.fillHeight: true
                             onClicked: {
                                 townStringsModel.move(styleData.row, styleData.row - 1, 1)
                                 townStringsModelChanged()
@@ -204,7 +205,7 @@ Item {
                         
                         Button {
                             iconName: 'go-down'
-                            Layout.preferredHeight: 23
+                            Layout.fillHeight: true
                             onClicked: {
                                 townStringsModel.move(styleData.row, styleData.row + 1, 1)
                                 townStringsModelChanged()
@@ -214,7 +215,7 @@ Item {
                         
                         Button {
                             iconName: 'list-remove'
-                            Layout.preferredHeight: 23
+                            Layout.fillHeight: true
                             onClicked: {
                                 townStringsModel.remove(styleData.row)
                                 townStringsModelChanged()
@@ -249,14 +250,12 @@ Item {
         Text {
             font.italic: true
             text: 'Find your town string in yr.no (english version)\nand use the URL from your browser to add a new location. E.g. paste this:\nhttp://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/'
-            color: theme.textColor
             Layout.preferredWidth: textfieldWidth
             Layout.columnSpan: 2
         }
         
         Text {
             text: 'NOTE: This will get automated in future versions.'
-            color: theme.textColor
             Layout.preferredWidth: textfieldWidth
             Layout.columnSpan: 2
         }

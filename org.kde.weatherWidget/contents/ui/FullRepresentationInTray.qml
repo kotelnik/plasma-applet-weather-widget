@@ -19,6 +19,7 @@ import org.kde.plasma.plasmoid 2.0
 import QtQuick.Layouts 1.1
 import QtGraphicalEffects 1.0
 import QtQuick.Controls 1.0
+import org.kde.plasma.core 2.0 as PlasmaCore
 
 Item {
     id: fullRepresentation
@@ -90,6 +91,7 @@ Item {
      * 
      */
     ScrollView {
+        id: nextDays
         
         anchors.top: parent.top
         anchors.topMargin: headingHeight
@@ -116,20 +118,14 @@ Item {
                 width: nextDaysView.width
                 height: nextDayHeight
                 
-                Item {
+                PlasmaCore.SvgItem {
                     id: dayTitleLine
                     width: parent.width
-                    height: 1
-                    
-                    LinearGradient {
-                        anchors.fill: parent
-                        start: Qt.point(0, 0)
-                        end: Qt.point(parent.width, 0)
-                        gradient: Gradient {
-                            GradientStop { position: 0.0; color: Qt.rgba(lineColor.r, lineColor.g, lineColor.b, 0) }
-                            GradientStop { position: 0.1; color: Qt.rgba(lineColor.r, lineColor.g, lineColor.b, 1) }
-                            GradientStop { position: 1.0; color: Qt.rgba(lineColor.r, lineColor.g, lineColor.b, 0) }
-                        }
+                    height: lineSvg.elementSize("horizontal-line").height
+                    elementId: "horizontal-line"
+                    svg: PlasmaCore.Svg {
+                        id: lineSvg
+                        imagePath: "widgets/line"
                     }
                 }
                 
@@ -137,6 +133,7 @@ Item {
                     id: dayTitleText
                     
                     anchors.top: dayTitleLine.bottom
+                    anchors.topMargin: units.smallSpacing
                     
                     text: dayTitle + ' ' + dateString
                     color: theme.textColor
@@ -225,8 +222,12 @@ Item {
      * 
      */
     MouseArea {
+        id: reloadMouseArea
+
+        anchors.top: nextDays.bottom
         anchors.left: parent.left
         anchors.bottom: parent.bottom
+        anchors.topMargin: units.smallSpacing
         
         width: lastReloadedTextComponent.contentWidth
         height: lastReloadedTextComponent.contentHeight
@@ -236,8 +237,7 @@ Item {
         
         Text {
             id: lastReloadedTextComponent
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
+            anchors.fill: parent
             
             color: theme.textColor
             font.pointSize: theme.defaultFont.pointSize
@@ -247,8 +247,7 @@ Item {
         
         Text {
             id: reloadTextComponent
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
+            anchors.fill: parent
             
             color: theme.textColor
             font.pointSize: theme.defaultFont.pointSize
@@ -276,13 +275,20 @@ Item {
     Text {
         id: creditText
         
+        anchors.top: nextDays.bottom
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+        anchors.left: reloadMouseArea.right
+        anchors.topMargin: units.smallSpacing
+        anchors.leftMargin: units.largeSpacing
         
         color: theme.textColor
         font.pointSize: theme.defaultFont.pointSize
         
-        text: 'Weather forecast from yr.no,delivered by the\nNorwegian Meteorological Institute and the NRK'
+        text: 'Weather forecast from yr.no, delivered by the Norwegian Meteorological Institute and the NRK'
+        wrapMode: Text.WordWrap
+        maximumLineCount: 3
+        elide: Text.ElideRight
     }
     
     MouseArea {
