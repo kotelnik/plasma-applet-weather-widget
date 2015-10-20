@@ -182,7 +182,11 @@ Item {
             
             //fill xml cache xml
             if (cacheContent) {
-                xmlCacheMap = JSON.parse(cacheContent)
+                try {
+                    xmlCacheMap = JSON.parse(cacheContent)
+                } catch (error) {
+                    dbgprint('error parsing cacheContent')
+                }
             }
             xmlCacheMap = xmlCacheMap || {}
             

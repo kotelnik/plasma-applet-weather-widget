@@ -21,6 +21,9 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 Item {
     id: weatherCache
     
+    // security measure
+    property int sizeLimitLength: 2000000
+    
     property string cacheFolderPath: '~/.cache/plasma/plasmoids/org.kde.weatherWidget/'
     property string cacheFilePath: cacheFolderPath + 'plasmoidId-' + plasmoid.id + '.json'
     property string writePattern: 'mkdir -p ' + cacheFolderPath + ' && echo \'{cacheContent}\' > ' + cacheFilePath
@@ -30,7 +33,15 @@ Item {
     
     function writeCache(cacheContent) {
         dbgprint('writing cache with pattern: ' + writePattern)
-        writeCacheExecutableDS.connectSource(writePattern.replace('{cacheContent}', cacheContent))
+        // security measure
+        var cacheContentEncoded = Qt.btoa(cacheContent)
+        if (cacheContentEncoded.length > sizeLimitLength) {
+            print('Cache size exceeded! Content bigger then ' + sizeLimitLength + ' characters. NOT storing cache.')
+            return
+        }
+        dbgprint('writing: ' + cacheContentEncoded)
+        dbgprint('cache length: ' + cacheContentEncoded.length)
+        writeCacheExecutableDS.connectSource(writePattern.replace('{cacheContent}', cacheContentEncoded))
     }
     
     function readCache(callback) {
@@ -76,7 +87,16 @@ Item {
                 return
             }
             dbgprint('reading cache succeded: ' + data.stdout)
-            currentCallback(data.stdout)
+            // security measure
+            var cacheContentDecoded = Qt.atob(data.stdout)
+            dbgprint('cache length: ' + cacheContentDecoded.length)
+            if (cacheContentDecoded.length > sizeLimitLength) {
+                print('Cache size exceeded! Content bigger then ' + sizeLimitLength + ' characters. NOT loading cache.')
+                currentCallback('')
+                return
+            }
+            dbgprint('reading: ' + cacheContentDecoded)
+            currentCallback(cacheContentDecoded)
         }
     }
     
