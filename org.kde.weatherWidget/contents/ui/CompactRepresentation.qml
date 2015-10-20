@@ -33,6 +33,7 @@ Item {
     
     Layout.preferredWidth: partWidth * 2
     Layout.preferredHeight: partHeight
+    Layout.maximumHeight: partHeight
     
     ListView {
         id: mainView
