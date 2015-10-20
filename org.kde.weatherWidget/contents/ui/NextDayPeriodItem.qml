@@ -15,9 +15,6 @@
  * along with this program.  If not, see <http: //www.gnu.org/licenses/>.
  */
 import QtQuick 2.2
-import QtQuick.Layouts 1.1
-import QtQuick.Controls 1.0
-import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import "../code/icons.js" as IconTools
 import "../code/temperature-utils.js" as TemperatureUtils
@@ -33,7 +30,7 @@ Item {
         width: parent.width / 2
         height: parent.height
         
-        Text {
+        PlasmaComponents.Label {
             id: temperatureText
             
             width: parent.width
@@ -43,7 +40,6 @@ Item {
             verticalAlignment: Text.AlignVCenter
             
             text: TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
-            color: theme.textColor
             font.pointSize: fontPointSize
         }
     }
@@ -54,13 +50,12 @@ Item {
         
         anchors.right: parent.right
         
-        Label {
+        PlasmaComponents.Label {
             anchors.centerIn: parent
             
             font.family: 'weathericons'
             text: IconTools.getIconCode(iconName, true, partOfDay)
             
-            color: theme.textColor
             font.pointSize: fontPointSize
         }
     }

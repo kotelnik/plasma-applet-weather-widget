@@ -51,7 +51,7 @@ Item {
                 width: partWidth
                 height: partHeight
                 
-                Text {
+                PlasmaComponents.Label {
                     id: temperatureText
                     
                     width: parent.width
@@ -61,7 +61,6 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     
                     text: TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
-                    color: theme.textColor
                     font.pointSize: fontPointSize
                 }
             }
@@ -75,13 +74,12 @@ Item {
                 anchors.leftMargin: temperatureNumberItem.width
                 anchors.topMargin: 0
                 
-                Label {
+                PlasmaComponents.Label {
                     anchors.centerIn: parent
                     
                     font.family: 'weathericons'
                     text: IconTools.getIconCode(iconName, true, getPartOfDayIndex())
                     
-                    color: theme.textColor
                     font.pointSize: fontPointSize
                 }
             }
@@ -113,12 +111,13 @@ Item {
         }
     ]
     
-    Text {
+    PlasmaComponents.Label {
         id: lastReloadedNotifier
         
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         anchors.bottomMargin: - partHeight * 0.05
+        verticalAlignment: Text.AlignBottom
         
         font.pointSize: partHeight * 0.2
         color: theme.highlightColor

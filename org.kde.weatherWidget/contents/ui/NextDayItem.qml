@@ -17,7 +17,7 @@
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import QtGraphicalEffects 1.0
-import org.kde.plasma.plasmoid 2.0
+import org.kde.plasma.components 2.0 as PlasmaComponents
 
 Item {
     
@@ -25,18 +25,18 @@ Item {
     property double periodHeight: (height - headingTopMargin) / 4
     property color lineColor: theme.textColor
     
-    Text {
+    PlasmaComponents.Label {
         id: dayTitleText
         text: dayTitle + ' ' + dateString
-        color: theme.textColor
-        font.pointSize: theme.defaultFont.pointSize
+        anchors.top: parent.top
     }
     
     Item {
         id: dayTitleLine
         width: parent.width
         height: 1
-        anchors.top: dayTitleText.bottom
+        anchors.top: parent.top
+        anchors.topMargin: headingTopMargin
         
         LinearGradient {
             anchors.fill: parent
