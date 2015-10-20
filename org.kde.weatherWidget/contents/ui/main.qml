@@ -81,6 +81,15 @@ Item {
     Plasmoid.compactRepresentation: cr
     Plasmoid.fullRepresentation: fr
     
+    property bool debugLogging: false
+    
+    function dbgprint(msg) {
+        if (!debugLogging) {
+            return
+        }
+        print('[weatherWidget] ' + msg)
+    }
+    
     FontLoader {
         source: '../fonts/weathericons-regular-webfont.ttf'
     }
@@ -154,6 +163,10 @@ Item {
         plasmoid.setAction('toggleUpdatingPaused', updatingPaused ? i18n('Resume Updating') : i18n('Pause Updating'), updatingPaused ? 'media-playback-start' : 'media-playback-pause');
     }
     
+    WeatherCache {
+        id: weatherCache
+    }
+    
     Component.onCompleted: {
         
         // systray settings
@@ -165,22 +178,24 @@ Item {
         // init contextMenu
         action_toggleUpdatingPaused()
         
-        //fill xml cache xml
-        var xmlCache = plasmoid.configuration.xmlCacheJson
-        if (xmlCache) {
-            xmlCacheMap = JSON.parse(xmlCache)
-        }
-        xmlCacheMap = xmlCacheMap || {}
-        
-        //fill last reloaded
-        var lastReloadedMsJson = plasmoid.configuration.lastReloadedMsJson
-        if (lastReloadedMsJson) {
-            lastReloadedMsMap = JSON.parse(lastReloadedMsJson)
-        }
-        lastReloadedMsMap = lastReloadedMsMap || {}
-        
-        //get town string
-        setNextTownString(true)
+        weatherCache.readCache(function (cacheContent) {
+            
+            //fill xml cache xml
+            if (cacheContent) {
+                xmlCacheMap = JSON.parse(cacheContent)
+            }
+            xmlCacheMap = xmlCacheMap || {}
+            
+            //fill last reloaded
+            var lastReloadedMsJson = plasmoid.configuration.lastReloadedMsJson
+            if (lastReloadedMsJson) {
+                lastReloadedMsMap = JSON.parse(lastReloadedMsJson)
+            }
+            lastReloadedMsMap = lastReloadedMsMap || {}
+            
+            //get town string
+            setNextTownString(true)
+        })
     }
     
     onTownStringsJsonStrChanged: {
@@ -188,7 +203,7 @@ Item {
     }
     
     function showData() {
-        print('init: plasmoid.configuration.lastReloadedMs = ' + getLastReloadedMs())
+        dbgprint('init: plasmoid.configuration.lastReloadedMs = ' + getLastReloadedMs())
         var ok = loadFromCache()
         if (!ok) {
             reloadData()
@@ -199,7 +214,7 @@ Item {
     
     function setNextTownString(initial) {
         var townStrings = ConfigUtils.getTownStringArray()
-        print('townStrings count', townStrings.length, plasmoid.configuration.townStringIndex)
+        dbgprint('townStrings count', townStrings.length, plasmoid.configuration.townStringIndex)
         var townStringIndex = plasmoid.configuration.townStringIndex
         if (!initial) {
             townStringIndex++
@@ -208,12 +223,12 @@ Item {
             townStringIndex = 0
         }
         plasmoid.configuration.townStringIndex = townStringIndex
-        print('townStringIndex now', plasmoid.configuration.townStringIndex)
+        dbgprint('townStringIndex now', plasmoid.configuration.townStringIndex)
         townString = townStrings[townStringIndex].townString
         placeAlias = townStrings[townStringIndex].placeAlias
-        print('next town string is: ' + townString)
+        dbgprint('next town string is: ' + townString)
         xmlCacheKey = generateXmlCacheKey(townString)
-        print('next xmlCacheKey is: ' + xmlCacheKey)
+        dbgprint('next xmlCacheKey is: ' + xmlCacheKey)
         
         alreadyLoadedFromCache = false
         overviewLink = yrnoUrlPreifx + townString + '/'
@@ -235,7 +250,7 @@ Item {
     
     function reloadData() {
         if (loadingData) {
-            print('still loading')
+            dbgprint('still loading')
             return
         }
         
@@ -253,18 +268,20 @@ Item {
             }
             
             // success
-            print('successfully loaded from the internet')
+            dbgprint('successfully loaded from the internet')
             
             var xmlString = xhr.responseText;
             if (!ModelUtils.isXmlStringValid(xmlString)) {
-                print('incomming xmlString is not valid: ' + xmlString)
+                dbgprint('incomming xmlString is not valid: ' + xmlString)
                 return
             }
-            print('incomming text seems to be valid')
+            dbgprint('incomming text seems to be valid')
             
             xmlCacheMap[xmlCacheKey] = xmlString
             alreadyLoadedFromCache = false
-            plasmoid.configuration.xmlCacheJson = JSON.stringify(xmlCacheMap)
+            //TODO delete this after some time
+            plasmoid.configuration.xmlCacheJson = 'cache is located in .cache/plasma/plasmoids/ folder'
+            weatherCache.writeCache(JSON.stringify(xmlCacheMap))
             
             reloadImage()
             overviewLink = yrnoUrlPreifx + townString + '/'
@@ -277,11 +294,11 @@ Item {
         loadingData = true
         xhr.send()
         
-        print('reload called, xmlCacheKey is: ' + xmlCacheKey)
+        dbgprint('reload called, xmlCacheKey is: ' + xmlCacheKey)
     }
     
     function reloadImage() {
-        print('reloading image')
+        dbgprint('reloading image')
         overviewImageSource = ''
         overviewImageSource = yrnoUrlPreifx + townString + '/avansert_meteogram.png'
     }
@@ -301,19 +318,19 @@ Item {
     function reloaded() {
         setLastReloadedMs(Reloader.setReloaded())
         updateLastReloadedText()
-        print('reloaded')
+        dbgprint('reloaded')
     }
     
     function loadFromCache() {
-        print('loading from cache, config key: ', xmlCacheKey)
+        dbgprint('loading from cache, config key: ', xmlCacheKey)
         
         if (alreadyLoadedFromCache) {
-            print('already loaded from cache')
+            dbgprint('already loaded from cache')
             return true
         }
         
         if (!xmlCacheMap || !xmlCacheMap[xmlCacheKey]) {
-            print('cache not available')
+            dbgprint('cache not available')
             return false
         }
         
@@ -330,7 +347,7 @@ Item {
             
             StateChangeScript {
                 script: {
-                    print('xmlModel ready')
+                    dbgprint('xmlModel ready')
                     ModelUtils.updateCurrentWeatherModel(actualWeatherModel, nextActualWeatherModel, xmlModel)
                     ModelUtils.updateNextDaysWeatherModel(nextDaysModel, xmlModel)
                     refreshTooltipSubText()
@@ -366,7 +383,7 @@ Item {
     }
     
     function handleLoadError() {
-        print('Error getting weather data. Scheduling data reload...')
+        dbgprint('Error getting weather data. Scheduling data reload...')
         Reloader.scheduleDataReload()
         
         loadFromCache()
@@ -377,7 +394,11 @@ Item {
     }
     
     function refreshTooltipSubText() {
-        print('refreshing sub text')
+        dbgprint('refreshing sub text')
+        if (nextActualWeatherModel.count === 0) {
+            dbgprint('model not yet ready')
+            return
+        }
         var futureWeatherIcon = IconTools.getIconCode(nextActualWeatherModel.get(0).iconName, true, getPartOfDayIndex())
         var windDirectionIcon = IconTools.getWindDirectionIconCode(actualWeatherModel.get(0).windDirection)
         var subText = ''

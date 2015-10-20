@@ -69,7 +69,7 @@ Item {
         hoverEnabled: true
         
         onClicked: {
-            print('clicked next location')
+            dbgprint('clicked next location')
             main.setNextTownString()
         }
         
@@ -298,7 +298,7 @@ Item {
         hoverEnabled: true
         
         onClicked: {
-            print('opening: ', overviewLink)
+            dbgprint('opening: ', overviewLink)
             Qt.openUrlExternally(overviewLink) //overviewLink
         }
         
