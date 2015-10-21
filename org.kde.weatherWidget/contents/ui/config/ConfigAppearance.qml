@@ -6,8 +6,8 @@ Item {
     width: childrenRect.width
     height: childrenRect.height
 
-    property alias cfg_compactLayout: compactLayout.checked
     property bool cfg_fahrenheitEnabled
+    property int cfg_layoutType
 
     onCfg_fahrenheitEnabledChanged: {
         if (cfg_fahrenheitEnabled) {
@@ -17,14 +17,34 @@ Item {
         }
     }
     
+    onCfg_layoutTypeChanged: {
+        switch (cfg_layoutType) {
+        case 0:
+            layoutTypeGroup.current = layoutTypeRadioHorizontal;
+            break;
+        case 1:
+            layoutTypeGroup.current = layoutTypeRadioVertical;
+            break;
+        case 2:
+            layoutTypeGroup.current = layoutTypeRadioCompact;
+            break;
+        default:
+        }
+    }
+    
     Component.onCompleted: {
         cfg_fahrenheitEnabledChanged()
+        cfg_layoutTypeChanged()
     }
     
     ExclusiveGroup {
         id: temperatureTypeGroup
     }
-
+    
+    ExclusiveGroup {
+        id: layoutTypeGroup
+    }
+    
     GridLayout {
         Layout.fillWidth: true
         columns: 2
@@ -54,13 +74,46 @@ Item {
         Item {
             width: 2
             height: 10
+            Layout.columnSpan: 2
         }
         
-        CheckBox {
-            id: compactLayout
+        Label {
+            text: i18n('Layout type:')
+            Layout.alignment: Qt.AlignVCenter|Qt.AlignRight
+        }
+        RadioButton {
+            id: layoutTypeRadioHorizontal
+            exclusiveGroup: layoutTypeGroup
+            text: i18n("Horizontal")
+            onCheckedChanged: if (checked) cfg_layoutType = 0;
+        }
+        Item {
+            width: 2
+            height: 2
+            Layout.rowSpan: 2
+        }
+        RadioButton {
+            id: layoutTypeRadioVertical
+            exclusiveGroup: layoutTypeGroup
+            text: i18n("Vertical")
+            onCheckedChanged: if (checked) cfg_layoutType = 1;
+        }
+        RadioButton {
+            id: layoutTypeRadioCompact
+            exclusiveGroup: layoutTypeGroup
+            text: i18n("Compact")
+            onCheckedChanged: if (checked) cfg_layoutType = 2;
+        }
+        
+        Item {
+            width: 2
+            height: 10
             Layout.columnSpan: 2
-            text: i18n('Vertical layout')
-            enabled: false
+        }
+        
+        Label {
+            text: i18n('NOTE: Setting layout type for in-tray plasmoid has no effect.')
+            Layout.columnSpan: 2
         }
     }
     

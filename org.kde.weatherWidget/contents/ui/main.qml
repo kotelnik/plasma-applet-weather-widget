@@ -59,12 +59,15 @@ Item {
     property string lastReloadedText: '⬇ 0m ago'
     property string tooltipSubText: ''
     
-    property bool verticalAlignment: plasmoid.configuration.compactLayout
-    
     property bool vertical: (plasmoid.formFactor == PlasmaCore.Types.Vertical)
     property bool inTray: (plasmoid.parent === null || plasmoid.parent.objectName === 'taskItemContainer')
     
     property int nextDaysCount: 8
+    
+    // 0 - standard
+    // 1 - vertical
+    // 2 - compact
+    property int layoutType: plasmoid.configuration.layoutType
     
     property bool updatingPaused: true
     

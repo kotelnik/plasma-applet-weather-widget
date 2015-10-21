@@ -15,91 +15,17 @@
  * along with this program.  If not, see <http: //www.gnu.org/licenses/>.
  */
 import QtQuick 2.2
-import QtQuick.Layouts 1.1
-import QtGraphicalEffects 1.0
 import org.kde.plasma.plasmoid 2.0
-import org.kde.plasma.components 2.0 as PlasmaComponents
-import "../code/icons.js" as IconTools
-import "../code/temperature-utils.js" as TemperatureUtils
 
 Item {
     id: compactRepresentationInTray
-
-    property double fontPointSize: height * 0.6
-
-    ListView {
-        id: mainView
-        
-        anchors.fill: parent
-        
-        model: actualWeatherModel
-        delegate: Item {
-            id: mainViewDelegate
-            
-            width: mainView.width
-            height: mainView.height
-
-            PlasmaComponents.Label {
-                anchors.fill: parent
-
-                opacity: 0.8
-                font.family: 'weathericons'
-                text: IconTools.getIconCode(iconName, true, getPartOfDayIndex())
-
-                font.pointSize: fontPointSize
-                fontSizeMode: Text.Fit
-            }
-
-            PlasmaComponents.Label {
-                id: temperatureText
-
-                anchors.fill: parent
-
-                horizontalAlignment: Text.AlignRight
-                verticalAlignment: Text.AlignBottom
-                    
-                text: TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
-                    
-                font.bold: true
-                font.pointSize: fontPointSize * 0.5
-            }
-            
-            DropShadow {
-                anchors.fill: temperatureText
-                radius: 3
-                samples: 16
-                spread: 0.9
-                fast: true
-                color: theme.backgroundColor
-                source: temperatureText
-            }
-        }
-    }
     
-    PlasmaComponents.BusyIndicator {
-        id: busyIndicator
-        anchors.fill: parent
-        visible: false
-        running: false
-    }
+    anchors.fill: parent
     
-    states: [
-        State {
-            name: "loading"
-            when: loadingData
-            
-            PropertyChanges {
-                target: busyIndicator
-                visible: true
-                running: true
-            }
-            
-            PropertyChanges {
-                target: mainView
-                opacity: 0.5
-            }
-        }
-    ]
+    CompactItem {
+        id: compactItem
+        inTray: true
+    }
     
     Plasmoid.toolTipMainText: placeAlias
     Plasmoid.toolTipSubText: tooltipSubText

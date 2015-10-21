@@ -16,100 +16,26 @@
  */
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
-import QtQuick.Controls 1.0
 import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
-import "../code/icons.js" as IconTools
-import "../code/temperature-utils.js" as TemperatureUtils
 
 Item {
     id: compactRepresentation
     
-    property double partHeight: vertical ? (parent.width / 2) / 1.3 : parent.height
-    property double partWidth: partHeight * 1.3
+    anchors.fill: parent
     
-    property double fontPointSize: partHeight * 0.5
-    
-    Layout.preferredWidth: partWidth * 2
-    Layout.preferredHeight: partHeight
-    Layout.maximumHeight: partHeight
-    
-    ListView {
-        id: mainView
-        
-        model: actualWeatherModel
-        delegate: Item {
-            id: mainViewDelegate
-            
-            width: Layout.maximumWidth
-            height: Layout.maximumHeight
-            
-            Item {
-                id: temperatureNumberItem
-                
-                width: partWidth
-                height: partHeight
-                
-                PlasmaComponents.Label {
-                    id: temperatureText
-                    
-                    width: parent.width
-                    height: parent.height
-                    
-                    horizontalAlignment: Text.AlignRight
-                    verticalAlignment: Text.AlignVCenter
-                    
-                    text: TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
-                    font.pointSize: fontPointSize
-                }
-            }
-            
-            Item {
-                width: partWidth
-                height: partHeight
-                
-                anchors.top: mainViewDelegate.top
-                anchors.left: mainViewDelegate.left
-                anchors.leftMargin: temperatureNumberItem.width
-                anchors.topMargin: 0
-                
-                PlasmaComponents.Label {
-                    anchors.centerIn: parent
-                    
-                    font.family: 'weathericons'
-                    text: IconTools.getIconCode(iconName, true, getPartOfDayIndex())
-                    
-                    font.pointSize: fontPointSize
-                }
-            }
-        }
+    CompactItem {
+        id: compactItem
+        inTray: false
     }
     
-    PlasmaComponents.BusyIndicator {
-        id: busyIndicator
-        anchors.fill: parent
-        visible: false
-        running: false
-    }
+    property double partHeight: compactItem.partHeight
     
-    states: [
-        State {
-            name: "loading"
-            when: loadingData
-            
-            PropertyChanges {
-                target: busyIndicator
-                visible: true
-                running: true
-            }
-            
-            PropertyChanges {
-                target: mainView
-                opacity: 0.5
-            }
-        }
-    ]
+    Layout.preferredWidth: compactItem.widgetWidth
+    Layout.maximumWidth: compactItem.widgetWidth
+    Layout.preferredHeight: compactItem.widgetHeight
+    Layout.maximumHeight: compactItem.widgetHeight
     
     PlasmaComponents.Label {
         id: lastReloadedNotifier
@@ -119,15 +45,13 @@ Item {
         anchors.bottomMargin: - partHeight * 0.05
         verticalAlignment: Text.AlignBottom
         
-        font.pointSize: partHeight * 0.2
+        font.pointSize: partHeight * 0.2 * (layoutType === 2 ? 0.7 : 1)
         color: theme.highlightColor
         
         text: lastReloadedText
         
         visible: false
     }
-    
-    
     
     MouseArea {
         anchors.fill: parent
@@ -163,7 +87,6 @@ Item {
             textFormat: Text.RichText
             icon: Qt.resolvedUrl('../images/weather-widget.svg')
         }
-    
     }
     
 }
