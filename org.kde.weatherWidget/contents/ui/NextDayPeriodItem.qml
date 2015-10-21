@@ -20,8 +20,9 @@ import "../code/icons.js" as IconTools
 import "../code/temperature-utils.js" as TemperatureUtils
 
 Item {
-    property int temperature
-    property int iconName
+    property string temperature
+    property string iconName
+    property bool hidden
     property int partOfDay
     property double fontPointSize: theme.defaultFont.pointSize
     
@@ -39,7 +40,7 @@ Item {
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
             
-            text: TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
+            text: hidden ? '' : TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
             font.pointSize: fontPointSize
         }
     }
@@ -54,7 +55,7 @@ Item {
             anchors.centerIn: parent
             
             font.family: 'weathericons'
-            text: IconTools.getIconCode(iconName, true, partOfDay)
+            text: hidden ? '' : IconTools.getIconCode(iconName, true, partOfDay)
             
             font.pointSize: fontPointSize
         }

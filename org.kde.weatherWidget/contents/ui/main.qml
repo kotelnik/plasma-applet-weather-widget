@@ -18,7 +18,6 @@ import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.kcoreaddons 1.0 as KCoreAddons
 import QtQuick.XmlListModel 2.0
 import QtQuick.Controls 1.0
 import "../code/reloader.js" as Reloader
@@ -63,9 +62,9 @@ Item {
     property bool verticalAlignment: plasmoid.configuration.compactLayout
     
     property bool vertical: (plasmoid.formFactor == PlasmaCore.Types.Vertical)
-    property bool inTray: (plasmoid.parent === null)
+    property bool inTray: (plasmoid.parent === null || plasmoid.parent.objectName === 'taskItemContainer')
     
-    property int nextDaysCount: inTray ? 3 : 8
+    property int nextDaysCount: 8
     
     property bool updatingPaused: true
     
@@ -406,12 +405,22 @@ Item {
         var futureWeatherIcon = IconTools.getIconCode(nextActualWeatherModel.get(0).iconName, true, getPartOfDayIndex())
         var windDirectionIcon = IconTools.getWindDirectionIconCode(actualWeatherModel.get(0).windDirection)
         var subText = ''
-        subText += '<br /><font size="4"><font style="font-family: weathericons">' + windDirectionIcon + '</font></font><font size="4"> ' + actualWeatherModel.get(0).windSpeedMps + ' m/s</font>'
-        subText += '<br /><font size="4">' + actualWeatherModel.get(0).pressureHpa + ' hPa</font>'
-        subText += '<br /><font size="4"><font style="font-family: weathericons">\uf051</font>&nbsp;' + sunRiseTime + '&nbsp;&nbsp;&nbsp;<font style="font-family: weathericons">\uf052</font>&nbsp;' + sunSetTime + '</font>'
-        subText += '<br /><br />'
-        subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(nextActualWeatherModel.get(0).temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
-        subText += '<font color="transparent">__</font><font style="font-family: weathericons">' + futureWeatherIcon + '</font></b></font>'
+        
+        if (inTray) {
+            subText += '<br /><font size="4"> ' + actualWeatherModel.get(0).windSpeedMps + ' m/s</s</font>'
+            subText += '<br /><font size="4">' + actualWeatherModel.get(0).pressureHpa + ' hPa</font>'
+            subText += '<br /><font size="4">⬆&nbsp;' + sunRiseTime + '&nbsp;&nbsp;&nbsp;⬇&nbsp;' + sunSetTime + '</font>'
+            subText += '<br /><br />'
+            subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(nextActualWeatherModel.get(0).temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
+        } else {
+            subText += '<br /><font size="4" style="font-family: weathericons">' + windDirectionIcon + '</font><font size="4"> ' + actualWeatherModel.get(0).windSpeedMps + ' m/s</s</font>'
+            subText += '<br /><font size="4">' + actualWeatherModel.get(0).pressureHpa + ' hPa</font>'
+            subText += '<br /><font size="4"><font style="font-family: weathericons">\uf051</font>&nbsp;' + sunRiseTime + '&nbsp;&nbsp;&nbsp;<font style="font-family: weathericons">\uf052</font>&nbsp;' + sunSetTime + '</font>'
+            subText += '<br /><br />'
+            subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(nextActualWeatherModel.get(0).temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
+            subText += '<font color="transparent">__</font><font style="font-family: weathericons">' + futureWeatherIcon + '</font></b></font>'
+        }
+        
         tooltipSubText = subText
     }
     

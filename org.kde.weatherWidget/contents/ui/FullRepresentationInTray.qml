@@ -20,6 +20,7 @@ import QtQuick.Layouts 1.1
 import QtGraphicalEffects 1.0
 import QtQuick.Controls 1.0
 import org.kde.plasma.core 2.0 as PlasmaCore
+import org.kde.plasma.components 2.0 as PlasmaComponents
 
 Item {
     id: fullRepresentation
@@ -38,25 +39,23 @@ Item {
     
     property color lineColor: theme.textColor
     
-    Text {
+    PlasmaComponents.Label {
         id: currentLocationText
         
         anchors.left: parent.left
         anchors.top: parent.top
         
-        color: theme.textColor
         font.pointSize: theme.defaultFont.pointSize
         
         text: main.placeAlias
     }
     
-    Text {
+    PlasmaComponents.Label {
         id: nextLocationText
         
         anchors.right: parent.right
         anchors.top: parent.top
         
-        color: theme.textColor
         font.pointSize: theme.defaultFont.pointSize
         
         text: 'Next Location'
@@ -118,25 +117,27 @@ Item {
                 width: nextDaysView.width
                 height: nextDayHeight
                 
+                property string svgLineName: 'horizontal-line'
+                
                 PlasmaCore.SvgItem {
                     id: dayTitleLine
                     width: parent.width
-                    height: lineSvg.elementSize("horizontal-line").height
-                    elementId: "horizontal-line"
+                    height: lineSvg.elementSize(svgLineName).height
+                    elementId: svgLineName
                     svg: PlasmaCore.Svg {
                         id: lineSvg
-                        imagePath: "widgets/line"
+                        imagePath: 'widgets/line'
                     }
                 }
                 
-                Text {
+                PlasmaComponents.Label {
                     id: dayTitleText
                     
                     anchors.top: dayTitleLine.bottom
                     anchors.topMargin: units.smallSpacing
+                    verticalAlignment: Text.AlignTop
                     
-                    text: dayTitle + ' ' + dateString
-                    color: theme.textColor
+                    text: dayTitle
                     font.pointSize: theme.defaultFont.pointSize
                 }
                 
@@ -165,6 +166,7 @@ Item {
                         height: parent.height
                         temperature: temperature0
                         iconName: iconName0
+                        hidden: hidden0
                         partOfDay: 1
                         fontPointSize: periodFontSize
                     }
@@ -175,6 +177,7 @@ Item {
                         height: parent.height
                         temperature: temperature1
                         iconName: iconName1
+                        hidden: hidden1
                         partOfDay: 0
                         fontPointSize: periodFontSize
                         
@@ -188,6 +191,7 @@ Item {
                         height: parent.height
                         temperature: temperature2
                         iconName: iconName2
+                        hidden: hidden2
                         partOfDay: 0
                         fontPointSize: periodFontSize
                         
@@ -201,6 +205,7 @@ Item {
                         height: parent.height
                         temperature: temperature3
                         iconName: iconName3
+                        hidden: hidden3
                         partOfDay: 1
                         fontPointSize: periodFontSize
                         
@@ -235,22 +240,22 @@ Item {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         
-        Text {
+        PlasmaComponents.Label {
             id: lastReloadedTextComponent
             anchors.fill: parent
             
-            color: theme.textColor
             font.pointSize: theme.defaultFont.pointSize
+            verticalAlignment: Text.AlignTop
             
             text: lastReloadedText
         }
         
-        Text {
+        PlasmaComponents.Label {
             id: reloadTextComponent
             anchors.fill: parent
             
-            color: theme.textColor
             font.pointSize: theme.defaultFont.pointSize
+            verticalAlignment: Text.AlignTop
             
             text: '\u21bb Reload'
             visible: false
@@ -272,7 +277,7 @@ Item {
     }
     
     
-    Text {
+    PlasmaComponents.Label {
         id: creditText
         
         anchors.top: nextDays.bottom
@@ -282,7 +287,6 @@ Item {
         anchors.topMargin: units.smallSpacing
         anchors.leftMargin: units.largeSpacing
         
-        color: theme.textColor
         font.pointSize: theme.defaultFont.pointSize
         
         text: 'Weather forecast from yr.no, delivered by the Norwegian Meteorological Institute and the NRK'

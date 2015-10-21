@@ -27,7 +27,7 @@ Item {
     
     PlasmaComponents.Label {
         id: dayTitleText
-        text: dayTitle + ' ' + dateString
+        text: dayTitle
         anchors.top: parent.top
     }
     
@@ -73,6 +73,7 @@ Item {
             height: periodHeight
             temperature: temperature0
             iconName: iconName0
+            hidden: hidden0
             partOfDay: 1
         }
         
@@ -81,6 +82,7 @@ Item {
             height: periodHeight
             temperature: temperature1
             iconName: iconName1
+            hidden: hidden1
             partOfDay: 0
         }
         
@@ -89,6 +91,7 @@ Item {
             height: periodHeight
             temperature: temperature2
             iconName: iconName2
+            hidden: hidden2
             partOfDay: 0
         }
         
@@ -97,6 +100,7 @@ Item {
             height: periodHeight
             temperature: temperature3
             iconName: iconName3
+            hidden: hidden3
             partOfDay: 1
         }
     }

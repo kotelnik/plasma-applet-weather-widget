@@ -16,7 +16,6 @@
  */
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
-import QtQuick.Controls 1.0
 import QtGraphicalEffects 1.0
 import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.components 2.0 as PlasmaComponents
@@ -37,22 +36,21 @@ Item {
         delegate: Item {
             id: mainViewDelegate
             
-            width: compactRepresentationInTray.width
-            height: compactRepresentationInTray.height
+            width: mainView.width
+            height: mainView.height
 
-            Label {
+            PlasmaComponents.Label {
                 anchors.fill: parent
 
                 opacity: 0.8
                 font.family: 'weathericons'
                 text: IconTools.getIconCode(iconName, true, getPartOfDayIndex())
 
-                color: theme.textColor
                 font.pointSize: fontPointSize
                 fontSizeMode: Text.Fit
             }
 
-            Text {
+            PlasmaComponents.Label {
                 id: temperatureText
 
                 anchors.fill: parent
@@ -61,7 +59,6 @@ Item {
                 verticalAlignment: Text.AlignBottom
                     
                 text: TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
-                color: theme.textColor
                     
                 font.bold: true
                 font.pointSize: fontPointSize * 0.5
@@ -105,7 +102,7 @@ Item {
     ]
     
     Plasmoid.toolTipMainText: placeAlias
-    Plasmoid.toolTipSubText: ''
+    Plasmoid.toolTipSubText: tooltipSubText
     //TODO why is this not working?
     //Plasmoid.toolTipTextFormat: Text.RichText
     Plasmoid.icon: Qt.resolvedUrl('../images/weather-widget.svg')

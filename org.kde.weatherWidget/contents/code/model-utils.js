@@ -42,7 +42,6 @@ function createEmptyNextDaysObject() {
     return {
         temperatureArray: [],
         iconNameArray: [],
-        dateString: '',
         dayTitle: ''
     }
 }
@@ -51,6 +50,7 @@ function populateNextDaysObject(nextDaysObj) {
     for (var i = 0; i < 4; i++) {
         nextDaysObj['temperature' + i] = nextDaysObj.temperatureArray[i]
         nextDaysObj['iconName' + i] = nextDaysObj.iconNameArray[i]
+        nextDaysObj['hidden' + i] = nextDaysObj.iconNameArray[i] === null
     }
 }
 
@@ -63,6 +63,7 @@ function updateNextDaysWeatherModel(nextDaysWeatherModel, originalXmlModel) {
     
     dbgprint('2orig', originalXmlModel.count)
 
+    var todayObject = null
     var newObjectArray = []
     var lastObject = null
     var addingStarted = false
@@ -75,7 +76,17 @@ function updateNextDaysWeatherModel(nextDaysWeatherModel, originalXmlModel) {
         
         if (!addingStarted) {
             addingStarted = dateTo.getFullYear() === nextDayStart.getFullYear() && dateTo.getMonth() === nextDayStart.getMonth() && dateTo.getDate() === nextDayStart.getDate() && timeObj.period === '0'
+            
             if (!addingStarted) {
+                
+                // add today object
+                if (todayObject === null) {
+                    todayObject = createEmptyNextDaysObject()
+                    todayObject.dayTitle = i18n('today')
+                }
+                todayObject.temperatureArray.push(timeObj.temperature)
+                todayObject.iconNameArray.push(timeObj.iconName)
+                
                 continue
             }
             dbgprint('found start!')
@@ -89,8 +100,7 @@ function updateNextDaysWeatherModel(nextDaysWeatherModel, originalXmlModel) {
                 break
             }
             lastObject = createEmptyNextDaysObject()
-            lastObject.dateString = dateTo.getDate() + '.' + (dateTo.getMonth() + 1) + '.'
-            lastObject.dayTitle = Qt.locale().dayName(dateTo.getDay(), Locale.ShortFormat)
+            lastObject.dayTitle = Qt.locale().dayName(dateTo.getDay(), Locale.ShortFormat) + ' ' + dateTo.getDate() + '.' + (dateTo.getMonth() + 1) + '.'
             newObjectArray.push(lastObject)
         }
         
@@ -102,11 +112,23 @@ function updateNextDaysWeatherModel(nextDaysWeatherModel, originalXmlModel) {
     
     nextDaysWeatherModel.clear()
     
-    for (var i = 0; i < newObjectArray.length; i++) {
-        var objToAdd = newObjectArray[i]
+    // prepend today object
+    if (todayObject !== null) {
+        while (todayObject.temperatureArray.length < 4) {
+            todayObject.temperatureArray.unshift(null)
+            todayObject.iconNameArray.unshift(null)
+        }
+        populateNextDaysObject(todayObject)
+        nextDaysWeatherModel.append(todayObject)
+    }
+    
+    newObjectArray.forEach(function (objToAdd) {
+        if (nextDaysWeatherModel.count >= nextDaysFixedCount) {
+            return
+        }
         populateNextDaysObject(objToAdd)
         nextDaysWeatherModel.append(objToAdd)
-    }
+    })
     for (var i = 0; i < (nextDaysFixedCount - nextDaysWeatherModel.count); i++) {
         nextDaysWeatherModel.append(createEmptyNextDaysObject())
     }
