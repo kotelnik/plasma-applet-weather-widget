@@ -1,43 +1,5 @@
 var wholeDayDurationMs = 1000 * 60 * 60 * 24
 
-function updateCurrentWeatherModel(currentWeatherModel, nextCurrentWeatherModel, originalXmlModel) {
-    
-    var now = new Date()
-    var interestingTimeObj = null
-    var nextInterestingTimeObj = null
-    
-    dbgprint('orig', originalXmlModel.count)
-    
-    for (var i = 0; i < originalXmlModel.count; i++) {
-        var timeObj = originalXmlModel.get(i)
-        var dateFrom = new Date(timeObj.from)
-        var dateTo = new Date(timeObj.to)
-        dbgprint('from, to, now, i', dateFrom, dateTo, now, i)
-        
-        if ((i === 0 && now < dateFrom)
-            || (dateFrom < now && now < dateTo)) {
-            
-            interestingTimeObj = timeObj
-            if (i + 1 < originalXmlModel.count) {
-                nextInterestingTimeObj = originalXmlModel.get(i + 1)
-            }
-            break
-        }
-    }
-    
-    currentWeatherModel.clear()
-    nextCurrentWeatherModel.clear()
-    
-    if (interestingTimeObj !== null) {
-        currentWeatherModel.append(interestingTimeObj)
-    }
-    if (nextInterestingTimeObj !== null) {
-        nextCurrentWeatherModel.append(nextInterestingTimeObj)
-    }
-    
-    dbgprint('w model: ', currentWeatherModel.count)
-}
-
 function createEmptyNextDaysObject() {
     return {
         temperatureArray: [],
@@ -54,7 +16,7 @@ function populateNextDaysObject(nextDaysObj) {
     }
 }
 
-function updateNextDaysWeatherModel(nextDaysWeatherModel, originalXmlModel) {
+function updateWeatherModels(currentWeatherModel, nextCurrentWeatherModel, nextDaysWeatherModel, originalXmlModel) {
     
     var nextDaysFixedCount = nextDaysCount
     
@@ -62,22 +24,36 @@ function updateNextDaysWeatherModel(nextDaysWeatherModel, originalXmlModel) {
     var nextDayStart = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() + wholeDayDurationMs)
     dbgprint('next day start: ' + nextDayStart)
     
-    dbgprint('2orig: ' + originalXmlModel.count)
+    dbgprint('orig: ' + originalXmlModel.count)
 
     var todayObject = null
     var newObjectArray = []
     var lastObject = null
     var addingStarted = false
     
+    var interestingTimeObj = null
+    var nextInterestingTimeObj = null
+    var currentWeatherModelsSet = false
+    
     for (var i = 0; i < originalXmlModel.count; i++) {
         var timeObj = originalXmlModel.get(i)
         var dateFrom = new Date(timeObj.from)
         var dateTo = new Date(timeObj.to)
-        dbgprint('2 from=' + dateFrom + ', to=' + dateTo + ', now=' + now + ', i=' + i)
+        dbgprint('from=' + dateFrom + ', to=' + dateTo + ', now=' + now + ', i=' + i)
+        
+        // prepare current models
+        if (!currentWeatherModelsSet
+            && ((i === 0 && now < dateFrom) || (dateFrom < now && now < dateTo))) {
+            
+            interestingTimeObj = timeObj
+            if (i + 1 < originalXmlModel.count) {
+                nextInterestingTimeObj = originalXmlModel.get(i + 1)
+            }
+            currentWeatherModelsSet = true
+        }
         
         if (!addingStarted) {
-            //addingStarted = dateTo.getFullYear() === nextDayStart.getFullYear() && dateTo.getMonth() === nextDayStart.getMonth() && dateTo.getDate() >= nextDayStart.getDate() && timeObj.period === '0'
-            addingStarted = dateTo.getTime() >= nextDayStart.getTime() && timeObj.period === '0'
+            addingStarted = dateTo >= nextDayStart && timeObj.period === '0'
             
             if (!addingStarted) {
                 
@@ -111,7 +87,20 @@ function updateNextDaysWeatherModel(nextDaysWeatherModel, originalXmlModel) {
         
         dbgprint('lastObject.temperatureArray: ', lastObject.temperatureArray)
     }
-    
+
+    // set current models
+    currentWeatherModel.clear()
+    nextCurrentWeatherModel.clear()
+    if (interestingTimeObj !== null) {
+        currentWeatherModel.append(interestingTimeObj)
+    }
+    if (nextInterestingTimeObj !== null) {
+        nextCurrentWeatherModel.append(nextInterestingTimeObj)
+    }
+
+    //
+    // set next days model
+    //
     nextDaysWeatherModel.clear()
     
     // prepend today object
@@ -135,7 +124,9 @@ function updateNextDaysWeatherModel(nextDaysWeatherModel, originalXmlModel) {
         nextDaysWeatherModel.append(createEmptyNextDaysObject())
     }
     
-    dbgprint('2w model: ', nextDaysWeatherModel.count)
+    dbgprint('result currentWeatherModel count: ', currentWeatherModel.count)
+    dbgprint('result nextCurrentWeatherModel count: ', nextCurrentWeatherModel.count)
+    dbgprint('result nextDaysWeatherModel count: ', nextDaysWeatherModel.count)
 }
 
 function isXmlStringValid(xmlString) {

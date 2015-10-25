@@ -354,8 +354,7 @@ Item {
             StateChangeScript {
                 script: {
                     dbgprint('xmlModel ready')
-                    ModelUtils.updateCurrentWeatherModel(actualWeatherModel, nextActualWeatherModel, xmlModel)
-                    ModelUtils.updateNextDaysWeatherModel(nextDaysModel, xmlModel)
+                    ModelUtils.updateWeatherModels(actualWeatherModel, nextActualWeatherModel, nextDaysModel, xmlModel)
                     refreshTooltipSubText()
                 }
             }
