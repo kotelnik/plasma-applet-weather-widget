@@ -25,6 +25,8 @@ Item {
     property double periodHeight: (height - headingTopMargin) / 4
     property color lineColor: theme.textColor
     
+    property double periodFontSize: theme.defaultFont.pointSize
+    
     PlasmaComponents.Label {
         id: dayTitleText
         text: dayTitle
@@ -75,6 +77,7 @@ Item {
             iconName: iconName0
             hidden: hidden0
             partOfDay: 1
+            pointFontSize: periodFontSize
         }
         
         NextDayPeriodItem {
@@ -84,6 +87,7 @@ Item {
             iconName: iconName1
             hidden: hidden1
             partOfDay: 0
+            pointFontSize: periodFontSize
         }
         
         NextDayPeriodItem {
@@ -93,6 +97,7 @@ Item {
             iconName: iconName2
             hidden: hidden2
             partOfDay: 0
+            pointFontSize: periodFontSize
         }
         
         NextDayPeriodItem {
@@ -102,6 +107,7 @@ Item {
             iconName: iconName3
             hidden: hidden3
             partOfDay: 1
+            pointFontSize: periodFontSize
         }
     }
     

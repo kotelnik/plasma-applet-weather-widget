@@ -16,6 +16,7 @@
  */
 import QtQuick 2.2
 import org.kde.plasma.plasmoid 2.0
+import org.kde.plasma.components 2.0 as PlasmaComponents
 
 Item {
     id: fullRepresentation
@@ -35,26 +36,22 @@ Item {
     width: imageWidth
     height: headingHeight + imageHeight + footerHeight + nextDaysHeight + nextDaysVerticalMargin * 2
     
-    Text {
+    PlasmaComponents.Label {
         id: currentLocationText
         
         anchors.left: parent.left
         anchors.top: parent.top
-        
-        color: theme.textColor
-        font.pointSize: theme.defaultFont.pointSize
+        verticalAlignment: Text.AlignTop
         
         text: main.placeAlias
     }
     
-    Text {
+    PlasmaComponents.Label {
         id: nextLocationText
         
         anchors.right: parent.right
         anchors.top: parent.top
-        
-        color: theme.textColor
-        font.pointSize: theme.defaultFont.pointSize
+        verticalAlignment: Text.AlignTop
         
         text: 'Next Location'
     }
@@ -79,7 +76,7 @@ Item {
         }
     }
     
-    Text {
+    PlasmaComponents.Label {
         id: noImageText
         width: imageWidth
         height: imageHeight
@@ -89,8 +86,6 @@ Item {
         anchors.topMargin: headingHeight
         
         text: loadingError ? 'Offline mode' : 'Loading image...'
-        font.pointSize: theme.defaultFont.pointSize
-        color: theme.textColor
     }
     
     Image {
@@ -156,15 +151,15 @@ Item {
         width: theme.defaultFont.pointSize * 2.4
         height: nextDaysHeight - 15
         
-        Text {
+        PlasmaComponents.Label {
             text: '0h'
             anchors.top: parent.top
             anchors.right: parent.right
+            verticalAlignment: Text.AlignBottom
             font.pointSize: theme.defaultFont.pointSize * 0.8
-            color: theme.textColor
             opacity: 0.6
         }
-        Text {
+        PlasmaComponents.Label {
             text: '.\n.\n.\n.'
             anchors.fill: parent
             anchors.topMargin: - theme.defaultFont.pointSize * 0.5
@@ -172,15 +167,14 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.pointSize: theme.defaultFont.pointSize
-            color: theme.textColor
             opacity: 0.6
         }
-        Text {
+        PlasmaComponents.Label {
             text: '24h'
             anchors.bottom: parent.bottom
             anchors.right: parent.right
+            verticalAlignment: Text.AlignBottom
             font.pointSize: theme.defaultFont.pointSize * 0.8
-            color: theme.textColor
             opacity: 0.6
         }
     }
@@ -201,24 +195,20 @@ Item {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         
-        Text {
+        PlasmaComponents.Label {
             id: lastReloadedTextComponent
             anchors.left: parent.left
             anchors.bottom: parent.bottom
-            
-            color: theme.textColor
-            font.pointSize: theme.defaultFont.pointSize
+            verticalAlignment: Text.AlignBottom
             
             text: lastReloadedText
         }
         
-        Text {
+        PlasmaComponents.Label {
             id: reloadTextComponent
             anchors.left: parent.left
             anchors.bottom: parent.bottom
-            
-            color: theme.textColor
-            font.pointSize: theme.defaultFont.pointSize
+            verticalAlignment: Text.AlignBottom
             
             text: '\u21bb Reload'
             visible: false
@@ -240,14 +230,12 @@ Item {
     }
     
     
-    Text {
+    PlasmaComponents.Label {
         id: creditText
         
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        
-        color: theme.textColor
-        font.pointSize: theme.defaultFont.pointSize
+        verticalAlignment: Text.AlignBottom
         
         text: 'Weather forecast from yr.no, delivered by the Norwegian Meteorological Institute and the NRK'
     }

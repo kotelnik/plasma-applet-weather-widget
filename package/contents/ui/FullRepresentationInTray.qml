@@ -151,7 +151,7 @@ Item {
                 property double periodMargin: 15
                 property double periodItemWidth: (width - periodMargin * 4) / 4
                 property double periodItemHeight: nextDayHeight - headingTopMargin
-                property double periodFontSize: periodItemHeight  * 0.27
+                property double periodFontSize: periodItemHeight * 0.27
                 
                 Item {
                     
@@ -168,7 +168,7 @@ Item {
                         iconName: iconName0
                         hidden: hidden0
                         partOfDay: 1
-                        fontPointSize: periodFontSize
+                        pointFontSize: periodFontSize
                     }
                     
                     NextDayPeriodItem {
@@ -179,7 +179,7 @@ Item {
                         iconName: iconName1
                         hidden: hidden1
                         partOfDay: 0
-                        fontPointSize: periodFontSize
+                        pointFontSize: periodFontSize
                         
                         anchors.left: period1.right
                         anchors.leftMargin: periodMargin
@@ -193,7 +193,7 @@ Item {
                         iconName: iconName2
                         hidden: hidden2
                         partOfDay: 0
-                        fontPointSize: periodFontSize
+                        pointFontSize: periodFontSize
                         
                         anchors.left: period2.right
                         anchors.leftMargin: periodMargin
@@ -207,7 +207,7 @@ Item {
                         iconName: iconName3
                         hidden: hidden3
                         partOfDay: 1
-                        fontPointSize: periodFontSize
+                        pointFontSize: periodFontSize
                         
                         anchors.left: period3.right
                         anchors.leftMargin: periodMargin

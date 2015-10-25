@@ -60,8 +60,9 @@ function updateNextDaysWeatherModel(nextDaysWeatherModel, originalXmlModel) {
     
     var now = new Date()
     var nextDayStart = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() + wholeDayDurationMs)
+    dbgprint('next day start: ' + nextDayStart)
     
-    dbgprint('2orig', originalXmlModel.count)
+    dbgprint('2orig: ' + originalXmlModel.count)
 
     var todayObject = null
     var newObjectArray = []
@@ -72,10 +73,11 @@ function updateNextDaysWeatherModel(nextDaysWeatherModel, originalXmlModel) {
         var timeObj = originalXmlModel.get(i)
         var dateFrom = new Date(timeObj.from)
         var dateTo = new Date(timeObj.to)
-        dbgprint('2from, to, now, i', dateFrom, dateTo, now, i)
+        dbgprint('2 from=' + dateFrom + ', to=' + dateTo + ', now=' + now + ', i=' + i)
         
         if (!addingStarted) {
-            addingStarted = dateTo.getFullYear() === nextDayStart.getFullYear() && dateTo.getMonth() === nextDayStart.getMonth() && dateTo.getDate() === nextDayStart.getDate() && timeObj.period === '0'
+            //addingStarted = dateTo.getFullYear() === nextDayStart.getFullYear() && dateTo.getMonth() === nextDayStart.getMonth() && dateTo.getDate() >= nextDayStart.getDate() && timeObj.period === '0'
+            addingStarted = dateTo.getTime() >= nextDayStart.getTime() && timeObj.period === '0'
             
             if (!addingStarted) {
                 

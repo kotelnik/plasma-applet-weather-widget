@@ -24,7 +24,7 @@ Item {
     property string iconName
     property bool hidden
     property int partOfDay
-    property double fontPointSize: theme.defaultFont.pointSize
+    property double pointFontSize
     
     Item {
         id: temperatureTextItem
@@ -41,7 +41,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             
             text: hidden ? '' : TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
-            font.pointSize: fontPointSize
+            font.pointSize: pointFontSize
         }
     }
     
@@ -57,7 +57,7 @@ Item {
             font.family: 'weathericons'
             text: hidden ? '' : IconTools.getIconCode(iconName, true, partOfDay)
             
-            font.pointSize: fontPointSize
+            font.pointSize: pointFontSize
         }
     }
     
