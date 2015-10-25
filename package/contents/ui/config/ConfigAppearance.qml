@@ -8,6 +8,7 @@ Item {
 
     property bool cfg_fahrenheitEnabled
     property int cfg_layoutType
+    property alias cfg_inTrayActiveTimeoutSec: inTrayActiveTimeoutSec.value
 
     onCfg_fahrenheitEnabledChanged: {
         if (cfg_fahrenheitEnabled) {
@@ -47,7 +48,7 @@ Item {
     
     GridLayout {
         Layout.fillWidth: true
-        columns: 2
+        columns: 3
         
         Label {
             text: i18n("Temperature:")
@@ -58,6 +59,7 @@ Item {
             exclusiveGroup: temperatureTypeGroup
             text: i18n("°C")
             onCheckedChanged: if (checked) cfg_fahrenheitEnabled = false
+            Layout.columnSpan: 2
         }
         Item {
             width: 2
@@ -69,12 +71,13 @@ Item {
             exclusiveGroup: temperatureTypeGroup
             text: i18n("°F")
             onCheckedChanged: if (checked) cfg_fahrenheitEnabled = true
+            Layout.columnSpan: 2
         }
         
         Item {
             width: 2
             height: 10
-            Layout.columnSpan: 2
+            Layout.columnSpan: 3
         }
         
         Label {
@@ -86,6 +89,12 @@ Item {
             exclusiveGroup: layoutTypeGroup
             text: i18n("Horizontal")
             onCheckedChanged: if (checked) cfg_layoutType = 0;
+        }
+        Label {
+            text: i18n('NOTE: Setting layout type for in-tray plasmoid has no effect.')
+            Layout.rowSpan: 3
+            Layout.preferredWidth: 250
+            wrapMode: Text.WordWrap
         }
         Item {
             width: 2
@@ -107,13 +116,34 @@ Item {
         
         Item {
             width: 2
-            height: 10
-            Layout.columnSpan: 2
+            height: 20
+            Layout.columnSpan: 3
         }
         
+        
         Label {
-            text: i18n('NOTE: Setting layout type for in-tray plasmoid has no effect.')
-            Layout.columnSpan: 2
+            text: i18n("In-Tray Settings:")
+            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+            font.bold: true
+            Layout.columnSpan: 3
+        }
+        Label {
+            text: i18n("Active timeout:")
+            Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+        }
+        SpinBox {
+            id: inTrayActiveTimeoutSec
+            decimals: 0
+            stepSize: 10
+            minimumValue: 10
+            maximumValue: 8000
+            suffix: i18nc('Abbreviation for seconds', 'sec')
+        }
+        Label {
+            text: i18n('NOTE: After this timeout widget will be hidden in system tray. You can always set the widget to be always "Shown" in system tray "Entries" settings.')
+            Layout.rowSpan: 3
+            Layout.preferredWidth: 250
+            wrapMode: Text.WordWrap
         }
     }
     

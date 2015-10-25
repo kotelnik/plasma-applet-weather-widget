@@ -40,6 +40,9 @@
             </choices>
             <default>0</default>
         </entry>
+        <entry name="inTrayActiveTimeoutSec" type="Int">
+            <default>3600</default>
+        </entry>
     </group>
 
 </kcfg>

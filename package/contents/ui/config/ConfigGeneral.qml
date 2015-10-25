@@ -37,7 +37,7 @@ Item {
             })
         }
         cfg_townStrings = JSON.stringify(newTownStringsArray)
-        print('townStrings: ' + cfg_townStrings)
+        print('[weatherWidget] townStrings: ' + cfg_townStrings)
     }
     
     

@@ -62,6 +62,8 @@ Item {
     property bool vertical: (plasmoid.formFactor == PlasmaCore.Types.Vertical)
     property bool inTray: (plasmoid.parent === null || plasmoid.parent.objectName === 'taskItemContainer')
     
+    property int inTrayActiveTimeoutSec: plasmoid.configuration.inTrayActiveTimeoutSec
+    
     property int nextDaysCount: 8
     
     // 0 - standard
@@ -394,8 +396,14 @@ Item {
         loadFromCache()
     }
     
+    onInTrayActiveTimeoutSecChanged: {
+        updateLastReloadedText()
+    }
+    
     function updateLastReloadedText() {
-        lastReloadedText = '⬇ ' + Reloader.getLastReloadedTimeText(getLastReloadedMs()) + ' ago'
+        var lastReloadedMs = getLastReloadedMs()
+        lastReloadedText = '⬇ ' + Reloader.getLastReloadedTimeText(lastReloadedMs) + ' ago'
+        plasmoid.status = Reloader.getPlasmoidStatus(lastReloadedMs, inTrayActiveTimeoutSec)
     }
     
     function refreshTooltipSubText() {

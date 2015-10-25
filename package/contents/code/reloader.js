@@ -17,10 +17,7 @@ function setReloaded() {
 }
 
 function getLastReloadedTimeText(lastReloaded) {
-    if (!lastReloaded) {
-        lastReloaded = 0
-    }
-    var reloadedAgoMs = new Date().getTime() - lastReloaded
+    var reloadedAgoMs = getReloadedAgoMs(lastReloaded)
     var mins = reloadedAgoMs / 60000;
     
     if (mins <= 180) {
@@ -44,4 +41,20 @@ function scheduleDataReload() {
     var now = new Date().getTime()
     loadingError = true
     scheduledDataReload = now + 15000
+}
+
+function getReloadedAgoMs(lastReloaded) {
+    if (!lastReloaded) {
+        lastReloaded = 0
+    }
+    return new Date().getTime() - lastReloaded
+}
+
+function getPlasmoidStatus(lastReloaded, inTrayActiveTimeoutSec) {
+    var reloadedAgoMs = getReloadedAgoMs(lastReloaded)
+    if (reloadedAgoMs < inTrayActiveTimeoutSec*1000) {
+        return PlasmaCore.Types.ActiveStatus
+    } else {
+        return PlasmaCore.Types.PassiveStatus
+    }
 }

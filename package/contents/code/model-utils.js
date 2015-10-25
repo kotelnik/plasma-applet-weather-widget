@@ -1,5 +1,11 @@
 var wholeDayDurationMs = 1000 * 60 * 60 * 24
 
+function isXmlStringValid(xmlString) {
+    
+    return xmlString.indexOf('<?xml ') === 0
+    
+}
+
 function createEmptyNextDaysObject() {
     return {
         temperatureArray: [],
@@ -127,10 +133,4 @@ function updateWeatherModels(currentWeatherModel, nextCurrentWeatherModel, nextD
     dbgprint('result currentWeatherModel count: ', currentWeatherModel.count)
     dbgprint('result nextCurrentWeatherModel count: ', nextCurrentWeatherModel.count)
     dbgprint('result nextDaysWeatherModel count: ', nextDaysWeatherModel.count)
-}
-
-function isXmlStringValid(xmlString) {
-    
-    return xmlString.indexOf('<?xml ') === 0
-    
 }
