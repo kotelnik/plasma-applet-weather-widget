@@ -94,7 +94,17 @@ Item {
         source: overviewImageSource
         anchors.top: parent.top
         anchors.topMargin: headingHeight
+        
+//         visible: false
     }
+    
+//     Meteogram {
+//         id: meteogram
+//         anchors.top: parent.top
+//         anchors.topMargin: headingHeight
+//         width: imageWidth
+//         height: imageHeight
+//     }
     
     states: [
         State {
