@@ -95,16 +95,16 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: headingHeight
         
-//         visible: false
+        visible: false
     }
     
-//     Meteogram {
-//         id: meteogram
-//         anchors.top: parent.top
-//         anchors.topMargin: headingHeight
-//         width: imageWidth
-//         height: imageHeight
-//     }
+    Meteogram {
+        id: meteogram
+        anchors.top: parent.top
+        anchors.topMargin: headingHeight
+        width: imageWidth
+        height: imageHeight
+    }
     
     states: [
         State {

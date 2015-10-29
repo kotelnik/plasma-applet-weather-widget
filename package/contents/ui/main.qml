@@ -18,13 +18,12 @@ import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
-import QtQuick.XmlListModel 2.0
 import QtQuick.Controls 1.0
-import "../code/reloader.js" as Reloader
-import "../code/model-utils.js" as ModelUtils
+import "../code/data-loader.js" as DataLoader
 import "../code/config-utils.js" as ConfigUtils
 import "../code/icons.js" as IconTools
 import "../code/temperature-utils.js" as TemperatureUtils
+import "providers"
 
 Item {
     id: main
@@ -33,18 +32,15 @@ Item {
     
     property string townString
     property string placeAlias
-    property string xmlCacheKey
-    property var xmlCacheMap: {}
+    property string cacheKey
+    property var cacheMap: {}
     property var lastReloadedMsMap: {}
     property bool fahrenheitEnabled: plasmoid.configuration.fahrenheitEnabled
     property string townStringsJsonStr: plasmoid.configuration.townStrings
     
     property string datetimeFormat: 'yyyy-MM-dd\'T\'hh:mm:ss'
     property var locale: Qt.locale('en_GB')
-    property date sunRise: Date.fromLocaleString(locale, '2000-01-01T06:00:00', datetimeFormat)
-    property date sunSet: Date.fromLocaleString(locale, '2000-01-01T18:00:00', datetimeFormat)
-    property string sunRiseTime: '6:00'
-    property string sunSetTime: '18:00'
+    property var additionalWeatherInfo: {}
     
     property string overviewImageSource
     property string overviewLink
@@ -73,6 +69,8 @@ Item {
     
     property bool updatingPaused: true
     
+    property var currentProvider: null
+    
     anchors.fill: parent
     
     property Component crInTray: CompactRepresentationInTray { }
@@ -98,64 +96,12 @@ Item {
         source: '../fonts/weathericons-regular-webfont.ttf'
     }
     
-    XmlListModel {
-        id: xmlModel
-        query: '/weatherdata/forecast/tabular/time'
-
-        XmlRole {
-            name: 'from'
-            query: '@from/string()'
-        }
-        XmlRole {
-            name: 'to'
-            query: '@to/string()'
-        }
-        XmlRole {
-            name: 'period'
-            query: '@period/string()'
-        }
-        XmlRole {
-            name: 'temperature'
-            query: 'temperature/@value/string()'
-        }
-        XmlRole {
-            name: 'iconName'
-            query: 'symbol/@number/string()'
-        }
-        XmlRole {
-            name: 'windDirection'
-            query: 'windDirection/@code/string()'
-        }
-        XmlRole {
-            name: 'windSpeedMps'
-            query: 'windSpeed/@mps/string()'
-        }
-        XmlRole {
-            name: 'pressureHpa'
-            query: 'pressure/@value/string()'
-        }
-    }
-    
-    XmlListModel {
-        id: xmlModelSunRiseSet
-        query: '/weatherdata/sun'
-
-        XmlRole {
-            name: 'rise'
-            query: '@rise/string()'
-        }
-        XmlRole {
-            name: 'set'
-            query: '@set/string()'
-        }
+    YrNo {
+        id: yrnoProvider
     }
     
     ListModel {
         id: actualWeatherModel
-    }
-    
-    ListModel {
-        id: nextActualWeatherModel
     }
     
     ListModel {
@@ -173,6 +119,17 @@ Item {
     
     Component.onCompleted: {
         
+        additionalWeatherInfo = {
+            sunRise: Date.fromLocaleString(locale, '2000-01-01T06:00:00', datetimeFormat),
+            sunSet: Date.fromLocaleString(locale, '2000-01-01T18:00:00', datetimeFormat),
+            sunRiseTime: '6:00',
+            sunSetTime: '18:00',
+            nearFutureWeather: {
+                iconName: null,
+                temperature: null
+            }
+        }
+        
         // systray settings
         if (inTray) {
             Plasmoid.compactRepresentation = crInTray
@@ -187,12 +144,12 @@ Item {
             //fill xml cache xml
             if (cacheContent) {
                 try {
-                    xmlCacheMap = JSON.parse(cacheContent)
+                    cacheMap = JSON.parse(cacheContent)
                 } catch (error) {
                     dbgprint('error parsing cacheContent')
                 }
             }
-            xmlCacheMap = xmlCacheMap || {}
+            cacheMap = cacheMap || {}
             
             //fill last reloaded
             var lastReloadedMsJson = plasmoid.configuration.lastReloadedMsJson
@@ -217,7 +174,7 @@ Item {
             reloadData()
         }
         updateLastReloadedText()
-        reloadImage()
+        reloadMeteogram()
     }
     
     function setNextTownString(initial) {
@@ -235,25 +192,15 @@ Item {
         townString = townStrings[townStringIndex].townString
         placeAlias = townStrings[townStringIndex].placeAlias
         dbgprint('next town string is: ' + townString)
-        xmlCacheKey = generateXmlCacheKey(townString)
-        dbgprint('next xmlCacheKey is: ' + xmlCacheKey)
+        cacheKey = DataLoader.generateXmlCacheKey(townString)
+        dbgprint('next cacheKey is: ' + cacheKey)
         
         alreadyLoadedFromCache = false
         overviewLink = yrnoUrlPreifx + townString + '/'
         
+        currentProvider = yrnoProvider
+        
         showData()
-    }
-    
-    function generateXmlCacheKey(townStr) {
-        var hash = 0
-        if (townStr.length !== 0) {
-            for (var i = 0; i < townStr.length; i++) {
-                var ch = townStr.charCodeAt(i);
-                hash = ((hash << 5) - hash) + ch
-                hash = hash & hash // Convert to 32bit integer
-            }
-        }
-        return 'xmlCache_' + hash
     }
     
     function reloadData() {
@@ -262,57 +209,40 @@ Item {
             return
         }
         
-        var xhr = new XMLHttpRequest()
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState !== XMLHttpRequest.DONE) {
-                return
-            }
-            
+        loadingData = true
+        
+        function successCallback(contentToCache, overviewLinkUrl) {
             loadingData = false
-                
-            if (xhr.status !== 200) {
-                handleLoadError()
-                return
-            }
             
-            // success
-            dbgprint('successfully loaded from the internet')
-            
-            var xmlString = xhr.responseText;
-            if (!ModelUtils.isXmlStringValid(xmlString)) {
-                dbgprint('incomming xmlString is not valid: ' + xmlString)
-                return
-            }
-            dbgprint('incomming text seems to be valid')
-            
-            xmlCacheMap[xmlCacheKey] = xmlString
+            cacheMap[cacheKey] = contentToCache
             alreadyLoadedFromCache = false
-            //TODO delete this after some time
-            plasmoid.configuration.xmlCacheJson = 'cache is located in .cache/plasma/plasmoids/ folder'
-            weatherCache.writeCache(JSON.stringify(xmlCacheMap))
+            weatherCache.writeCache(JSON.stringify(cacheMap))
             
-            reloadImage()
-            overviewLink = yrnoUrlPreifx + townString + '/'
+            reloadMeteogram()
+            overviewLink = overviewLinkUrl
             reloaded()
             
             loadFromCache()
         }
-        xhr.open('GET', yrnoUrlPreifx + townString + '/forecast.xml')
         
-        loadingData = true
-        xhr.send()
+        function failureCallback() {
+            loadingData = false
+            handleLoadError()
+        }
         
-        dbgprint('reload called, xmlCacheKey is: ' + xmlCacheKey)
+        currentProvider.loadDataFromInternet(successCallback, failureCallback, { townString: townString })
+        
+        dbgprint('reload called, cacheKey is: ' + cacheKey)
     }
     
-    function reloadImage() {
+    function reloadMeteogram() {
         dbgprint('reloading image')
         overviewImageSource = ''
         overviewImageSource = yrnoUrlPreifx + townString + '/avansert_meteogram.png'
     }
     
     function setLastReloadedMs(lastReloadedMs) {
-        lastReloadedMsMap[xmlCacheKey] = lastReloadedMs
+        lastReloadedMsMap[cacheKey] = lastReloadedMs
         plasmoid.configuration.lastReloadedMsJson = JSON.stringify(lastReloadedMsMap)
     }
     
@@ -320,78 +250,40 @@ Item {
         if (!lastReloadedMsMap) {
             return new Date().getTime()
         }
-        return lastReloadedMsMap[xmlCacheKey]
+        return lastReloadedMsMap[cacheKey]
     }
     
     function reloaded() {
-        setLastReloadedMs(Reloader.setReloaded())
+        setLastReloadedMs(DataLoader.setReloaded())
         updateLastReloadedText()
         dbgprint('reloaded')
     }
     
     function loadFromCache() {
-        dbgprint('loading from cache, config key: ', xmlCacheKey)
+        dbgprint('loading from cache, config key: ', cacheKey)
         
         if (alreadyLoadedFromCache) {
             dbgprint('already loaded from cache')
             return true
         }
         
-        if (!xmlCacheMap || !xmlCacheMap[xmlCacheKey]) {
+        if (!cacheMap || !cacheMap[cacheKey]) {
             dbgprint('cache not available')
             return false
         }
         
-        xmlModel.xml = xmlCacheMap[xmlCacheKey]
-        xmlModelSunRiseSet.xml = xmlCacheMap[xmlCacheKey]
+        var success = currentProvider.setWeatherContents([ cacheMap[cacheKey] ])
+        if (!success) {
+            return false
+        }
+        
         alreadyLoadedFromCache = true
         return true
     }
     
-    states: [
-        State {
-            name: 'ready'
-            when: xmlModel.status == XmlListModel.Ready
-            
-            StateChangeScript {
-                script: {
-                    dbgprint('xmlModel ready')
-                    ModelUtils.updateWeatherModels(actualWeatherModel, nextActualWeatherModel, nextDaysModel, xmlModel)
-                    refreshTooltipSubText()
-                }
-            }
-        }
-    ]
-    
-    Item {
-        states: [
-            State {
-                name: 'sunReady'
-                when: xmlModelSunRiseSet.status == XmlListModel.Ready
-                
-                StateChangeScript {
-                    script: {
-                        sunRise = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
-                        sunSet = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
-                        var now = new Date()
-                        sunRise.setFullYear(now.getFullYear())
-                        sunRise.setMonth(now.getMonth())
-                        sunRise.setDate(now.getDate())
-                        sunSet.setFullYear(now.getFullYear())
-                        sunSet.setMonth(now.getMonth())
-                        sunSet.setDate(now.getDate())
-                        sunRiseTime = Qt.formatTime(sunRise, Qt.locale().timeFormat(Locale.ShortFormat))
-                        sunSetTime = Qt.formatTime(sunSet, Qt.locale().timeFormat(Locale.ShortFormat))
-                        refreshTooltipSubText()
-                    }
-                }
-            }
-        ]
-    }
-    
     function handleLoadError() {
         dbgprint('Error getting weather data. Scheduling data reload...')
-        Reloader.scheduleDataReload()
+        DataLoader.scheduleDataReload()
         
         loadFromCache()
     }
@@ -402,32 +294,33 @@ Item {
     
     function updateLastReloadedText() {
         var lastReloadedMs = getLastReloadedMs()
-        lastReloadedText = '⬇ ' + Reloader.getLastReloadedTimeText(lastReloadedMs) + ' ago'
-        plasmoid.status = Reloader.getPlasmoidStatus(lastReloadedMs, inTrayActiveTimeoutSec)
+        lastReloadedText = '⬇ ' + DataLoader.getLastReloadedTimeText(lastReloadedMs) + ' ago'
+        plasmoid.status = DataLoader.getPlasmoidStatus(lastReloadedMs, inTrayActiveTimeoutSec)
     }
     
-    function refreshTooltipSubText() {
+    function refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled) {
         dbgprint('refreshing sub text')
-        if (nextActualWeatherModel.count === 0) {
+        if (additionalWeatherInfo === undefined || additionalWeatherInfo.nearFutureWeather.iconName === null) {
             dbgprint('model not yet ready')
             return
         }
-        var futureWeatherIcon = IconTools.getIconCode(nextActualWeatherModel.get(0).iconName, true, getPartOfDayIndex())
+        var nearFutureWeather = additionalWeatherInfo.nearFutureWeather
+        var futureWeatherIcon = IconTools.getIconCode(nearFutureWeather.iconName, true, getPartOfDayIndex())
         var windDirectionIcon = IconTools.getWindDirectionIconCode(actualWeatherModel.get(0).windDirection)
         var subText = ''
         
         if (inTray) {
             subText += '<br /><font size="4"> ' + actualWeatherModel.get(0).windSpeedMps + ' m/s</s</font>'
             subText += '<br /><font size="4">' + actualWeatherModel.get(0).pressureHpa + ' hPa</font>'
-            subText += '<br /><font size="4">⬆&nbsp;' + sunRiseTime + '&nbsp;&nbsp;&nbsp;⬇&nbsp;' + sunSetTime + '</font>'
+            subText += '<br /><font size="4">⬆&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;⬇&nbsp;' + additionalWeatherInfo.sunSetTime + '</font>'
             subText += '<br /><br />'
-            subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(nextActualWeatherModel.get(0).temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
+            subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(nearFutureWeather.temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
         } else {
             subText += '<br /><font size="4" style="font-family: weathericons">' + windDirectionIcon + '</font><font size="4"> ' + actualWeatherModel.get(0).windSpeedMps + ' m/s</s</font>'
             subText += '<br /><font size="4">' + actualWeatherModel.get(0).pressureHpa + ' hPa</font>'
-            subText += '<br /><font size="4"><font style="font-family: weathericons">\uf051</font>&nbsp;' + sunRiseTime + '&nbsp;&nbsp;&nbsp;<font style="font-family: weathericons">\uf052</font>&nbsp;' + sunSetTime + '</font>'
+            subText += '<br /><font size="4"><font style="font-family: weathericons">\uf051</font>&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;<font style="font-family: weathericons">\uf052</font>&nbsp;' + additionalWeatherInfo.sunSetTime + '</font>'
             subText += '<br /><br />'
-            subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(nextActualWeatherModel.get(0).temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
+            subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(nearFutureWeather.temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
             subText += '<font color="transparent">__</font><font style="font-family: weathericons">' + futureWeatherIcon + '</font></b></font>'
         }
         
@@ -436,7 +329,7 @@ Item {
     
     function getPartOfDayIndex() {
         var now = new Date()
-        return sunRise < now && now < sunSet ? 0 : 1
+        return additionalWeatherInfo.sunRise < now && now < additionalWeatherInfo.sunSet ? 0 : 1
     }
     
     function tryReload() {
@@ -447,11 +340,11 @@ Item {
         }
         
         if (imageLoadingError && !loadingError) {
-            reloadImage()
+            reloadMeteogram()
             imageLoadingError = false
         }
         
-        if (Reloader.isReadyToReload(reloadIntervalMs, getLastReloadedMs())) {
+        if (DataLoader.isReadyToReload(reloadIntervalMs, getLastReloadedMs())) {
             reloadData()
         }
     }
@@ -466,7 +359,7 @@ Item {
     }
     
     onFahrenheitEnabledChanged: {
-        refreshTooltipSubText()
+        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled)
     }
     
 }
