@@ -24,35 +24,41 @@ Item {
     
     property var dataArray: []
     
-    property int sideGap: 10
-    property int dataArraySize: 1
+    property int dataArraySize: 2
     property double sampleWidth: meteogram.width / (dataArraySize - 1)
-    property double yMultiplier: meteogram.height / (maxY - minY)
+
+    property int temperatureMaxY: 0
+    property int temperatureMinY: 0
+    property int temperatureSideGap: 5
+    property double temperatureAdditiveY: - temperatureMinY
+    property double temperatureMultiplierY: meteogram.height / (temperatureMaxY - temperatureMinY)
     
-    property int maxY: 0
-    property int minY: 0
+    property int pressureSideGap: 20
+    property int pressureMaxY: 100 + pressureSideGap
+    property int pressureAdditiveY: - 950 + pressureSideGap
+    property double pressureMultiplierY: meteogram.height / (100 + pressureSideGap * 2)
+    
+    property bool meteogramModelChanged: main.meteogramModelChanged
     
     onSampleWidthChanged: {
         redrawCanvas()
     }
     
-    onYMultiplierChanged: {
-        redrawCanvas()
-    }
-    
-    ListModel {
-        id: meteogramModel
+    onMeteogramModelChangedChanged: {
+        print('meteogram changed')
+        modelUpdated()
     }
     
     function modelUpdated() {
         
-        print('meteogram model updated')
+        print('meteogram model updated ' + meteogramModel.count)
+        dataArraySize = meteogramModel.count
         
         var minValue = null
         var maxValue = null
         
-        dataArray.forEach(function (dataObj) {
-            var value = dataObj.temperature
+        for (var i = 0; i < meteogramModel.count; i++) {
+            var value = meteogramModel.get(i).temperature
             if (minValue === null || maxValue === null) {
                 minValue = value
                 maxValue = value
@@ -63,71 +69,52 @@ Item {
             if (value > maxValue) {
                 maxValue = value
             }
-        })
+        }
         
-        maxY = maxValue + sideGap
-        minY = minValue - sideGap
+        temperatureMaxY = maxValue + temperatureSideGap
+        temperatureMinY = minValue - temperatureSideGap
+        
+        print('maxValue: ' + maxValue + ', minValue: ' + minValue)
+        print('temperatureMaxY: ' + temperatureMaxY + ', temperatureMinY: ' + temperatureMinY)
         
         redrawCanvas()
     }
     
     function redrawCanvas() {
         
-        print('redrawing canvas with yMultiplier=' + yMultiplier)
+        print('redrawing canvas with temperatureMultiplierY=' + temperatureMultiplierY)
         
         var newPathElements = []
         var newPressureElements = []
         
-        if (dataArray === undefined || yMultiplier > 1000000) {
+        if (meteogramModel.count === 0 || temperatureMultiplierY > 1000000) {
             return
         }
         
-        dataArray.forEach(function (dataObj, i) {
+        for (var i = 0; i < meteogramModel.count; i++) {
+            var dataObj = meteogramModel.get(i)
+            
+            var temperatureY = (temperatureMaxY + temperatureSideGap - dataObj.temperature - temperatureAdditiveY) * temperatureMultiplierY
+            var pressureY = (pressureMaxY + pressureSideGap - dataObj.pressureHpa - pressureAdditiveY) * pressureMultiplierY
+            
+            print('temperature: ' + dataObj.temperature + ', pressure: ' + dataObj.pressureHpa)
+            
             if (i === 0) {
-                temperaturePath.startY = dataObj.temperature * yMultiplier
-                pressurePath.startY = dataObj.pressure * 0.2
-                return
+                temperaturePath.startY = temperatureY
+                pressurePath.startY = pressureY
+                continue
             }
             
-            newPathElements.push(Qt.createQmlObject('import QtQuick 2.0; PathCurve { x: ' + (i * sampleWidth) + '; y: ' + ((dataObj.temperature + sideGap) * yMultiplier) + ' }', meteogram, "dynamicTemperature" + i))
-            
-            newPressureElements.push(Qt.createQmlObject('import QtQuick 2.0; PathCurve { x: ' + (i * sampleWidth) + '; y: ' + ((dataObj.pressure + sideGap) * 0.2) + ' }', meteogram, "dynamicPressure" + i))
-        })
+            newPathElements.push(Qt.createQmlObject('import QtQuick 2.0; PathCurve { x: ' + (i * sampleWidth) + '; y: ' + temperatureY + ' }', meteogram, "dynamicTemperature" + i))
+
+            newPressureElements.push(Qt.createQmlObject('import QtQuick 2.0; PathCurve { x: ' + (i * sampleWidth) + '; y: ' + pressureY + ' }', meteogram, "dynamicPressure" + i))
+        }
         
         temperaturePath.pathElements = newPathElements
         pressurePath.pathElements = newPressureElements
         
         meteogramCanvas.requestPaint()
         
-    }
-    
-    function setNewTemperatureArray(newDataArray) {
-        dataArray = newDataArray
-        dataArraySize = dataArray.length
-        modelUpdated()
-    }
-    
-    
-    Component.onCompleted: {
-        
-        //20
-        
-        var temperatureArray = [4,2,6,10,12,17,12,11,8,7,4,2,6,10,12,17,12,11,8,7, 4, 2, 20]
-        
-        var newDataArray = []
-        
-        temperatureArray.forEach(function (temp) {
-            newDataArray.push({
-                temperature: temp,
-                precipitation: 0.3,
-                windDirection: 'ENE',
-                windSpeed: 7.6,
-                pressure: 1002.4,
-                iconNumber: 13
-            })
-        })
-        
-        setNewTemperatureArray(newDataArray)
     }
     
     Canvas {
@@ -156,6 +143,17 @@ Item {
             context.path = temperaturePath
             context.stroke()
         }
+        
+        visible: false
+    }
+    
+    Image {
+        id: overviewImage
+        cache: false
+        source: overviewImageSource
+        anchors.fill: parent
+        
+        visible: true
     }
     
 }

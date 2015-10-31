@@ -71,6 +71,8 @@ Item {
     
     property var currentProvider: null
     
+    property bool meteogramModelChanged: false
+    
     anchors.fill: parent
     
     property Component crInTray: CompactRepresentationInTray { }
@@ -83,7 +85,7 @@ Item {
     Plasmoid.compactRepresentation: cr
     Plasmoid.fullRepresentation: fr
     
-    property bool debugLogging: false
+    property bool debugLogging: true
     
     function dbgprint(msg) {
         if (!debugLogging) {
@@ -106,6 +108,10 @@ Item {
     
     ListModel {
         id: nextDaysModel
+    }
+    
+    ListModel {
+        id: meteogramModel
     }
     
     function action_toggleUpdatingPaused() {
@@ -139,28 +145,33 @@ Item {
         // init contextMenu
         action_toggleUpdatingPaused()
         
-        weatherCache.readCache(function (cacheContent) {
+        var cacheContent = weatherCache.readCache()
+        
+        dbgprint('readCache result length: ' + cacheContent.length)
             
-            //fill xml cache xml
-            if (cacheContent) {
-                try {
-                    cacheMap = JSON.parse(cacheContent)
-                } catch (error) {
-                    dbgprint('error parsing cacheContent')
+        //fill xml cache xml
+        if (cacheContent) {
+            try {
+                cacheMap = JSON.parse(cacheContent)
+                dbgprint('cacheMap initialized - keys:')
+                for (var key in cacheMap) {
+                    dbgprint('  ' + key + ', data: ' + cacheMap[key])
                 }
+            } catch (error) {
+                dbgprint('error parsing cacheContent')
             }
-            cacheMap = cacheMap || {}
-            
-            //fill last reloaded
-            var lastReloadedMsJson = plasmoid.configuration.lastReloadedMsJson
-            if (lastReloadedMsJson) {
-                lastReloadedMsMap = JSON.parse(lastReloadedMsJson)
-            }
-            lastReloadedMsMap = lastReloadedMsMap || {}
-            
-            //get town string
-            setNextTownString(true)
-        })
+        }
+        cacheMap = cacheMap || {}
+        
+        //fill last reloaded
+        var lastReloadedMsJson = plasmoid.configuration.lastReloadedMsJson
+        if (lastReloadedMsJson) {
+            lastReloadedMsMap = JSON.parse(lastReloadedMsJson)
+        }
+        lastReloadedMsMap = lastReloadedMsMap || {}
+        
+        //get town string
+        setNextTownString(true)
     }
     
     onTownStringsJsonStrChanged: {
@@ -179,7 +190,7 @@ Item {
     
     function setNextTownString(initial) {
         var townStrings = ConfigUtils.getTownStringArray()
-        dbgprint('townStrings count', townStrings.length, plasmoid.configuration.townStringIndex)
+        dbgprint('townStrings count=' + townStrings.length + ', townStringsIndex=' + plasmoid.configuration.townStringIndex)
         var townStringIndex = plasmoid.configuration.townStringIndex
         if (!initial) {
             townStringIndex++
@@ -188,11 +199,11 @@ Item {
             townStringIndex = 0
         }
         plasmoid.configuration.townStringIndex = townStringIndex
-        dbgprint('townStringIndex now', plasmoid.configuration.townStringIndex)
+        dbgprint('townStringIndex now: ' + plasmoid.configuration.townStringIndex)
         townString = townStrings[townStringIndex].townString
         placeAlias = townStrings[townStringIndex].placeAlias
         dbgprint('next town string is: ' + townString)
-        cacheKey = DataLoader.generateXmlCacheKey(townString)
+        cacheKey = DataLoader.generateCacheKey(townString)
         dbgprint('next cacheKey is: ' + cacheKey)
         
         alreadyLoadedFromCache = false
@@ -201,6 +212,25 @@ Item {
         currentProvider = yrnoProvider
         
         showData()
+    }
+    
+    function dataLoadedFromInternet(contentToCache, overviewLinkUrl) {
+        loadingData = false
+        
+        dbgprint('saving cacheKey = ' + cacheKey)
+        cacheMap[cacheKey] = contentToCache
+        dbgprint('cacheMap now has these keys:')
+        for (var key in cacheMap) {
+            dbgprint('  ' + key)
+        }
+        alreadyLoadedFromCache = false
+        weatherCache.writeCache(JSON.stringify(cacheMap))
+        
+        reloadMeteogram()
+        overviewLink = overviewLinkUrl
+        reloaded()
+        
+        loadFromCache()
     }
     
     function reloadData() {
@@ -212,25 +242,15 @@ Item {
         loadingData = true
         
         function successCallback(contentToCache, overviewLinkUrl) {
-            loadingData = false
             
-            cacheMap[cacheKey] = contentToCache
-            alreadyLoadedFromCache = false
-            weatherCache.writeCache(JSON.stringify(cacheMap))
-            
-            reloadMeteogram()
-            overviewLink = overviewLinkUrl
-            reloaded()
-            
-            loadFromCache()
         }
         
         function failureCallback() {
-            loadingData = false
+            main.loadingData = false
             handleLoadError()
         }
         
-        currentProvider.loadDataFromInternet(successCallback, failureCallback, { townString: townString })
+        currentProvider.loadDataFromInternet(dataLoadedFromInternet, failureCallback, { townString: townString })
         
         dbgprint('reload called, cacheKey is: ' + cacheKey)
     }
@@ -260,7 +280,7 @@ Item {
     }
     
     function loadFromCache() {
-        dbgprint('loading from cache, config key: ', cacheKey)
+        dbgprint('loading from cache, config key: ' + cacheKey)
         
         if (alreadyLoadedFromCache) {
             dbgprint('already loaded from cache')
@@ -272,8 +292,9 @@ Item {
             return false
         }
         
-        var success = currentProvider.setWeatherContents([ cacheMap[cacheKey] ])
+        var success = currentProvider.setWeatherContents(cacheMap[cacheKey])
         if (!success) {
+            dbgprint('setting weather contents not successful')
             return false
         }
         

@@ -33,7 +33,7 @@ Item {
     }
     
     XmlListModel {
-        id: xmlModel
+        id: xmlModelLongTerm
         query: '/weatherdata/forecast/tabular/time'
 
         XmlRole {
@@ -71,6 +71,52 @@ Item {
     }
     
     XmlListModel {
+        id: xmlModelHourByHour
+        query: '/weatherdata/forecast/tabular/time'
+
+        XmlRole {
+            name: 'from'
+            query: '@from/string()'
+        }
+        XmlRole {
+            name: 'to'
+            query: '@to/string()'
+        }
+        XmlRole {
+            name: 'temperature'
+            query: 'temperature/@value/string()'
+        }
+        XmlRole {
+            name: 'iconNumber'
+            query: 'symbol/@number/string()'
+        }
+        XmlRole {
+            name: 'windDirection'
+            query: 'windDirection/@code/string()'
+        }
+        XmlRole {
+            name: 'windSpeedMps'
+            query: 'windSpeed/@mps/string()'
+        }
+        XmlRole {
+            name: 'pressureHpa'
+            query: 'pressure/@value/string()'
+        }
+        XmlRole {
+            name: 'precipitationAvg'
+            query: 'precipitation/@value/string()'
+        }
+        XmlRole {
+            name: 'precipitationMin'
+            query: 'precipitation/@minvalue/string()'
+        }
+        XmlRole {
+            name: 'precipitationMax'
+            query: 'precipitation/@maxvalue/string()'
+        }
+    }
+    
+    XmlListModel {
         id: xmlModelSunRiseSet
         query: '/weatherdata/sun'
 
@@ -84,47 +130,69 @@ Item {
         }
     }
     
-    states: [
-        State {
-            name: 'ready'
-            when: xmlModel.status == XmlListModel.Ready
-            
-            StateChangeScript {
-                script: {
-                    dbgprint('xmlModel ready')
-                    updateWeatherModels(actualWeatherModel, additionalWeatherInfo.nearFutureWeather, nextDaysModel, xmlModel)
-                    refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled)
-                }
-            }
+    property var xmlModelLongTermStatus: xmlModelLongTerm.status
+    property var xmlModelSunRiseSetStatus: xmlModelSunRiseSet.status
+    property var xmlModelHourByHourStatus: xmlModelHourByHour.status
+
+    onXmlModelLongTermStatusChanged: {
+        if (xmlModelLongTerm.status != XmlListModel.Ready) {
+            return
         }
-    ]
+        dbgprint('xmlModelLongTerm ready')
+        updateWeatherModels(actualWeatherModel, additionalWeatherInfo.nearFutureWeather, nextDaysModel, xmlModelLongTerm)
+        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled)
+    }
     
-    Item {
-        states: [
-            State {
-                name: 'sunReady'
-                when: xmlModelSunRiseSet.status == XmlListModel.Ready
-                
-                StateChangeScript {
-                    script: {
-                        additionalWeatherInfo.sunRise = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
-                        additionalWeatherInfo.sunSet = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
-                        var sunRise = additionalWeatherInfo.sunRise
-                        var sunSet = additionalWeatherInfo.sunSet
-                        var now = new Date()
-                        sunRise.setFullYear(now.getFullYear())
-                        sunRise.setMonth(now.getMonth())
-                        sunRise.setDate(now.getDate())
-                        sunSet.setFullYear(now.getFullYear())
-                        sunSet.setMonth(now.getMonth())
-                        sunSet.setDate(now.getDate())
-                        additionalWeatherInfo.sunRiseTime = Qt.formatTime(sunRise, Qt.locale().timeFormat(Locale.ShortFormat))
-                        additionalWeatherInfo.sunSetTime = Qt.formatTime(sunSet, Qt.locale().timeFormat(Locale.ShortFormat))
-                        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled)
-                    }
-                }
-            }
-        ]
+    onXmlModelSunRiseSetStatusChanged: {
+        if (xmlModelSunRiseSet.status != XmlListModel.Ready) {
+            return
+        }
+        dbgprint('xmlModelSunRiseSet ready')
+        additionalWeatherInfo.sunRise = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
+        additionalWeatherInfo.sunSet = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
+        var sunRise = additionalWeatherInfo.sunRise
+        var sunSet = additionalWeatherInfo.sunSet
+        var now = new Date()
+        sunRise.setFullYear(now.getFullYear())
+        sunRise.setMonth(now.getMonth())
+        sunRise.setDate(now.getDate())
+        sunSet.setFullYear(now.getFullYear())
+        sunSet.setMonth(now.getMonth())
+        sunSet.setDate(now.getDate())
+        additionalWeatherInfo.sunRiseTime = Qt.formatTime(sunRise, Qt.locale().timeFormat(Locale.ShortFormat))
+        additionalWeatherInfo.sunSetTime = Qt.formatTime(sunSet, Qt.locale().timeFormat(Locale.ShortFormat))
+        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled)
+    }
+    
+    onXmlModelHourByHourStatusChanged: {
+        if (xmlModelHourByHour.status != XmlListModel.Ready) {
+            return
+        }
+        dbgprint('xmlModelHourByHour ready')
+        updateMeteogramModel(meteogramModel, xmlModelHourByHour)
+    }
+    
+    function updateMeteogramModel(meteogramModel, originalXmlModel) {
+        
+        meteogramModel.clear()
+        
+        for (var i = 0; i < originalXmlModel.count; i++) {
+            var obj = originalXmlModel.get(i)
+            meteogramModel.append({
+                temperature: parseInt(obj.temperature),
+                precipitationAvg: parseFloat(obj.precipitationAvg),
+                precipitationMin: parseFloat(obj.precipitationMin),
+                precipitationMax: parseFloat(obj.precipitationMax),
+                windDirection: obj.windDirection,
+                windSpeedMps: parseFloat(obj.windSpeedMps),
+                pressureHpa: parseFloat(obj.pressureHpa),
+                iconNumber: obj.iconNumber
+            })
+        }
+        
+        dbgprint('meteogramModel.count = ' + meteogramModel.count)
+        
+        main.meteogramModelChanged = !main.meteogramModelChanged
     }
     
     function updateWeatherModels(currentWeatherModel, nearFutureWeather, nextDaysWeatherModel, originalXmlModel) {
@@ -279,12 +347,14 @@ Item {
         
     }
     
-    function setWeatherContents(cacheContentXmls) {
-        if (cacheContentXmls.length < 1 || !cacheContentXmls[0].longTerm || !cacheContentXmls[0].hourByHour) {
+    function setWeatherContents(cacheContent) {
+        if (!cacheContent.longTerm || !cacheContent.hourByHour) {
             return false
         }
-        xmlModel.xml = cacheContentXmls[0].longTerm
-        xmlModelSunRiseSet.xml = cacheContentXmls[0].hourByHour
+        xmlModelLongTerm.xml = cacheContent.longTerm
+        xmlModelSunRiseSet.xml = cacheContent.longTerm
+        xmlModelHourByHour.xml = cacheContent.hourByHour
+        return true
     }
     
 }

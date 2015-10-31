@@ -64,16 +64,8 @@ function getPlasmoidStatus(lastReloaded, inTrayActiveTimeoutSec) {
     }
 }
 
-function generateXmlCacheKey(townStr) {
-    var hash = 0
-    if (townStr.length !== 0) {
-        for (var i = 0; i < townStr.length; i++) {
-            var ch = townStr.charCodeAt(i);
-            hash = ((hash << 5) - hash) + ch
-            hash = hash & hash // Convert to 32bit integer
-        }
-    }
-    return 'xmlCache_' + hash
+function generateCacheKey(townStr) {
+    return 'cache_' + Qt.md5(townStr)
 }
 
 function isXmlStringValid(xmlString) {
@@ -108,5 +100,4 @@ function fetchXmlFromInternet(getUrl, successCallback, failureCallback) {
     xhr.send()
     
     dbgprint('GET called for url: ' + getUrl)
-    print('[weatherWidget] GET called for url: ' + getUrl)
 }

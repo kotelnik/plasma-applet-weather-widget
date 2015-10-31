@@ -16,93 +16,24 @@
  */
 import QtQuick 2.2
 import org.kde.plasma.plasmoid 2.0
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.kcoreaddons 1.0 as KCoreAddons
+import org.kde.private.weatherWidget 1.0 as WW
 
 Item {
     id: weatherCache
-    
-    KCoreAddons.KUser {
-        id: kuser
+        
+    WW.Backend {
+        id: cacheBackend
     }
-    
-    // security measure
-    property int sizeLimitLength: 2000000
-    
-    property string cacheFolderPath: '/home/' + kuser.loginName + '/.cache/plasma/plasmoids/org.kde.weatherWidget/'
-    property string cacheFilePath: cacheFolderPath + 'plasmoidId-' + plasmoid.id + '.json'
-    property string writePattern: 'mkdir -p ' + cacheFolderPath + ' && echo \'{cacheContent}\' > ' + cacheFilePath
-    property string readPattern: 'cat ' + cacheFilePath
-    
-    property var readCacheCallback: null
     
     function writeCache(cacheContent) {
-        dbgprint('writing cache with pattern: ' + writePattern)
-        // security measure
-        var cacheContentEncoded = Qt.btoa(cacheContent)
-        if (cacheContentEncoded.length > sizeLimitLength) {
-            print('Cache size exceeded! Content bigger then ' + sizeLimitLength + ' characters. NOT storing cache.')
-            return
-        }
-        dbgprint('writing: ' + cacheContentEncoded)
-        dbgprint('cache length: ' + cacheContentEncoded.length)
-        writeCacheExecutableDS.connectSource(writePattern.replace('{cacheContent}', cacheContentEncoded))
-    }
-    
-    function readCache(callback) {
-        if (readCacheCallback !== null) {
-            dbgprint('already reading!')
-            return false
-        }
-        readCacheCallback = callback
-        readCacheExecutableDS.connectSource(readPattern)
-    }
-    
-    PlasmaCore.DataSource {
-        id: writeCacheExecutableDS
-        engine: 'executable'
-        onNewData: {
-            disconnectSource(sourceName)
-            if (data['exit code'] > 0) {
-                dbgprint('error writing cache: ' + data.stderr)
-                return
-            }
-            dbgprint('writing cache succeded')
-        }
-    }
-    
-    PlasmaCore.DataSource {
-        id: readCacheExecutableDS
-        engine: 'executable'
+        dbgprint('writing cache')
+        cacheBackend.writeCache(cacheContent, plasmoid.id)
         
-        onNewData: {
-            var currentCallback = readCacheCallback;
-            readCacheCallback = null
-            
-            disconnectSource(sourceName)
-            
-            if (currentCallback === null) {
-                dbgprint('there is no callback set!')
-                currentCallback = function () {}
-            }
-            
-            if (data['exit code'] > 0) {
-                dbgprint('error reading cache: ' + data.stderr)
-                currentCallback('')
-                return
-            }
-            dbgprint('reading cache succeded: ' + data.stdout)
-            // security measure
-            var cacheContentDecoded = Qt.atob(data.stdout)
-            dbgprint('cache length: ' + cacheContentDecoded.length)
-            if (cacheContentDecoded.length > sizeLimitLength) {
-                print('Cache size exceeded! Content bigger then ' + sizeLimitLength + ' characters. NOT loading cache.')
-                currentCallback('')
-                return
-            }
-            dbgprint('reading: ' + cacheContentDecoded)
-            currentCallback(cacheContentDecoded)
-        }
+    }
+    
+    function readCache() {
+        dbgprint('reading cache')
+        return cacheBackend.readCache(plasmoid.id)
     }
     
 }

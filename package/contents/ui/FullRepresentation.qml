@@ -88,16 +88,6 @@ Item {
         text: loadingError ? 'Offline mode' : 'Loading image...'
     }
     
-    Image {
-        id: overviewImage
-        cache: false
-        source: overviewImageSource
-        anchors.top: parent.top
-        anchors.topMargin: headingHeight
-        
-        visible: false
-    }
-    
     Meteogram {
         id: meteogram
         anchors.top: parent.top
