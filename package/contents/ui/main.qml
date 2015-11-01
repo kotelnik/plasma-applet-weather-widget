@@ -35,6 +35,7 @@ Item {
     property string cacheKey
     property var cacheMap: {}
     property var lastReloadedMsMap: {}
+    property bool renderMeteogram: plasmoid.configuration.renderMeteogram
     property bool fahrenheitEnabled: plasmoid.configuration.fahrenheitEnabled
     property string townStringsJsonStr: plasmoid.configuration.townStrings
     

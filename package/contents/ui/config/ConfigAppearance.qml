@@ -1,11 +1,12 @@
 import QtQuick 2.2
-import QtQuick.Controls 1.0
-import QtQuick.Layouts 1.0
+import QtQuick.Controls 1.3
+import QtQuick.Layouts 1.1
 
 Item {
     width: childrenRect.width
     height: childrenRect.height
 
+    property alias cfg_renderMeteogram: renderMeteogram.checked
     property bool cfg_fahrenheitEnabled
     property int cfg_layoutType
     property alias cfg_inTrayActiveTimeoutSec: inTrayActiveTimeoutSec.value
@@ -49,6 +50,18 @@ Item {
     GridLayout {
         Layout.fillWidth: true
         columns: 3
+        
+        CheckBox {
+            id: renderMeteogram
+            text: i18n("Render meteogram")
+            Layout.columnSpan: 2
+        }
+        
+        Item {
+            width: 2
+            height: 10
+            Layout.columnSpan: 3
+        }
         
         Label {
             text: i18n("Temperature:")

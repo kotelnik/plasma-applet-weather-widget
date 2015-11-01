@@ -149,14 +149,15 @@ Item {
             context.stroke()
         }
         
-        visible: true
+        visible: renderMeteogram
     }
     
-//     Image {
-//         id: overviewImage
-//         cache: false
-//         source: overviewImageSource
-//         anchors.fill: parent
-//     }
+    Image {
+        id: overviewImage
+        cache: false
+        source: renderMeteogram ? undefined : overviewImageSource
+        anchors.fill: parent
+        visible: !renderMeteogram
+    }
     
 }

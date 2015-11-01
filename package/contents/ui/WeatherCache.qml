@@ -16,24 +16,49 @@
  */
 import QtQuick 2.2
 import org.kde.plasma.plasmoid 2.0
-import org.kde.private.weatherWidget 1.0 as WW
 
 Item {
     id: weatherCache
-        
-    WW.Backend {
-        id: cacheBackend
+
+    property var cacheBackend: null
+    property bool cacheBackendFailedToInitialize: false
+    
+    function getCacheBackend() {
+        if (cacheBackend !== null) {
+            return cacheBackend
+        }
+        if (!cacheBackendFailedToInitialize) {
+            dbgprint('initializing cacheBackend...')
+            try {
+                cacheBackend = Qt.createQmlObject('import org.kde.private.weatherWidget 1.0 as WW; WW.Backend {}', weatherCache, 'cacheBackend')
+            } catch (e) {
+                dbgprint('cacheBackend failed to initialize')
+                cacheBackendFailedToInitialize = true
+            }
+            dbgprint('initializing cacheBackend...DONE ' + cacheBackend)
+        }
+        return cacheBackend
     }
     
     function writeCache(cacheContent) {
         dbgprint('writing cache')
-        cacheBackend.writeCache(cacheContent, plasmoid.id)
-        
+        var backend = getCacheBackend()
+        if (backend) {
+            backend.writeCache(cacheContent, plasmoid.id)
+        } else {
+            dbgprint('cacheBackend N/A')
+        }
     }
     
     function readCache() {
         dbgprint('reading cache')
-        return cacheBackend.readCache(plasmoid.id)
+        var backend = getCacheBackend()
+        if (backend) {
+            return backend.readCache(plasmoid.id)
+        } else {
+            dbgprint('cacheBackend N/A')
+            return ''
+        }
     }
     
 }
