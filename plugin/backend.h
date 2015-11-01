@@ -3,8 +3,8 @@
 
 #include <QObject>
 
-class Backend : public QObject
-{
+class Backend : public QObject {
+    
     Q_OBJECT
     
     public:
@@ -18,5 +18,3 @@ class Backend : public QObject
 };
 
 #endif
-
-

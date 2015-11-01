@@ -42,6 +42,7 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         verticalAlignment: Text.AlignTop
+        font.bold: true
         
         text: main.placeAlias
     }
@@ -155,7 +156,6 @@ Item {
             text: '0h'
             anchors.top: parent.top
             anchors.right: parent.right
-            verticalAlignment: Text.AlignBottom
             font.pointSize: theme.defaultFont.pointSize * 0.8
             opacity: 0.6
         }

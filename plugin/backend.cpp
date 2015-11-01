@@ -5,17 +5,14 @@
 #include <QDir>
 #include <QStandardPaths>
 
-Backend::Backend(QObject *parent)
-    : QObject(parent)
-{   
+Backend::Backend(QObject *parent) : QObject(parent) {
 }
 
-Backend::~Backend()
-{
+Backend::~Backend() {
 }
 
-void Backend::writeCache(const QString &cacheContent, const QString &plasmoidId)
-{
+void Backend::writeCache(const QString &cacheContent, const QString &plasmoidId) {
+    
     qDebug() << "backend: writing cache, plasmoidId = " + plasmoidId;
 
     QString fileDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/plasmoids/org.kde.weatherWidget/");
@@ -36,8 +33,8 @@ void Backend::writeCache(const QString &cacheContent, const QString &plasmoidId)
     qDebug() << "backend: writing cache content finished";
 }
 
-QString Backend::readCache(const QString &plasmoidId)
-{
+QString Backend::readCache(const QString &plasmoidId) {
+    
     qDebug() << "backend: reading cache, plasmoidId = " + plasmoidId;
 
     QString fileName(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));

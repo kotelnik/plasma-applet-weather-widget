@@ -106,7 +106,6 @@ var iconCodeByWindDirectionCode = {
 }
 
 function getIconCode(iconName, byIdFlag, partOfDay) {
-    print('iconName: ' + iconName)
     var iconCodeParts = null
     if (byIdFlag) {
         iconCodeParts = iconCodeById[iconName];
@@ -120,7 +119,6 @@ function getIconCode(iconName, byIdFlag, partOfDay) {
 }
 
 function getWindDirectionIconCode(code) {
-    print('wind direction: ' + code)
     var iconCode = iconCodeByWindDirectionCode[code]
     if (!iconCode) {
         return '\uf073'

@@ -26,6 +26,13 @@ Item {
     property int partOfDay
     property double pointFontSize
     
+    onPointFontSizeChanged: {
+        if (pointFontSize > 0) {
+            temperatureText.font.pointSize = pointFontSize
+            temperatureIcon.font.pointSize = pointFontSize
+        }
+    }
+    
     Item {
         id: temperatureTextItem
         width: parent.width / 2
@@ -41,7 +48,6 @@ Item {
             verticalAlignment: Text.AlignVCenter
             
             text: hidden ? '' : TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
-            font.pointSize: pointFontSize
         }
     }
     
@@ -52,12 +58,12 @@ Item {
         anchors.right: parent.right
         
         PlasmaComponents.Label {
+            id: temperatureIcon
+            
             anchors.centerIn: parent
             
             font.family: 'weathericons'
             text: hidden ? '' : IconTools.getIconCode(iconName, true, partOfDay)
-            
-            font.pointSize: pointFontSize
         }
     }
     

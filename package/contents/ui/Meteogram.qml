@@ -45,13 +45,13 @@ Item {
     }
     
     onMeteogramModelChangedChanged: {
-        print('meteogram changed')
+        dbgprint('meteogram changed')
         modelUpdated()
     }
     
     function modelUpdated() {
         
-        print('meteogram model updated ' + meteogramModel.count)
+        dbgprint('meteogram model updated ' + meteogramModel.count)
         dataArraySize = meteogramModel.count
         
         var minValue = null
@@ -74,8 +74,8 @@ Item {
         temperatureMaxY = maxValue + temperatureSideGap
         temperatureMinY = minValue - temperatureSideGap
         
-        print('maxValue: ' + maxValue + ', minValue: ' + minValue)
-        print('temperatureMaxY: ' + temperatureMaxY + ', temperatureMinY: ' + temperatureMinY)
+        dbgprint('maxValue: ' + maxValue + ', minValue: ' + minValue)
+        dbgprint('temperatureMaxY: ' + temperatureMaxY + ', temperatureMinY: ' + temperatureMinY)
         
         redrawCanvas()
     }
@@ -97,7 +97,7 @@ Item {
             var temperatureY = (temperatureMaxY + temperatureSideGap - dataObj.temperature - temperatureAdditiveY) * temperatureMultiplierY
             var pressureY = (pressureMaxY + pressureSideGap - dataObj.pressureHpa - pressureAdditiveY) * pressureMultiplierY
             
-            print('temperature: ' + dataObj.temperature + ', pressure: ' + dataObj.pressureHpa)
+//             dbgprint('temperature: ' + dataObj.temperature + ', pressure: ' + dataObj.pressureHpa)
             
             if (i === 0) {
                 temperaturePath.startY = temperatureY
