@@ -27,11 +27,10 @@ Item {
     property int dataArraySize: 2
     property double sampleWidth: meteogram.width / (dataArraySize - 1)
 
+    property int temperatureSizeY: 20
     property int temperatureMaxY: 0
-    property int temperatureMinY: 0
-    property int temperatureSideGap: 5
-    property double temperatureAdditiveY: - temperatureMinY
-    property double temperatureMultiplierY: meteogram.height / (temperatureMaxY - temperatureMinY)
+    property double temperatureAdditiveY: 0
+    property double temperatureMultiplierY: meteogram.height / (temperatureSizeY - 1)
     
     property int pressureSideGap: 20
     property int pressureMaxY: 100 + pressureSideGap
@@ -59,9 +58,10 @@ Item {
         
         for (var i = 0; i < meteogramModel.count; i++) {
             var value = meteogramModel.get(i).temperature
-            if (minValue === null || maxValue === null) {
+            if (minValue === null) {
                 minValue = value
                 maxValue = value
+                continue
             }
             if (value < minValue) {
                 minValue = value
@@ -71,11 +71,16 @@ Item {
             }
         }
         
-        temperatureMaxY = maxValue + temperatureSideGap
-        temperatureMinY = minValue - temperatureSideGap
+        dbgprint('minValue: ' + minValue)
+        dbgprint('maxValue: ' + maxValue)
+        dbgprint('temperatureSizeY: ' + temperatureSizeY)
         
-        dbgprint('maxValue: ' + maxValue + ', minValue: ' + minValue)
-        dbgprint('temperatureMaxY: ' + temperatureMaxY + ', temperatureMinY: ' + temperatureMinY)
+        var mid = (maxValue - minValue) / 2 + minValue
+        var halfSize = temperatureSizeY / 2
+        
+        temperatureAdditiveY = - (mid - halfSize)
+        
+        dbgprint('temperatureAdditiveY: ' + temperatureAdditiveY)
         
         redrawCanvas()
     }
@@ -94,10 +99,10 @@ Item {
         for (var i = 0; i < meteogramModel.count; i++) {
             var dataObj = meteogramModel.get(i)
             
-            var temperatureY = (temperatureMaxY + temperatureSideGap - dataObj.temperature - temperatureAdditiveY) * temperatureMultiplierY
+            var rawTempY = temperatureSizeY - (dataObj.temperature + temperatureAdditiveY)
+            dbgprint('rawTempY: ' + rawTempY)
+            var temperatureY = rawTempY * temperatureMultiplierY
             var pressureY = (pressureMaxY + pressureSideGap - dataObj.pressureHpa - pressureAdditiveY) * pressureMultiplierY
-            
-//             dbgprint('temperature: ' + dataObj.temperature + ', pressure: ' + dataObj.pressureHpa)
             
             if (i === 0) {
                 temperaturePath.startY = temperatureY
@@ -144,16 +149,14 @@ Item {
             context.stroke()
         }
         
-        visible: false
-    }
-    
-    Image {
-        id: overviewImage
-        cache: false
-        source: overviewImageSource
-        anchors.fill: parent
-        
         visible: true
     }
+    
+//     Image {
+//         id: overviewImage
+//         cache: false
+//         source: overviewImageSource
+//         anchors.fill: parent
+//     }
     
 }
