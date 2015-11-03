@@ -153,7 +153,7 @@ Item {
             suffix: i18nc('Abbreviation for seconds', 'sec')
         }
         Label {
-            text: i18n('NOTE: After this timeout widget will be hidden in system tray. You can always set the widget to be always "Shown" in system tray "Entries" settings.')
+            text: i18n('NOTE: After this timeout widget will be hidden in system tray until changed again. You can always set the widget to be always "Shown" in system tray "Entries" settings.')
             Layout.rowSpan: 3
             Layout.preferredWidth: 250
             wrapMode: Text.WordWrap

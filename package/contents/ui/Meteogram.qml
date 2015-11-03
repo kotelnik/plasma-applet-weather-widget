@@ -18,6 +18,7 @@ import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import QtGraphicalEffects 1.0
 import org.kde.plasma.components 2.0 as PlasmaComponents
+import "../code/temperature-utils.js" as TemperatureUtils
 
 Item {
     id: meteogram
@@ -171,7 +172,7 @@ Item {
                 }
                 
                 PlasmaComponents.Label {
-                    text: (-temperatureAdditiveY + (temperatureSizeY - num)) + '°'
+                    text: TemperatureUtils.getTemperatureNumber(-temperatureAdditiveY + (temperatureSizeY - num), fahrenheitEnabled) + '°'
                     height: parent.height
                     width: graphLeftMargin - 2
                     horizontalAlignment: Text.AlignRight
