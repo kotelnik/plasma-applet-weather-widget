@@ -53,7 +53,7 @@ Item {
         
         CheckBox {
             id: renderMeteogram
-            text: i18n("Render meteogram")
+            text: i18n("Render meteogram (experimental)")
             Layout.columnSpan: 2
         }
         
