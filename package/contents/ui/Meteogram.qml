@@ -22,24 +22,32 @@ import org.kde.plasma.components 2.0 as PlasmaComponents
 Item {
     id: meteogram
     
+    property int temperatureSizeY: 21
+    property int pressureSizeY: 101
+    property int pressureMultiplier: Math.round((pressureSizeY - 1) / (temperatureSizeY - 1))
+    
+    property int graphLeftMargin: 28
+    property int graphTopMargin: 20
+    property double graphWidth: meteogram.width - graphLeftMargin * 2
+    property double graphHeight: meteogram.height - graphTopMargin * 2
+    
     property var dataArray: []
     
     property int dataArraySize: 2
-    property double sampleWidth: meteogram.width / (dataArraySize - 1)
+    property double sampleWidth: graphWidth / (dataArraySize - 1)
 
-    property int temperatureSizeY: 20
-    property int temperatureMaxY: 0
     property double temperatureAdditiveY: 0
-    property double temperatureMultiplierY: meteogram.height / (temperatureSizeY - 1)
+    property double temperatureMultiplierY: graphHeight / (temperatureSizeY - 1)
     
-    property int pressureSideGap: 20
-    property int pressureMaxY: 100 + pressureSideGap
-    property int pressureAdditiveY: - 950 + pressureSideGap
-    property double pressureMultiplierY: meteogram.height / (100 + pressureSideGap * 2)
+    property int pressureAdditiveY: - 950
+    property double pressureMultiplierY: graphHeight / (pressureSizeY - 1)
     
     property bool meteogramModelChanged: main.meteogramModelChanged
     
-    onSampleWidthChanged: {
+    property color pressureColor: Qt.rgba(0.3, 1.0, 0.3, 1.0)
+    
+    onGraphHeightChanged: {
+        dbgprint('graphHeight changed to: ' + graphHeight)
         redrawCanvas()
     }
     
@@ -78,7 +86,7 @@ Item {
         var mid = (maxValue - minValue) / 2 + minValue
         var halfSize = temperatureSizeY / 2
         
-        temperatureAdditiveY = - (mid - halfSize)
+        temperatureAdditiveY = Math.round(- (mid - halfSize))
         
         dbgprint('temperatureAdditiveY: ' + temperatureAdditiveY)
         
@@ -92,7 +100,7 @@ Item {
         var newPathElements = []
         var newPressureElements = []
         
-        if (meteogramModel.count === 0 || temperatureMultiplierY > 1000000) {
+        if (meteogramModel.count === 0 || temperatureMultiplierY > 1000000 || temperatureMultiplierY === 0) {
             return
         }
         
@@ -100,9 +108,12 @@ Item {
             var dataObj = meteogramModel.get(i)
             
             var rawTempY = temperatureSizeY - (dataObj.temperature + temperatureAdditiveY)
-            dbgprint('rawTempY: ' + rawTempY)
+            dbgprint('realTemp: ' + dataObj.temperature + ', rawTempY: ' + rawTempY)
             var temperatureY = rawTempY * temperatureMultiplierY
-            var pressureY = (pressureMaxY + pressureSideGap - dataObj.pressureHpa - pressureAdditiveY) * pressureMultiplierY
+            
+            var rawPressY = pressureSizeY - (dataObj.pressureHpa + pressureAdditiveY)
+            dbgprint('realPress: ' + dataObj.pressureHpa + ', rawTempY: ' + rawPressY)
+            var pressureY = rawPressY * pressureMultiplierY
             
             if (i === 0) {
                 temperaturePath.startY = temperatureY
@@ -122,34 +133,110 @@ Item {
         
     }
     
-    Canvas {
-        id: meteogramCanvas
-        anchors.fill: parent
-        contextType: '2d'
+    ListModel {
+        id: verticalGridModel
+    }
+    
+    Component.onCompleted: {
+        for (var i = 0; i < temperatureSizeY; i++) {
+            verticalGridModel.append({
+                num: i
+            })
+        }
+    }
+    
+    Item {
+        id: graph
+        width: graphWidth
+        height: graphHeight
+        anchors.centerIn: parent
+        anchors.topMargin: -(graphHeight / temperatureSizeY) * 0.5
+        
+        ListView {
+            id: horizontalLines
+            model: verticalGridModel
+            anchors.fill: parent
+            delegate: Item {
+                height: horizontalLines.height / (temperatureSizeY - 1)
+                width: horizontalLines.width
+                
+                visible: num % 2 === 0
+                
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: theme.textColor
+                    opacity: 0.5
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                
+                PlasmaComponents.Label {
+                    text: (-temperatureAdditiveY + (temperatureSizeY - num)) + '°'
+                    height: parent.height
+                    width: graphLeftMargin - 2
+                    horizontalAlignment: Text.AlignRight
+                    anchors.left: parent.left
+                    anchors.leftMargin: -graphLeftMargin
+                    font.pointSize: 8
+                }
+                
+                PlasmaComponents.Label {
+                    text: (-pressureAdditiveY + (pressureSizeY - 1 - num * pressureMultiplier))
+                    height: parent.height
+                    width: graphLeftMargin - 2
+                    horizontalAlignment: Text.AlignLeft
+                    anchors.right: parent.right
+                    anchors.rightMargin: -graphLeftMargin
+                    font.pointSize: 8
+                    color: pressureColor
+                }
+            }
+        }
+        
+        Canvas {
+            id: meteogramCanvas
+            anchors.fill: parent
+            anchors.topMargin: (horizontalLines.height / temperatureSizeY) * 0.5
+            anchors.bottomMargin: (horizontalLines.height / temperatureSizeY) * 0.5
+            contextType: '2d'
 
-        Path {
-            id: pressurePath
-            startX: 0
-        }
-        
-        Path {
-            id: temperaturePath
-            startX: 0
-        }
-        
-        onPaint: {
-            context.clearRect(0, 0, meteogramCanvas.width, meteogramCanvas.height)
+            Path {
+                id: pressurePath
+                startX: 0
+            }
             
-            context.strokeStyle = Qt.rgba(0.3, 1.0, 0.3, 1.0)
-            context.path = pressurePath
-            context.stroke()
+            Path {
+                id: temperaturePath
+                startX: 0
+            }
             
-            context.strokeStyle = Qt.rgba(1.0, 0.1, 0.1, 1.0)
-            context.path = temperaturePath
-            context.stroke()
+            onPaint: {
+                context.clearRect(0, 0, meteogramCanvas.width, meteogramCanvas.height)
+                
+                context.strokeStyle = pressureColor
+                context.lineWidth = 1;
+                context.path = pressurePath
+                context.stroke()
+                
+                context.strokeStyle = Qt.rgba(1.0, 0.1, 0.1, 1.0)
+                context.lineWidth = 2;
+                context.path = temperaturePath
+                context.stroke()
+            }
+            
+            visible: renderMeteogram
         }
-        
-        visible: renderMeteogram
+    }
+    
+    PlasmaComponents.Label {
+        id: noImageText
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        anchors.top: parent.top
+        anchors.topMargin: headingHeight
+        text: loadingError ? 'Offline mode' : 'Loading image...'
+        visible: !renderMeteogram
     }
     
     Image {
@@ -159,5 +246,29 @@ Item {
         anchors.fill: parent
         visible: !renderMeteogram
     }
+    
+    states: [
+        State {
+            name: 'error'
+            when: overviewImage.status == Image.Error || overviewImage.status == Image.Null
+
+            StateChangeScript {
+                script: {
+                    dbgprint('image loading error')
+                    imageLoadingError = true
+                }
+            }
+        },
+        State {
+            name: 'loading'
+            when: overviewImage.status == Image.Loading || overviewImage.status == Image.Ready
+
+            StateChangeScript {
+                script: {
+                    imageLoadingError = false
+                }
+            }
+        }
+    ]
     
 }

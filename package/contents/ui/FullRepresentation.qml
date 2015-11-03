@@ -42,7 +42,6 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         verticalAlignment: Text.AlignTop
-        font.bold: true
         
         text: main.placeAlias
     }
@@ -77,18 +76,6 @@ Item {
         }
     }
     
-    PlasmaComponents.Label {
-        id: noImageText
-        width: imageWidth
-        height: imageHeight
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        anchors.top: parent.top
-        anchors.topMargin: headingHeight
-        
-        text: loadingError ? 'Offline mode' : 'Loading image...'
-    }
-    
     Meteogram {
         id: meteogram
         anchors.top: parent.top
@@ -96,29 +83,6 @@ Item {
         width: imageWidth
         height: imageHeight
     }
-    
-    states: [
-        State {
-            name: "error"
-            when: overviewImage.status == Image.Error || overviewImage.status == Image.Null
-
-            StateChangeScript {
-                script: {
-                    imageLoadingError = true
-                }
-            }
-        },
-        State {
-            name: "loading"
-            when: overviewImage.status == Image.Loading || overviewImage.status == Image.Ready
-
-            StateChangeScript {
-                script: {
-                    imageLoadingError = false
-                }
-            }
-        }
-    ]
     
     /*
      * 
