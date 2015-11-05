@@ -37,6 +37,8 @@ Item {
     property int dataArraySize: 2
     property double sampleWidth: graphWidth / (dataArraySize - 1)
 
+    property int endDayHour: 0
+    
     property double temperatureAdditiveY: 0
     property double temperatureMultiplierY: graphHeight / (temperatureSizeY - 1)
     
@@ -62,14 +64,30 @@ Item {
         dbgprint('meteogram model updated ' + meteogramModel.count)
         dataArraySize = meteogramModel.count
         
+        if (dataArraySize === 0) {
+            dbgprint('model is empty')
+            return
+        }
+        
+        horizontalGridModel.clear()
+        for (var i = 0; i < meteogramModel.count; i++) {
+            horizontalGridModel.append({
+                num: i,
+                hourFrom: meteogramModel.get(i).from.getHours()
+            })
+        }
+        
         var minValue = null
         var maxValue = null
+        var maxHour = null
         
         for (var i = 0; i < meteogramModel.count; i++) {
             var value = meteogramModel.get(i).temperature
+            var hour = horizontalGridModel.get(i).hourFrom
             if (minValue === null) {
                 minValue = value
                 maxValue = value
+                maxHour = hour
                 continue
             }
             if (value < minValue) {
@@ -77,6 +95,9 @@ Item {
             }
             if (value > maxValue) {
                 maxValue = value
+            }
+            if (hour > maxHour) {
+                maxHour = hour
             }
         }
         
@@ -90,6 +111,10 @@ Item {
         temperatureAdditiveY = Math.round(- (mid - halfSize))
         
         dbgprint('temperatureAdditiveY: ' + temperatureAdditiveY)
+        
+        endDayHour = maxHour
+        
+        dbgprint('endDayHour: ' + endDayHour)
         
         redrawCanvas()
     }
@@ -107,6 +132,8 @@ Item {
         
         for (var i = 0; i < meteogramModel.count; i++) {
             var dataObj = meteogramModel.get(i)
+            
+            dbgprint('hour: ' + dataObj.from.getHours())
             
             var rawTempY = temperatureSizeY - (dataObj.temperature + temperatureAdditiveY)
             dbgprint('realTemp: ' + dataObj.temperature + ', rawTempY: ' + rawTempY)
@@ -138,6 +165,10 @@ Item {
         id: verticalGridModel
     }
     
+    ListModel {
+        id: horizontalGridModel
+    }
+    
     Component.onCompleted: {
         for (var i = 0; i < temperatureSizeY; i++) {
             verticalGridModel.append({
@@ -153,10 +184,13 @@ Item {
         anchors.centerIn: parent
         anchors.topMargin: -(graphHeight / temperatureSizeY) * 0.5
         
+        visible: renderMeteogram
+        
         ListView {
             id: horizontalLines
             model: verticalGridModel
             anchors.fill: parent
+            
             delegate: Item {
                 height: horizontalLines.height / (temperatureSizeY - 1)
                 width: horizontalLines.width
@@ -194,6 +228,41 @@ Item {
             }
         }
         
+        ListView {
+            id: verticalLines
+            model: horizontalGridModel
+            anchors.fill: parent
+            anchors.topMargin: -graph.anchors.topMargin
+            orientation: ListView.Horizontal
+            
+            delegate: Item {
+                height: horizontalLines.height
+                width: horizontalLines.width / (dataArraySize - 1)
+                
+                Rectangle {
+                    width: hourFrom === endDayHour ? 2 : 1
+                    height: parent.height
+                    color: theme.textColor
+                    opacity: 0.5
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    
+                    visible: num % 2 === 1
+                }
+                
+                PlasmaComponents.Label {
+                    text: hourFrom < 10 ? '0' + hourFrom : hourFrom
+                    height: graphTopMargin - 2
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: -graphTopMargin
+                    font.pointSize: 9
+                    
+                    visible: num % 2 === 0
+                }
+            }
+        }
+        
         Canvas {
             id: meteogramCanvas
             anchors.fill: parent
@@ -224,8 +293,6 @@ Item {
                 context.path = temperaturePath
                 context.stroke()
             }
-            
-            visible: renderMeteogram
         }
     }
     
