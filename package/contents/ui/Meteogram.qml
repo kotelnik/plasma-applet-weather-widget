@@ -32,13 +32,14 @@ Item {
     property double graphWidth: meteogram.width - graphLeftMargin * 2
     property double graphHeight: meteogram.height - graphTopMargin * 2
     
+    property int hourModelSize: 0
+    
+    
     property var dataArray: []
     
     property int dataArraySize: 2
     property double sampleWidth: graphWidth / (dataArraySize - 1)
 
-    property int endDayHour: 0
-    
     property double temperatureAdditiveY: 0
     property double temperatureMultiplierY: graphHeight / (temperatureSizeY - 1)
     
@@ -49,9 +50,12 @@ Item {
     
     property color pressureColor: Qt.rgba(0.3, 1.0, 0.3, 1.0)
     
-    onGraphHeightChanged: {
-        dbgprint('graphHeight changed to: ' + graphHeight)
-        redrawCanvas()
+    property bool textColorLight: ((theme.textColor.r + theme.textColor.g + theme.textColor.b) / 3) > 0.5
+    property color gridColor: textColorLight ? Qt.tint(theme.textColor, '#80000000') : Qt.tint(theme.textColor, '#80FFFFFF')
+    
+    onTemperatureMultiplierYChanged: {
+        dbgprint('temperatureMultiplierY changed to: ' + temperatureMultiplierY)
+        modelUpdated()
     }
     
     onMeteogramModelChangedChanged: {
@@ -69,25 +73,20 @@ Item {
             return
         }
         
-        horizontalGridModel.clear()
-        for (var i = 0; i < meteogramModel.count; i++) {
-            horizontalGridModel.append({
-                num: i,
-                hourFrom: meteogramModel.get(i).from.getHours()
-            })
-        }
-        
         var minValue = null
         var maxValue = null
-        var maxHour = null
+        var firstDate = null
+        var lastDate = null
         
-        for (var i = 0; i < meteogramModel.count; i++) {
+        for (var i = 0; i < dataArraySize; i++) {
             var value = meteogramModel.get(i).temperature
-            var hour = horizontalGridModel.get(i).hourFrom
+            lastDate = Date.fromLocaleString(locale, meteogramModel.get(i).from, datetimeFormat)
+            dbgprint('  found date: ' + lastDate)
             if (minValue === null) {
                 minValue = value
                 maxValue = value
-                maxHour = hour
+                firstDate = new Date(lastDate.getTime())
+                dbgprint('firstDate set to: ' + firstDate)
                 continue
             }
             if (value < minValue) {
@@ -96,9 +95,27 @@ Item {
             if (value > maxValue) {
                 maxValue = value
             }
-            if (hour > maxHour) {
-                maxHour = hour
-            }
+            dbgprint('firstDate still set to: ' + firstDate)
+        }
+        
+        dbgprint('firstDate is now: ' + firstDate)
+        
+        hourGridModel.clear()
+        
+        dbgprint('and now: ' + firstDate)
+        
+        var hourMs = 60 * 60 * 1000
+        var nextDate = firstDate;
+        
+        dbgprint('and now next: ' + nextDate)
+        dbgprint('and now first: ' + firstDate)
+        
+        while (nextDate <= lastDate) {
+            dbgprint('nextDate: ' + nextDate)
+            hourGridModel.append({
+                hourFrom: nextDate.getHours()
+            })
+            nextDate = new Date(nextDate.getTime() + hourMs)
         }
         
         dbgprint('minValue: ' + minValue)
@@ -112,10 +129,6 @@ Item {
         
         dbgprint('temperatureAdditiveY: ' + temperatureAdditiveY)
         
-        endDayHour = maxHour
-        
-        dbgprint('endDayHour: ' + endDayHour)
-        
         redrawCanvas()
     }
     
@@ -126,14 +139,14 @@ Item {
         var newPathElements = []
         var newPressureElements = []
         
-        if (meteogramModel.count === 0 || temperatureMultiplierY > 1000000 || temperatureMultiplierY === 0) {
+        if (dataArraySize === 0 || temperatureMultiplierY > 1000000 || temperatureMultiplierY === 0) {
             return
         }
         
-        for (var i = 0; i < meteogramModel.count; i++) {
+        for (var i = 0; i < dataArraySize; i++) {
             var dataObj = meteogramModel.get(i)
             
-            dbgprint('hour: ' + dataObj.from.getHours())
+            dbgprint('hour: ' + dataObj.from)
             
             var rawTempY = temperatureSizeY - (dataObj.temperature + temperatureAdditiveY)
             dbgprint('realTemp: ' + dataObj.temperature + ', rawTempY: ' + rawTempY)
@@ -166,7 +179,7 @@ Item {
     }
     
     ListModel {
-        id: horizontalGridModel
+        id: hourGridModel
     }
     
     Component.onCompleted: {
@@ -191,6 +204,8 @@ Item {
             model: verticalGridModel
             anchors.fill: parent
             
+            interactive: false
+            
             delegate: Item {
                 height: horizontalLines.height / (temperatureSizeY - 1)
                 width: horizontalLines.width
@@ -200,8 +215,7 @@ Item {
                 Rectangle {
                     width: parent.width
                     height: 1
-                    color: theme.textColor
-                    opacity: 0.5
+                    color: gridColor
                     anchors.verticalCenter: parent.verticalCenter
                 }
                 
@@ -229,37 +243,58 @@ Item {
         }
         
         ListView {
-            id: verticalLines
-            model: horizontalGridModel
+            id: hourGrid
+            model: hourGridModel
+            
+            property double hourItemWidth: hourGridModel.count === 0 ? 0 : parent.width / (hourGridModel.count - 1)
+            
+            width: hourItemWidth * hourGridModel.count
+            height: parent.height
+            
             anchors.fill: parent
+//             anchors.top: horizontalLines.top
             anchors.topMargin: -graph.anchors.topMargin
+            anchors.bottomMargin: graph.anchors.topMargin
+//             anchors.left: horizontalLines.left
+            anchors.leftMargin: -(hourItemWidth/2)
             orientation: ListView.Horizontal
             
+            interactive: false
+            
             delegate: Item {
-                height: horizontalLines.height
-                width: horizontalLines.width / (dataArraySize - 1)
+                height: hourGrid.height
+                width: hourGrid.hourItemWidth
+                
+                visible: hourFrom % 2 === 0
                 
                 Rectangle {
-                    width: hourFrom === endDayHour ? 2 : 1
+                    width: hourFrom === 0 ? 2 : 1
                     height: parent.height
-                    color: theme.textColor
-                    opacity: 0.5
+                    color: gridColor
                     anchors.horizontalCenter: parent.horizontalCenter
-                    
-                    visible: num % 2 === 1
                 }
                 
                 PlasmaComponents.Label {
-                    text: hourFrom < 10 ? '0' + hourFrom : hourFrom
-                    height: graphTopMargin - 2
-                    width: parent.width
+                    id: hourText
+                    text: (hourFrom < 10 ? '0' + hourFrom : hourFrom)
+                    verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignHCenter
+                    height: graphTopMargin - 2
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: -graphTopMargin
-                    font.pointSize: 9
-                    
-                    visible: num % 2 === 0
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.pointSize: 8
                 }
+                
+                PlasmaComponents.Label {
+                    text: '00'
+                    verticalAlignment: Text.AlignTop
+                    horizontalAlignment: Text.AlignLeft
+                    anchors.top: hourText.top
+                    anchors.left: hourText.right
+                    font.pointSize: 5
+                }
+                
             }
         }
         

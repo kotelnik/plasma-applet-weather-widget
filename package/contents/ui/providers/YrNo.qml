@@ -179,8 +179,8 @@ Item {
         for (var i = 0; i < originalXmlModel.count; i++) {
             var obj = originalXmlModel.get(i)
             meteogramModel.append({
-                from: Date.fromLocaleString(locale, obj.from, datetimeFormat),
-                to: Date.fromLocaleString(locale, obj.to, datetimeFormat),
+                from: obj.from,
+                to: obj.to,
                 temperature: parseInt(obj.temperature),
                 precipitationAvg: parseFloat(obj.precipitationAvg),
                 precipitationMin: parseFloat(obj.precipitationMin),
