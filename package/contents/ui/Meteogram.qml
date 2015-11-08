@@ -52,6 +52,7 @@ Item {
     
     property bool textColorLight: ((theme.textColor.r + theme.textColor.g + theme.textColor.b) / 3) > 0.5
     property color gridColor: textColorLight ? Qt.tint(theme.textColor, '#80000000') : Qt.tint(theme.textColor, '#80FFFFFF')
+    property color gridColorHighlight: textColorLight ? Qt.tint(theme.textColor, '#50000000') : Qt.tint(theme.textColor, '#50FFFFFF')
     
     onTemperatureMultiplierYChanged: {
         dbgprint('temperatureMultiplierY changed to: ' + temperatureMultiplierY)
@@ -61,6 +62,32 @@ Item {
     onMeteogramModelChangedChanged: {
         dbgprint('meteogram changed')
         modelUpdated()
+    }
+    
+    function _appendHorizontalModel(meteogramModelObj) {
+        var oneHourMs = 3600000
+        var dateFrom = Date.fromLocaleString(locale, meteogramModelObj.from, datetimeFormat)
+        var dateTo = Date.fromLocaleString(locale, meteogramModelObj.to, datetimeFormat)
+        var differenceHours = Math.round((dateTo.getTime() - dateFrom.getTime()) / oneHourMs)
+        dbgprint('differenceHours=' + differenceHours + ', oneHourMs=' + oneHourMs + ', dateFrom=' + dateFrom + ', dateTo=' + dateTo)
+        if (differenceHours > 20) {
+            return
+        }
+        for (var i = 0; i < differenceHours; i++) {
+            hourGridModel.append({
+                dateFrom: new Date(dateFrom.getTime() + i * oneHourMs),
+                precipitationAvg: meteogramModelObj.precipitationAvg,
+                precipitationMin: meteogramModelObj.precipitationMin,
+                precipitationMax: meteogramModelObj.precipitationMax,
+                canShowDay: true
+            })
+        }
+    }
+    
+    function _adjustLastDay() {
+        for (var i = hourGridModel.count - 5; i < hourGridModel.count; i++) {
+            hourGridModel.setProperty(i, 'canShowDay', false)
+        }
     }
     
     function modelUpdated() {
@@ -73,20 +100,18 @@ Item {
             return
         }
         
+        hourGridModel.clear()
+        
         var minValue = null
         var maxValue = null
-        var firstDate = null
-        var lastDate = null
         
         for (var i = 0; i < dataArraySize; i++) {
-            var value = meteogramModel.get(i).temperature
-            lastDate = Date.fromLocaleString(locale, meteogramModel.get(i).from, datetimeFormat)
-            dbgprint('  found date: ' + lastDate)
+            var obj = meteogramModel.get(i)
+            _appendHorizontalModel(obj)
+            var value = obj.temperature
             if (minValue === null) {
                 minValue = value
                 maxValue = value
-                firstDate = new Date(lastDate.getTime())
-                dbgprint('firstDate set to: ' + firstDate)
                 continue
             }
             if (value < minValue) {
@@ -95,28 +120,9 @@ Item {
             if (value > maxValue) {
                 maxValue = value
             }
-            dbgprint('firstDate still set to: ' + firstDate)
         }
         
-        dbgprint('firstDate is now: ' + firstDate)
-        
-        hourGridModel.clear()
-        
-        dbgprint('and now: ' + firstDate)
-        
-        var hourMs = 60 * 60 * 1000
-        var nextDate = firstDate;
-        
-        dbgprint('and now next: ' + nextDate)
-        dbgprint('and now first: ' + firstDate)
-        
-        while (nextDate <= lastDate) {
-            dbgprint('nextDate: ' + nextDate)
-            hourGridModel.append({
-                hourFrom: nextDate.getHours()
-            })
-            nextDate = new Date(nextDate.getTime() + hourMs)
-        }
+        _adjustLastDay()
         
         dbgprint('minValue: ' + minValue)
         dbgprint('maxValue: ' + maxValue)
@@ -252,10 +258,8 @@ Item {
             height: parent.height
             
             anchors.fill: parent
-//             anchors.top: horizontalLines.top
             anchors.topMargin: -graph.anchors.topMargin
             anchors.bottomMargin: graph.anchors.topMargin
-//             anchors.left: horizontalLines.left
             anchors.leftMargin: -(hourItemWidth/2)
             orientation: ListView.Horizontal
             
@@ -265,12 +269,26 @@ Item {
                 height: hourGrid.height
                 width: hourGrid.hourItemWidth
                 
+                property int hourFrom: dateFrom.getHours()
                 visible: hourFrom % 2 === 0
+                property bool dayBegins: hourFrom === 0
+                
+                PlasmaComponents.Label {
+                    id: dayTest
+                    text: Qt.locale().dayName(dateFrom.getDay(), Locale.LongFormat)
+                    height: graphTopMargin - 2
+                    anchors.top: parent.top
+                    anchors.topMargin: -graphTopMargin
+                    anchors.left: parent.left
+                    anchors.leftMargin: parent.width / 2
+                    font.pointSize: theme.defaultFont.pointSize
+                    visible: dayBegins && canShowDay
+                }
                 
                 Rectangle {
-                    width: hourFrom === 0 ? 2 : 1
+                    width: dayBegins ? 2 : 1
                     height: parent.height
-                    color: gridColor
+                    color: dayBegins ? gridColorHighlight : gridColor
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
                 
