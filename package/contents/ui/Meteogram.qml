@@ -48,6 +48,10 @@ Item {
     
     property bool meteogramModelChanged: main.meteogramModelChanged
     
+    property int precipitationFontPointSize: 6
+    property int precipitationHeightMultiplier: 20
+    property int precipitationLabelMargin: 10
+    
     property color pressureColor: Qt.rgba(0.3, 1.0, 0.3, 1.0)
     
     property bool textColorLight: ((theme.textColor.r + theme.textColor.g + theme.textColor.b) / 3) > 0.5
@@ -270,8 +274,13 @@ Item {
                 width: hourGrid.hourItemWidth
                 
                 property int hourFrom: dateFrom.getHours()
-                visible: hourFrom % 2 === 0
                 property bool dayBegins: hourFrom === 0
+                property bool hourVisible: hourFrom % 2 === 0
+                
+                property double precAvg: parseFloat(precipitationAvg) || 0
+                property double precMax: parseFloat(precipitationMax) || 0
+                
+                property bool precLabelVisible: precAvg > 0 || precMax > 0
                 
                 PlasmaComponents.Label {
                     id: dayTest
@@ -290,6 +299,7 @@ Item {
                     height: parent.height
                     color: dayBegins ? gridColorHighlight : gridColor
                     anchors.horizontalCenter: parent.horizontalCenter
+                    visible: hourVisible
                 }
                 
                 PlasmaComponents.Label {
@@ -302,6 +312,7 @@ Item {
                     anchors.bottomMargin: -graphTopMargin
                     anchors.horizontalCenter: parent.horizontalCenter
                     font.pointSize: 8
+                    visible: hourVisible
                 }
                 
                 PlasmaComponents.Label {
@@ -311,6 +322,53 @@ Item {
                     anchors.top: hourText.top
                     anchors.left: hourText.right
                     font.pointSize: 5
+                    visible: hourVisible
+                }
+                
+                Rectangle {
+                    id: precipitationMaxRect
+                    width: parent.width
+                    height: (precMax < precAvg ? precAvg : precMax) * precipitationHeightMultiplier
+                    color: theme.highlightColor
+                    anchors.left: parent.horizontalCenter
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: precipitationLabelMargin
+                    opacity: 0.5
+                }
+                
+                Rectangle {
+                    id: precipitationAvgRect
+                    width: parent.width
+                    height: precAvg * precipitationHeightMultiplier
+                    color: theme.highlightColor
+                    anchors.left: parent.horizontalCenter
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: precipitationLabelMargin
+                }
+                
+                PlasmaComponents.Label {
+                    text: precipitationMin
+                    verticalAlignment: Text.AlignTop
+                    horizontalAlignment: Text.AlignHCenter
+                    anchors.top: parent.bottom
+                    anchors.topMargin: -precipitationLabelMargin
+                    anchors.horizontalCenter: precipitationAvgRect.horizontalCenter
+                    font.pointSize: precipitationFontPointSize
+                    visible: precLabelVisible
+                }
+
+                PlasmaComponents.Label {
+                    text: precipitationMax || precipitationAvg
+                    verticalAlignment: Text.AlignBottom
+                    horizontalAlignment: Text.AlignHCenter
+                    anchors.bottom: precipitationMaxRect.top
+                    anchors.horizontalCenter: precipitationAvgRect.horizontalCenter
+                    font.pointSize: precipitationFontPointSize
+                    visible: precLabelVisible
+                }
+                
+                Component.onCompleted: {
+                    dbgprint('avg=' + precipitationAvg + ', max=' + precipitationMax + ', min=' + precipitationMin)
                 }
                 
             }
