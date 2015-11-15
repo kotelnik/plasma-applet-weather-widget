@@ -24,12 +24,12 @@ Item {
     property string iconName
     property bool hidden
     property int partOfDay
-    property double pointFontSize
+    property double pixelFontSize
     
-    onPointFontSizeChanged: {
-        if (pointFontSize > 0) {
-            temperatureText.font.pointSize = pointFontSize
-            temperatureIcon.font.pointSize = pointFontSize
+    onPixelFontSizeChanged: {
+        if (pixelFontSize > 0) {
+            temperatureText.font.pixelSize = pixelFontSize
+            temperatureIcon.font.pixelSize = pixelFontSize
         }
     }
     

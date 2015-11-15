@@ -10,8 +10,6 @@ Item {
     property alias cfg_reloadIntervalMin: reloadIntervalMin.value
     property string cfg_townStrings
     
-    property int textfieldWidth: theme.defaultFont.pointSize * 55
-
     ListModel {
         id: townStringsModel
     }
@@ -105,6 +103,8 @@ Item {
     
     GridLayout {
         columns: 2
+        anchors.left: parent.left
+        anchors.right: parent.right
         
         Label {
             text: i18n('Location')
@@ -120,17 +120,18 @@ Item {
         TableView {
             id: townStringTable
             headerVisible: false
+            width: parent.width
             
             TableViewColumn {
                 role: 'townString'
-                title: "Town String"
-                width: textfieldWidth * 0.5
+                title: 'Town String'
+                width: parent.width * 0.5
             }
             
             TableViewColumn {
                 role: 'placeAlias'
                 title: 'Place Alias'
-                width: textfieldWidth * 0.2 - 4
+                width: parent.width * 0.2
                 
                 delegate: MouseArea {
                     
@@ -155,7 +156,7 @@ Item {
             
             TableViewColumn {
                 title: "Action"
-                width: textfieldWidth * 0.3 - 4
+                width: parent.width * 0.2
                 
                 delegate: Item {
                     
@@ -198,7 +199,7 @@ Item {
             }
             model: townStringsModel
             Layout.preferredHeight: 150
-            Layout.preferredWidth: textfieldWidth
+            Layout.preferredWidth: parent.width
             Layout.columnSpan: 2
         }
         Button {
@@ -221,13 +222,13 @@ Item {
         Label {
             font.italic: true
             text: 'Find your town string in yr.no (english version)\nand use the URL from your browser to add a new location. E.g. paste this:\nhttp://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/'
-            Layout.preferredWidth: textfieldWidth
+            //Layout.preferredWidth: parent.width
             Layout.columnSpan: 2
         }
         
         Label {
             text: 'NOTE: This will get automated in future versions.'
-            Layout.preferredWidth: textfieldWidth
+            //Layout.preferredWidth: parent.width
             Layout.columnSpan: 2
         }
         

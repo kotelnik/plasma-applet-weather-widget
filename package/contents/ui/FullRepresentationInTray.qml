@@ -27,15 +27,15 @@ Item {
     
     width: parent.width
     
-    property double footerHeight: theme.defaultFont.pointSize * 5
+    property double defaultFontPixelSize: theme.defaultFont.pixelSize
+    property double footerHeight: defaultFontPixelSize * 3.5
     
     property int nextDaysSpacing: 5
-    property int nextDayHeight: 70
-    property int hourLegendMargin: 20
-    property int headingHeight: 30
-    property int nextDayItemSpacing: 10
+    property int nextDayHeight: defaultFontPixelSize * 4.9
+    property int headingHeight: defaultFontPixelSize * 3
+    property int nextDayItemSpacing: defaultFontPixelSize * 0.7
     
-    property double headingTopMargin: 10
+    property double headingTopMargin: defaultFontPixelSize
     
     property color lineColor: theme.textColor
     
@@ -45,8 +45,6 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         
-        font.pointSize: theme.defaultFont.pointSize
-        
         text: main.placeAlias
     }
     
@@ -55,8 +53,6 @@ Item {
         
         anchors.right: parent.right
         anchors.top: parent.top
-        
-        font.pointSize: theme.defaultFont.pointSize
         
         text: 'Next Location'
     }
@@ -98,7 +94,6 @@ Item {
         anchors.bottomMargin: footerHeight
         
         width: parent.width
-        height: parent.height - footerHeight - headingHeight
         
         ListView {
             id: nextDaysView
@@ -134,11 +129,10 @@ Item {
                     id: dayTitleText
                     
                     anchors.top: dayTitleLine.bottom
-                    anchors.topMargin: units.smallSpacing
+                    anchors.topMargin: units.smallSpacing * 0.5
                     verticalAlignment: Text.AlignTop
                     
                     text: dayTitle
-                    font.pointSize: theme.defaultFont.pointSize
                 }
                 
                 
@@ -148,10 +142,10 @@ Item {
                 * four item data
                 * 
                 */
-                property double periodMargin: 15
+                property double periodMargin: defaultFontPixelSize * 1.5
                 property double periodItemWidth: (width - periodMargin * 4) / 4
                 property double periodItemHeight: nextDayHeight - headingTopMargin
-                property double periodFontSize: periodItemHeight * 0.27
+                property double periodFontSize: periodItemHeight * 0.45
                 
                 Item {
                     
@@ -168,7 +162,7 @@ Item {
                         iconName: iconName0
                         hidden: hidden0
                         partOfDay: 1
-                        pointFontSize: periodFontSize
+                        pixelFontSize: periodFontSize
                     }
                     
                     NextDayPeriodItem {
@@ -179,7 +173,7 @@ Item {
                         iconName: iconName1
                         hidden: hidden1
                         partOfDay: 0
-                        pointFontSize: periodFontSize
+                        pixelFontSize: periodFontSize
                         
                         anchors.left: period1.right
                         anchors.leftMargin: periodMargin
@@ -193,7 +187,7 @@ Item {
                         iconName: iconName2
                         hidden: hidden2
                         partOfDay: 0
-                        pointFontSize: periodFontSize
+                        pixelFontSize: periodFontSize
                         
                         anchors.left: period2.right
                         anchors.leftMargin: periodMargin
@@ -207,7 +201,7 @@ Item {
                         iconName: iconName3
                         hidden: hidden3
                         partOfDay: 1
-                        pointFontSize: periodFontSize
+                        pixelFontSize: periodFontSize
                         
                         anchors.left: period3.right
                         anchors.leftMargin: periodMargin
@@ -244,7 +238,6 @@ Item {
             id: lastReloadedTextComponent
             anchors.fill: parent
             
-            font.pointSize: theme.defaultFont.pointSize
             verticalAlignment: Text.AlignTop
             
             text: lastReloadedText
@@ -254,7 +247,6 @@ Item {
             id: reloadTextComponent
             anchors.fill: parent
             
-            font.pointSize: theme.defaultFont.pointSize
             verticalAlignment: Text.AlignTop
             
             text: '\u21bb Reload'
@@ -286,8 +278,6 @@ Item {
         anchors.left: reloadMouseArea.right
         anchors.topMargin: units.smallSpacing
         anchors.leftMargin: units.largeSpacing
-        
-        font.pointSize: theme.defaultFont.pointSize
         
         text: creditLabel
         wrapMode: Text.WordWrap

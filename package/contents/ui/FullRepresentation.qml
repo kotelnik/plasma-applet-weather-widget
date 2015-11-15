@@ -24,14 +24,16 @@ Item {
     property int imageWidth: 828
     property int imageHeight: 302
     
-    property double footerHeight: theme.defaultFont.pointSize * 3
+    property double defaultFontPixelSize: theme.defaultFont.pixelSize
+    property double footerHeight: defaultFontPixelSize
     
-    property int nextDayItemSpacing: 5
-    property int nextDaysHeight: imageHeight * 0.4
-    property int nextDaysVerticalMargin: 10
-    property int hourLegendMargin: 20
+    property int nextDayItemSpacing: defaultFontPixelSize * 0.5
+    property int nextDaysHeight: defaultFontPixelSize * 9
+    property int nextDaysVerticalMargin: defaultFontPixelSize
+    property int hourLegendMargin: defaultFontPixelSize * 2
     property double nextDayItemWidth: (imageWidth / nextDaysCount) - nextDayItemSpacing - hourLegendMargin / nextDaysCount
-    property int headingHeight: 20
+    property int headingHeight: defaultFontPixelSize * 2
+    property double hourLegendBottomMargin: defaultFontPixelSize * 0.2
     
     width: imageWidth
     height: headingHeight + imageHeight + footerHeight + nextDaysHeight + nextDaysVerticalMargin * 2
@@ -112,25 +114,26 @@ Item {
     Item {
         id: hourLegend
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: footerHeight
-        width: theme.defaultFont.pointSize * 2.4
-        height: nextDaysHeight - 15
+        anchors.bottomMargin: footerHeight + nextDaysVerticalMargin + hourLegendBottomMargin
+        width: hourLegendMargin
+        height: nextDaysHeight - defaultFontPixelSize - hourLegendBottomMargin*2
         
         PlasmaComponents.Label {
             text: '0h'
             anchors.top: parent.top
             anchors.right: parent.right
-            font.pointSize: theme.defaultFont.pointSize * 0.8
+            font.pixelSize: defaultFontPixelSize * 0.8
+            verticalAlignment: Text.AlignTop
             opacity: 0.6
         }
         PlasmaComponents.Label {
             text: '.\n.\n.\n.'
             anchors.fill: parent
-            anchors.topMargin: - theme.defaultFont.pointSize * 0.5
+            anchors.topMargin: - defaultFontPixelSize * 0.5
             anchors.leftMargin: hourLegendMargin * 0.4
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-            font.pointSize: theme.defaultFont.pointSize
+            font.pixelSize: defaultFontPixelSize
             opacity: 0.6
         }
         PlasmaComponents.Label {
@@ -138,7 +141,7 @@ Item {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             verticalAlignment: Text.AlignBottom
-            font.pointSize: theme.defaultFont.pointSize * 0.8
+            font.pixelSize: defaultFontPixelSize * 0.8
             opacity: 0.6
         }
     }

@@ -21,16 +21,17 @@ import org.kde.plasma.components 2.0 as PlasmaComponents
 
 Item {
     
-    property double headingTopMargin: 20//TODO
-    property double periodHeight: (height - headingTopMargin) / 4
+    property int itemRowSpacing: 5
+    property double periodFontSize: theme.defaultFont.pixelSize
+    property double periodHeight: (height - periodFontSize - itemRowSpacing * 4) / 4
     property color lineColor: theme.textColor
-    
-    property double periodFontSize: theme.defaultFont.pointSize
     
     PlasmaComponents.Label {
         id: dayTitleText
         text: dayTitle
         anchors.top: parent.top
+        height: periodFontSize
+        verticalAlignment: Text.AlignBottom
     }
     
     Item {
@@ -38,7 +39,7 @@ Item {
         width: parent.width
         height: 1
         anchors.top: parent.top
-        anchors.topMargin: headingTopMargin
+        anchors.topMargin: periodFontSize * 0.8
         
         LinearGradient {
             anchors.fill: parent
@@ -63,9 +64,10 @@ Item {
      */
     GridLayout {
         anchors.fill: parent
-        anchors.topMargin: headingTopMargin
+        anchors.topMargin: periodFontSize
         
         columns: 1
+        rowSpacing: 5
         
         height: parent.height - anchors.topMargin
         width: parent.width
@@ -77,7 +79,7 @@ Item {
             iconName: iconName0
             hidden: hidden0
             partOfDay: 1
-            pointFontSize: periodFontSize
+            pixelFontSize: periodFontSize
         }
         
         NextDayPeriodItem {
@@ -87,7 +89,7 @@ Item {
             iconName: iconName1
             hidden: hidden1
             partOfDay: 0
-            pointFontSize: periodFontSize
+            pixelFontSize: periodFontSize
         }
         
         NextDayPeriodItem {
@@ -97,7 +99,7 @@ Item {
             iconName: iconName2
             hidden: hidden2
             partOfDay: 0
-            pointFontSize: periodFontSize
+            pixelFontSize: periodFontSize
         }
         
         NextDayPeriodItem {
@@ -107,7 +109,7 @@ Item {
             iconName: iconName3
             hidden: hidden3
             partOfDay: 1
-            pointFontSize: periodFontSize
+            pixelFontSize: periodFontSize
         }
     }
     

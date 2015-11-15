@@ -104,6 +104,10 @@ Item {
         id: yrnoProvider
     }
     
+    OpenWeatherMap {
+        id: owmProvider
+    }
+    
     ListModel {
         id: actualWeatherModel
     }
@@ -190,6 +194,14 @@ Item {
         reloadMeteogram()
     }
     
+    function setCurrentProviderAccordingId(providerId) {
+        if (providerId === 'owm') {
+            currentProvider = owmProvider
+        } else {
+            currentProvider = yrnoProvider
+        }
+    }
+    
     function setNextTownString(initial) {
         var townStrings = ConfigUtils.getTownStringArray()
         dbgprint('townStrings count=' + townStrings.length + ', townStringsIndex=' + plasmoid.configuration.townStringIndex)
@@ -202,8 +214,10 @@ Item {
         }
         plasmoid.configuration.townStringIndex = townStringIndex
         dbgprint('townStringIndex now: ' + plasmoid.configuration.townStringIndex)
-        townString = townStrings[townStringIndex].townString
-        placeAlias = townStrings[townStringIndex].placeAlias
+        var placeObject = townStrings[townStringIndex]
+        townString = placeObject.townString
+        placeAlias = placeObject.placeAlias
+        currentProvider = placeObject.providerId
         dbgprint('next town string is: ' + townString)
         cacheKey = DataLoader.generateCacheKey(townString)
         dbgprint('next cacheKey is: ' + cacheKey)

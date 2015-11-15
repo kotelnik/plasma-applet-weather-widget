@@ -46,7 +46,8 @@ Item {
     }
     
     GridLayout {
-        Layout.fillWidth: true
+        anchors.left: parent.left
+        anchors.right: parent.right
         columns: 3
         
         CheckBox {

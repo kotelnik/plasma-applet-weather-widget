@@ -50,7 +50,7 @@ Item {
     
     property bool meteogramModelChanged: main.meteogramModelChanged
     
-    property int precipitationFontPointSize: 6
+    property int precipitationFontPixelSize: 7
     property int precipitationHeightMultiplier: 15
     property int precipitationLabelMargin: 10
     
@@ -240,7 +240,7 @@ Item {
                     horizontalAlignment: Text.AlignRight
                     anchors.left: parent.left
                     anchors.leftMargin: -graphLeftMargin
-                    font.pointSize: 8
+                    font.pixelSize: 10
                 }
                 
                 PlasmaComponents.Label {
@@ -250,7 +250,7 @@ Item {
                     horizontalAlignment: Text.AlignLeft
                     anchors.right: parent.right
                     anchors.rightMargin: -graphLeftMargin
-                    font.pointSize: 8
+                    font.pixelSize: 10
                     color: pressureColor
                 }
             }
@@ -294,7 +294,7 @@ Item {
                     anchors.topMargin: -graphTopMargin
                     anchors.left: parent.left
                     anchors.leftMargin: parent.width / 2
-                    font.pointSize: theme.defaultFont.pointSize
+                    font.pixelSize: theme.defaultFont.pixelSize
                     visible: dayBegins && canShowDay
                 }
                 
@@ -315,7 +315,7 @@ Item {
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: -graphTopMargin
                     anchors.horizontalCenter: parent.horizontalCenter
-                    font.pointSize: 8
+                    font.pixelSize: 10
                     visible: hourVisible
                 }
                 
@@ -325,7 +325,7 @@ Item {
                     horizontalAlignment: Text.AlignLeft
                     anchors.top: hourText.top
                     anchors.left: hourText.right
-                    font.pointSize: 5
+                    font.pixelSize: 7
                     visible: hourVisible
                 }
                 
@@ -361,7 +361,7 @@ Item {
                         anchors.top: parent.bottom
                         anchors.topMargin: -precipitationLabelMargin
                         anchors.horizontalCenter: precipitationAvgRect.horizontalCenter
-                        font.pointSize: precipitationFontPointSize
+                        font.pixelSize: precipitationFontPixelSize
                         visible: precLabelVisible
                     }
 
@@ -371,7 +371,7 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         anchors.bottom: precipitationMaxRect.top
                         anchors.horizontalCenter: precipitationAvgRect.horizontalCenter
-                        font.pointSize: precipitationFontPointSize
+                        font.pixelSize: precipitationFontPixelSize
                         visible: precLabelVisible
                     }
                 }
