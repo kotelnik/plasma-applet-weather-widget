@@ -44,7 +44,8 @@ Item {
     property var additionalWeatherInfo: {}
     
     property string overviewImageSource
-    property string overviewLink
+    property string creditLink
+    property string creditLabel
     property int reloadIntervalMin: plasmoid.configuration.reloadIntervalMin
     property int reloadIntervalMs: reloadIntervalMin * 60 * 1000
     
@@ -86,7 +87,7 @@ Item {
     Plasmoid.compactRepresentation: cr
     Plasmoid.fullRepresentation: fr
     
-    property bool debugLogging: false
+    property bool debugLogging: true
     
     function dbgprint(msg) {
         if (!debugLogging) {
@@ -208,14 +209,13 @@ Item {
         dbgprint('next cacheKey is: ' + cacheKey)
         
         alreadyLoadedFromCache = false
-        overviewLink = yrnoUrlPreifx + townString + '/'
         
         currentProvider = yrnoProvider
         
         showData()
     }
     
-    function dataLoadedFromInternet(contentToCache, overviewLinkUrl) {
+    function dataLoadedFromInternet(contentToCache) {
         loadingData = false
         
         dbgprint('saving cacheKey = ' + cacheKey)
@@ -228,7 +228,7 @@ Item {
         weatherCache.writeCache(JSON.stringify(cacheMap))
         
         reloadMeteogram()
-        overviewLink = overviewLinkUrl
+        
         reloaded()
         
         loadFromCache()
@@ -241,10 +241,6 @@ Item {
         }
         
         loadingData = true
-        
-        function successCallback(contentToCache, overviewLinkUrl) {
-            
-        }
         
         function failureCallback() {
             main.loadingData = false
@@ -287,6 +283,9 @@ Item {
             dbgprint('already loaded from cache')
             return true
         }
+        
+        creditLink = currentProvider.getCreditLink(townString)
+        creditLabel = currentProvider.getCreditLabel(townString)
         
         if (!cacheMap || !cacheMap[cacheKey]) {
             dbgprint('cache not available')

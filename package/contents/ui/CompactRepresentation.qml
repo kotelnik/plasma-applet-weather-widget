@@ -45,7 +45,7 @@ Item {
         anchors.bottomMargin: - partHeight * 0.05
         verticalAlignment: Text.AlignBottom
         
-        font.pointSize: partHeight * 0.2 * (layoutType === 2 ? 0.7 : 1)
+        font.pixelSize: partHeight * 0.26 * (layoutType === 2 ? 0.7 : 1)
         color: theme.highlightColor
         
         text: lastReloadedText

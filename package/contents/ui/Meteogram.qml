@@ -23,6 +23,8 @@ import "../code/temperature-utils.js" as TemperatureUtils
 Item {
     id: meteogram
     
+    property bool enableRendering: renderMeteogram || currentProvider.id !== 'yrno'
+    
     property int temperatureSizeY: 21
     property int pressureSizeY: 101
     property int pressureMultiplier: Math.round((pressureSizeY - 1) / (temperatureSizeY - 1))
@@ -49,7 +51,7 @@ Item {
     property bool meteogramModelChanged: main.meteogramModelChanged
     
     property int precipitationFontPointSize: 6
-    property int precipitationHeightMultiplier: 20
+    property int precipitationHeightMultiplier: 15
     property int precipitationLabelMargin: 10
     
     property color pressureColor: Qt.rgba(0.3, 1.0, 0.3, 1.0)
@@ -83,7 +85,8 @@ Item {
                 precipitationAvg: meteogramModelObj.precipitationAvg,
                 precipitationMin: meteogramModelObj.precipitationMin,
                 precipitationMax: meteogramModelObj.precipitationMax,
-                canShowDay: true
+                canShowDay: true,
+                canShowPrec: true
             })
         }
     }
@@ -92,6 +95,7 @@ Item {
         for (var i = hourGridModel.count - 5; i < hourGridModel.count; i++) {
             hourGridModel.setProperty(i, 'canShowDay', false)
         }
+        hourGridModel.setProperty(hourGridModel.count - 1, 'canShowPrec', false)
     }
     
     function modelUpdated() {
@@ -207,7 +211,7 @@ Item {
         anchors.centerIn: parent
         anchors.topMargin: -(graphHeight / temperatureSizeY) * 0.5
         
-        visible: renderMeteogram
+        visible: enableRendering
         
         ListView {
             id: horizontalLines
@@ -325,46 +329,51 @@ Item {
                     visible: hourVisible
                 }
                 
-                Rectangle {
-                    id: precipitationMaxRect
-                    width: parent.width
-                    height: (precMax < precAvg ? precAvg : precMax) * precipitationHeightMultiplier
-                    color: theme.highlightColor
-                    anchors.left: parent.horizontalCenter
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: precipitationLabelMargin
-                    opacity: 0.5
-                }
-                
-                Rectangle {
-                    id: precipitationAvgRect
-                    width: parent.width
-                    height: precAvg * precipitationHeightMultiplier
-                    color: theme.highlightColor
-                    anchors.left: parent.horizontalCenter
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: precipitationLabelMargin
-                }
-                
-                PlasmaComponents.Label {
-                    text: precipitationMin
-                    verticalAlignment: Text.AlignTop
-                    horizontalAlignment: Text.AlignHCenter
-                    anchors.top: parent.bottom
-                    anchors.topMargin: -precipitationLabelMargin
-                    anchors.horizontalCenter: precipitationAvgRect.horizontalCenter
-                    font.pointSize: precipitationFontPointSize
-                    visible: precLabelVisible
-                }
+                Item {
+                    visible: canShowPrec
+                    anchors.fill: parent
+                    
+                    Rectangle {
+                        id: precipitationMaxRect
+                        width: parent.width
+                        height: (precMax < precAvg ? precAvg : precMax) * precipitationHeightMultiplier
+                        color: theme.highlightColor
+                        anchors.left: parent.horizontalCenter
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: precipitationLabelMargin
+                        opacity: 0.5
+                    }
+                    
+                    Rectangle {
+                        id: precipitationAvgRect
+                        width: parent.width
+                        height: precAvg * precipitationHeightMultiplier
+                        color: theme.highlightColor
+                        anchors.left: parent.horizontalCenter
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: precipitationLabelMargin
+                    }
+                    
+                    PlasmaComponents.Label {
+                        text: precipitationMin
+                        verticalAlignment: Text.AlignTop
+                        horizontalAlignment: Text.AlignHCenter
+                        anchors.top: parent.bottom
+                        anchors.topMargin: -precipitationLabelMargin
+                        anchors.horizontalCenter: precipitationAvgRect.horizontalCenter
+                        font.pointSize: precipitationFontPointSize
+                        visible: precLabelVisible
+                    }
 
-                PlasmaComponents.Label {
-                    text: precipitationMax || precipitationAvg
-                    verticalAlignment: Text.AlignBottom
-                    horizontalAlignment: Text.AlignHCenter
-                    anchors.bottom: precipitationMaxRect.top
-                    anchors.horizontalCenter: precipitationAvgRect.horizontalCenter
-                    font.pointSize: precipitationFontPointSize
-                    visible: precLabelVisible
+                    PlasmaComponents.Label {
+                        text: precipitationMax || precipitationAvg
+                        verticalAlignment: Text.AlignBottom
+                        horizontalAlignment: Text.AlignHCenter
+                        anchors.bottom: precipitationMaxRect.top
+                        anchors.horizontalCenter: precipitationAvgRect.horizontalCenter
+                        font.pointSize: precipitationFontPointSize
+                        visible: precLabelVisible
+                    }
                 }
                 
                 Component.onCompleted: {
@@ -407,47 +416,51 @@ Item {
         }
     }
     
-    PlasmaComponents.Label {
-        id: noImageText
-        anchors.fill: parent
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        anchors.top: parent.top
-        anchors.topMargin: headingHeight
-        text: loadingError ? 'Offline mode' : 'Loading image...'
-        visible: !renderMeteogram
-    }
-    
-    Image {
-        id: overviewImage
-        cache: false
-        source: renderMeteogram ? undefined : overviewImageSource
-        anchors.fill: parent
-        visible: !renderMeteogram
-    }
-    
-    states: [
-        State {
-            name: 'error'
-            when: overviewImage.status == Image.Error || overviewImage.status == Image.Null
-
-            StateChangeScript {
-                script: {
-                    dbgprint('image loading error')
-                    imageLoadingError = true
-                }
-            }
-        },
-        State {
-            name: 'loading'
-            when: overviewImage.status == Image.Loading || overviewImage.status == Image.Ready
-
-            StateChangeScript {
-                script: {
-                    imageLoadingError = false
-                }
-            }
+    Item {
+        
+        visible: !enableRendering
+        
+        PlasmaComponents.Label {
+            id: noImageText
+            anchors.fill: parent
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            anchors.top: parent.top
+            anchors.topMargin: headingHeight
+            text: loadingError ? 'Offline mode' : 'Loading image...'
         }
-    ]
+        
+        Image {
+            id: overviewImage
+            cache: false
+            source: !enableRendering ? undefined : overviewImageSource
+            anchors.fill: parent
+        }
+        
+        states: [
+            State {
+                name: 'error'
+                when: !enableRendering && (overviewImage.status == Image.Error || overviewImage.status == Image.Null)
+
+                StateChangeScript {
+                    script: {
+                        dbgprint('image loading error')
+                        imageLoadingError = true
+                    }
+                }
+            },
+            State {
+                name: 'loading'
+                when: !enableRendering && (overviewImage.status == Image.Loading || overviewImage.status == Image.Ready)
+
+                StateChangeScript {
+                    script: {
+                        imageLoadingError = false
+                    }
+                }
+            }
+        ]
+        
+    }
     
 }

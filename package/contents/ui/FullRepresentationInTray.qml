@@ -289,7 +289,7 @@ Item {
         
         font.pointSize: theme.defaultFont.pointSize
         
-        text: 'Weather forecast from yr.no, delivered by the Norwegian Meteorological Institute and the NRK'
+        text: creditLabel
         wrapMode: Text.WordWrap
         maximumLineCount: 3
         elide: Text.ElideRight
@@ -302,8 +302,8 @@ Item {
         hoverEnabled: true
         
         onClicked: {
-            dbgprint('opening: ', overviewLink)
-            Qt.openUrlExternally(overviewLink) //overviewLink
+            dbgprint('opening: ', creditLink)
+            Qt.openUrlExternally(creditLink)
         }
         
         onEntered: {

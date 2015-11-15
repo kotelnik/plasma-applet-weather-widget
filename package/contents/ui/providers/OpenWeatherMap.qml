@@ -20,29 +20,34 @@ import "../../code/model-utils.js" as ModelUtils
 import "../../code/data-loader.js" as DataLoader
 
 Item {
-    id: yrno
+    id: owm
     
-    property string urlPrefix: 'http://www.yr.no/place/'
+    property string urlPrefix: 'http://api.openweathermap.org/data/2.5/forecast'
+    property string appIdAndModeSuffix: '&mode=xml&appid=5819a34c58f8f07bc282820ca08948f1'
     
     XmlListModel {
         id: xmlModelLongTerm
-        query: '/weatherdata/forecast/tabular/time'
+        query: '/weatherdata/forecast/time'
 
         XmlRole {
-            name: 'from'
-            query: '@from/string()'
+            name: 'date'
+            query: '@day/string()'
         }
         XmlRole {
-            name: 'to'
-            query: '@to/string()'
+            name: 'temperatureMorning'
+            query: 'temperature/@morn/string()'
         }
         XmlRole {
-            name: 'period'
-            query: '@period/string()'
+            name: 'temperatureDay'
+            query: 'temperature/@day/string()'
         }
         XmlRole {
-            name: 'temperature'
-            query: 'temperature/@value/string()'
+            name: 'temperatureEvening'
+            query: 'temperature/@eve/string()'
+        }
+        XmlRole {
+            name: 'temperatureNight'
+            query: 'temperature/@night/string()'
         }
         XmlRole {
             name: 'iconName'
@@ -64,7 +69,7 @@ Item {
     
     XmlListModel {
         id: xmlModelHourByHour
-        query: '/weatherdata/forecast/tabular/time'
+        query: '/weatherdata/forecast/time'
 
         XmlRole {
             name: 'from'
@@ -97,14 +102,6 @@ Item {
         XmlRole {
             name: 'precipitationAvg'
             query: 'precipitation/@value/string()'
-        }
-        XmlRole {
-            name: 'precipitationMin'
-            query: 'precipitation/@minvalue/string()'
-        }
-        XmlRole {
-            name: 'precipitationMax'
-            query: 'precipitation/@maxvalue/string()'
         }
     }
     
@@ -189,6 +186,7 @@ Item {
         main.meteogramModelChanged = !main.meteogramModelChanged
     }
     
+    //TODO
     function updateWeatherModels(currentWeatherModel, nearFutureWeather, nextDaysWeatherModel, originalXmlModel) {
         
         var nextDaysFixedCount = nextDaysCount
@@ -335,8 +333,8 @@ Item {
             }
         }
         
-        DataLoader.fetchXmlFromInternet(urlPrefix + townString + '/forecast.xml', successLongTerm, failureCallback)
-        DataLoader.fetchXmlFromInternet(urlPrefix + townString + '/forecast_hour_by_hour.xml', successHourByHour, failureCallback)
+        DataLoader.fetchXmlFromInternet(urlPrefix + '/daily?id=' + townString + '&cnt=14' + appIdAndModeSuffix, successLongTerm, failureCallback)
+        DataLoader.fetchXmlFromInternet(urlPrefix + '?id=' + townString + appIdAndModeSuffix, successHourByHour, failureCallback)
         
     }
     
@@ -351,11 +349,12 @@ Item {
     }
     
     function getCreditLabel(townString) {
-        return 'Weather forecast from yr.no, delivered by the Norwegian Meteorological Institute and the NRK'
+        return 'Open Weather Map'
     }
     
+    //TODO
     function getCreditLink(townString) {
-        return urlPrefix + townString + '/'
+        return urlPrefix
     }
     
 }

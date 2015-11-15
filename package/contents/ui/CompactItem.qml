@@ -72,7 +72,7 @@ Item {
     }
     
     
-    property double fontPointSize: partHeight * (layoutType === 2 ? 0.6 : 0.5)
+    property double fontPixelSize: partHeight * (layoutType === 2 ? 0.7 : 0.7)
     
     property string iconNameStr:    actualWeatherModel.count > 0 ? IconTools.getIconCode(actualWeatherModel.get(0).iconName, true, getPartOfDayIndex()) : ''
     property string temperatureStr: actualWeatherModel.count > 0 ? TemperatureUtils.getTemperatureNumber(actualWeatherModel.get(0).temperature, fahrenheitEnabled) + '°' : ''
@@ -96,7 +96,7 @@ Item {
         
         opacity: layoutType === 2 ? 0.8 : 1
         
-        font.pointSize: fontPointSize
+        font.pixelSize: fontPixelSize
     }
     
     PlasmaComponents.Label {
@@ -109,7 +109,7 @@ Item {
         verticalAlignment: layoutType === 2 ? Text.AlignBottom : Text.AlignVCenter
         
         text: temperatureStr
-        font.pointSize: fontPointSize * (layoutType === 2 ? 0.5 : 1)
+        font.pixelSize: fontPixelSize * (layoutType === 2 ? 0.5 : (fahrenheitEnabled ? 6/7 : 1))
     }
     
     DropShadow {

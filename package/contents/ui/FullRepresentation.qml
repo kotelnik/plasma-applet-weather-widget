@@ -201,7 +201,7 @@ Item {
         anchors.bottom: parent.bottom
         verticalAlignment: Text.AlignBottom
         
-        text: 'Weather forecast from yr.no, delivered by the Norwegian Meteorological Institute and the NRK'
+        text: creditLabel
     }
     
     MouseArea {
@@ -211,8 +211,8 @@ Item {
         hoverEnabled: true
         
         onClicked: {
-            dbgprint('opening: ', overviewLink)
-            Qt.openUrlExternally(overviewLink) //overviewLink
+            dbgprint('opening: ', creditLink)
+            Qt.openUrlExternally(creditLink)
         }
         
         onEntered: {
