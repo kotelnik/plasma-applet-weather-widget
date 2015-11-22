@@ -22,6 +22,8 @@ import "../../code/data-loader.js" as DataLoader
 Item {
     id: owm
     
+    property string providerId: 'owm'
+    
     property string urlPrefix: 'http://api.openweathermap.org/data/2.5/forecast'
     property string appIdAndModeSuffix: '&mode=xml&appid=5819a34c58f8f07bc282820ca08948f1'
     

@@ -23,7 +23,7 @@ import "../code/temperature-utils.js" as TemperatureUtils
 Item {
     id: meteogram
     
-    property bool enableRendering: renderMeteogram || currentProvider.id !== 'yrno'
+    property bool enableRendering: renderMeteogram || currentProvider.providerId !== 'yrno'
     
     property int temperatureSizeY: 21
     property int pressureSizeY: 101
@@ -59,11 +59,6 @@ Item {
     property bool textColorLight: ((theme.textColor.r + theme.textColor.g + theme.textColor.b) / 3) > 0.5
     property color gridColor: textColorLight ? Qt.tint(theme.textColor, '#80000000') : Qt.tint(theme.textColor, '#80FFFFFF')
     property color gridColorHighlight: textColorLight ? Qt.tint(theme.textColor, '#50000000') : Qt.tint(theme.textColor, '#50FFFFFF')
-    
-    onTemperatureMultiplierYChanged: {
-        dbgprint('temperatureMultiplierY changed to: ' + temperatureMultiplierY)
-        modelUpdated()
-    }
     
     onMeteogramModelChangedChanged: {
         dbgprint('meteogram changed')
@@ -202,6 +197,7 @@ Item {
                 num: i
             })
         }
+        modelUpdated()
     }
     
     Item {
@@ -418,6 +414,8 @@ Item {
     
     Item {
         
+        anchors.fill: parent
+        
         visible: !enableRendering
         
         PlasmaComponents.Label {
@@ -433,7 +431,7 @@ Item {
         Image {
             id: overviewImage
             cache: false
-            source: !enableRendering ? undefined : overviewImageSource
+            source: !enableRendering ? overviewImageSource : undefined
             anchors.fill: parent
         }
         

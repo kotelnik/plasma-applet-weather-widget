@@ -22,6 +22,8 @@ import "../../code/data-loader.js" as DataLoader
 Item {
     id: yrno
     
+    property string providerId: 'yrno'
+    
     property string urlPrefix: 'http://www.yr.no/place/'
     
     XmlListModel {
@@ -212,7 +214,6 @@ Item {
             var timeObj = originalXmlModel.get(i)
             var dateFrom = new Date(timeObj.from)
             var dateTo = new Date(timeObj.to)
-//             dbgprint('from=' + dateFrom + ', to=' + dateTo + ', now=' + now + ', i=' + i)
             
             // prepare current models
             if (!currentWeatherModelsSet
@@ -257,8 +258,6 @@ Item {
             
             lastObject.temperatureArray.push(timeObj.temperature)
             lastObject.iconNameArray.push(timeObj.iconName)
-            
-//             dbgprint('lastObject.temperatureArray: ', lastObject.temperatureArray)
         }
 
         // set current models
