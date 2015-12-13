@@ -30,14 +30,14 @@ Item {
     
     property string yrnoUrlPreifx: 'http://www.yr.no/place/'
     
-    property string townString
+    property string placeIdentifier
     property string placeAlias
     property string cacheKey
     property var cacheMap: {}
     property var lastReloadedMsMap: {}
     property bool renderMeteogram: plasmoid.configuration.renderMeteogram
     property bool fahrenheitEnabled: plasmoid.configuration.fahrenheitEnabled
-    property string townStringsJsonStr: plasmoid.configuration.townStrings
+    property bool placesJsonStr: plasmoid.configuration.places
     
     property string datetimeFormat: 'yyyy-MM-dd\'T\'hh:mm:ss'
     property var locale: Qt.locale('en_GB')
@@ -97,7 +97,7 @@ Item {
     }
     
     FontLoader {
-        source: '../fonts/weathericons-regular-webfont.ttf'
+        source: '../fonts/weathericons-regular-webfont-2.0.10.ttf'
     }
     
     YrNo {
@@ -155,7 +155,7 @@ Item {
         
         dbgprint('readCache result length: ' + cacheContent.length)
             
-        //fill xml cache xml
+        // fill xml cache xml
         if (cacheContent) {
             try {
                 cacheMap = JSON.parse(cacheContent)
@@ -169,19 +169,19 @@ Item {
         }
         cacheMap = cacheMap || {}
         
-        //fill last reloaded
+        // fill last reloaded
         var lastReloadedMsJson = plasmoid.configuration.lastReloadedMsJson
         if (lastReloadedMsJson) {
             lastReloadedMsMap = JSON.parse(lastReloadedMsJson)
         }
         lastReloadedMsMap = lastReloadedMsMap || {}
         
-        //get town string
-        setNextTownString(true)
+        // set initial place
+        setNextPlace(true)
     }
     
-    onTownStringsJsonStrChanged: {
-        setNextTownString(true)
+    onPlacesJsonStrChanged: {
+        setNextPlace(true)
     }
     
     function showData() {
@@ -196,35 +196,40 @@ Item {
     
     function setCurrentProviderAccordingId(providerId) {
         if (providerId === 'owm') {
+            dbgprint('setting provider OpenWeatherMap')
             currentProvider = owmProvider
         } else {
+            dbgprint('setting provider yr.no')
             currentProvider = yrnoProvider
         }
     }
     
-    function setNextTownString(initial) {
-        var townStrings = ConfigUtils.getTownStringArray()
-        dbgprint('townStrings count=' + townStrings.length + ', townStringsIndex=' + plasmoid.configuration.townStringIndex)
-        var townStringIndex = plasmoid.configuration.townStringIndex
+    function setNextPlace(initial) {
+        actualWeatherModel.clear()
+        nextDaysModel.clear()
+        meteogramModel.clear()
+        
+        var places = ConfigUtils.getPlacesArray()
+        dbgprint('places count=' + places.length + ', placeIndex=' + plasmoid.configuration.placeIndex)
+        var placeIndex = plasmoid.configuration.placeIndex
         if (!initial) {
-            townStringIndex++
+            placeIndex++
         }
-        if (townStringIndex > townStrings.length - 1) {
-            townStringIndex = 0
+        if (placeIndex > places.length - 1) {
+            placeIndex = 0
         }
-        plasmoid.configuration.townStringIndex = townStringIndex
-        dbgprint('townStringIndex now: ' + plasmoid.configuration.townStringIndex)
-        var placeObject = townStrings[townStringIndex]
-        townString = placeObject.townString
+        plasmoid.configuration.placeIndex = placeIndex
+        dbgprint('placeIndex now: ' + plasmoid.configuration.placeIndex)
+        var placeObject = places[placeIndex]
+        placeIdentifier = placeObject.placeIdentifier
         placeAlias = placeObject.placeAlias
-        currentProvider = placeObject.providerId
-        dbgprint('next town string is: ' + townString)
-        cacheKey = DataLoader.generateCacheKey(townString)
+        dbgprint('next placeIdentifier is: ' + placeIdentifier)
+        cacheKey = DataLoader.generateCacheKey(placeIdentifier)
         dbgprint('next cacheKey is: ' + cacheKey)
         
         alreadyLoadedFromCache = false
         
-        currentProvider = yrnoProvider
+        setCurrentProviderAccordingId(placeObject.providerId)
         
         showData()
     }
@@ -261,15 +266,13 @@ Item {
             handleLoadError()
         }
         
-        currentProvider.loadDataFromInternet(dataLoadedFromInternet, failureCallback, { townString: townString })
+        currentProvider.loadDataFromInternet(dataLoadedFromInternet, failureCallback, { placeIdentifier: placeIdentifier })
         
         dbgprint('reload called, cacheKey is: ' + cacheKey)
     }
     
     function reloadMeteogram() {
-        dbgprint('reloading image')
-        overviewImageSource = ''
-        overviewImageSource = yrnoUrlPreifx + townString + '/avansert_meteogram.png'
+        currentProvider.reloadMeteogramImage(placeIdentifier)
     }
     
     function setLastReloadedMs(lastReloadedMs) {
@@ -298,8 +301,8 @@ Item {
             return true
         }
         
-        creditLink = currentProvider.getCreditLink(townString)
-        creditLabel = currentProvider.getCreditLabel(townString)
+        creditLink = currentProvider.getCreditLink(placeIdentifier)
+        creditLabel = currentProvider.getCreditLabel(placeIdentifier)
         
         if (!cacheMap || !cacheMap[cacheKey]) {
             dbgprint('cache not available')
@@ -335,12 +338,12 @@ Item {
     
     function refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled) {
         dbgprint('refreshing sub text')
-        if (additionalWeatherInfo === undefined || additionalWeatherInfo.nearFutureWeather.iconName === null) {
+        if (additionalWeatherInfo === undefined || additionalWeatherInfo.nearFutureWeather.iconName === null || actualWeatherModel.count === 0) {
             dbgprint('model not yet ready')
             return
         }
         var nearFutureWeather = additionalWeatherInfo.nearFutureWeather
-        var futureWeatherIcon = IconTools.getIconCode(nearFutureWeather.iconName, true, getPartOfDayIndex())
+        var futureWeatherIcon = IconTools.getIconCode(nearFutureWeather.iconName, currentProvider.providerId, getPartOfDayIndex())
         var windDirectionIcon = IconTools.getWindDirectionIconCode(actualWeatherModel.get(0).windDirection)
         var subText = ''
         

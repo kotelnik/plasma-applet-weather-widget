@@ -1,5 +1,5 @@
-function getTownStringArray() {
-    var cfgTownStrings = plasmoid.configuration.townStrings
-    print('Reading townStrings from configuration: ' + cfgTownStrings)
-    return JSON.parse(cfgTownStrings)
+function getPlacesArray() {
+    var cfgPlaces = plasmoid.configuration.places
+    print('Reading places from configuration: ' + cfgPlaces)
+    return JSON.parse(cfgPlaces)
 }

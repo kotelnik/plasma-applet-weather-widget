@@ -65,7 +65,7 @@ Item {
         
         onClicked: {
             dbgprint('clicked next location')
-            main.setNextTownString()
+            main.setNextPlace()
         }
         
         onEntered: {

@@ -74,7 +74,7 @@ Item {
     
     property double fontPixelSize: partHeight * (layoutType === 2 ? 0.7 : 0.7)
     
-    property string iconNameStr:    actualWeatherModel.count > 0 ? IconTools.getIconCode(actualWeatherModel.get(0).iconName, true, getPartOfDayIndex()) : ''
+    property string iconNameStr:    actualWeatherModel.count > 0 ? IconTools.getIconCode(actualWeatherModel.get(0).iconName, currentProvider.providerId, getPartOfDayIndex()) : ''
     property string temperatureStr: actualWeatherModel.count > 0 ? TemperatureUtils.getTemperatureNumber(actualWeatherModel.get(0).temperature, fahrenheitEnabled) + '°' : ''
     
     PlasmaComponents.Label {

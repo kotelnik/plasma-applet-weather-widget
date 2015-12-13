@@ -18,6 +18,7 @@ import QtQuick 2.2
 import QtQuick.XmlListModel 2.0
 import "../../code/model-utils.js" as ModelUtils
 import "../../code/data-loader.js" as DataLoader
+import "../../code/temperature-utils.js" as TemperatureUtils
 
 Item {
     id: owm
@@ -86,7 +87,7 @@ Item {
             query: 'temperature/@value/string()'
         }
         XmlRole {
-            name: 'iconNumber'
+            name: 'iconName'
             query: 'symbol/@number/string()'
         }
         XmlRole {
@@ -130,7 +131,7 @@ Item {
             return
         }
         dbgprint('xmlModelLongTerm ready')
-        updateWeatherModels(actualWeatherModel, additionalWeatherInfo.nearFutureWeather, nextDaysModel, xmlModelLongTerm)
+        updateNextDaysModel(nextDaysModel, xmlModelLongTerm)
         refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled)
     }
     
@@ -160,6 +161,7 @@ Item {
             return
         }
         dbgprint('xmlModelHourByHour ready')
+        updateTodayModels(actualWeatherModel, additionalWeatherInfo.nearFutureWeather, xmlModelHourByHour)
         updateMeteogramModel(meteogramModel, xmlModelHourByHour)
     }
     
@@ -167,20 +169,36 @@ Item {
         
         meteogramModel.clear()
         
+        var firstFromMs = null
+        var limitMsDifference = 1000 * 60 * 60 * 54 // 2.25 days
+        
         for (var i = 0; i < originalXmlModel.count; i++) {
             var obj = originalXmlModel.get(i)
+            var dateFrom = Date.fromLocaleString(locale, obj.from, datetimeFormat)
+            var dateTo = Date.fromLocaleString(locale, obj.to, datetimeFormat)
+            dbgprint('meteo fill: i=' + i + ', from=' + obj.from + ', to=' + obj.to)
+            var prec = obj.precipitationAvg
             meteogramModel.append({
-                from: obj.from,
-                to: obj.to,
+                from: dateFrom,
+                to: dateTo,
                 temperature: parseInt(obj.temperature),
                 precipitationAvg: obj.precipitationAvg,
-                precipitationMin: obj.precipitationMin,
-                precipitationMax: obj.precipitationMax,
+                precipitationMin: '',
+                precipitationMax: obj.precipitationAvg,
                 windDirection: obj.windDirection,
                 windSpeedMps: parseFloat(obj.windSpeedMps),
                 pressureHpa: parseFloat(obj.pressureHpa),
-                iconNumber: obj.iconNumber
+                iconName: obj.iconName
             })
+            
+            if (firstFromMs === null) {
+                firstFromMs = dateFrom.getTime()
+            }
+            
+            if (dateTo.getTime() - firstFromMs > limitMsDifference) {
+                dbgprint('breaking')
+                break
+            }
         }
         
         dbgprint('meteogramModel.count = ' + meteogramModel.count)
@@ -188,8 +206,42 @@ Item {
         main.meteogramModelChanged = !main.meteogramModelChanged
     }
     
-    //TODO
-    function updateWeatherModels(currentWeatherModel, nearFutureWeather, nextDaysWeatherModel, originalXmlModel) {
+    function updateTodayModels(currentWeatherModel, nearFutureWeather, originalXmlModelHourByHour) {
+        
+        var now = new Date()
+        
+        // set current models
+        currentWeatherModel.clear()
+        nearFutureWeather.iconName = null
+        nearFutureWeather.temperature = null
+        var foundNow = false
+        for (var i = 0; i < originalXmlModelHourByHour.count; i++) {
+            var timeObj = originalXmlModelHourByHour.get(i)
+            var dateFrom = new Date(timeObj.from)
+            var dateTo = new Date(timeObj.to)
+            dbgprint('HOUR BY HOUR: dateFrom=' + dateFrom + ', dateTo=' + dateTo + ', now=' + now + ', i=' + i)
+            
+            if (dateFrom <= now && now <= dateTo) {
+                dbgprint('foundNow setting to true and adding to currentWeatherModel - temperature: ' + timeObj.temperature + ', iconName: ' + timeObj.iconName)
+                foundNow = true
+                currentWeatherModel.append(timeObj)
+                continue
+            }
+            
+            if (foundNow) {
+                nearFutureWeather.iconName = timeObj.iconName
+                nearFutureWeather.temperature = timeObj.temperature
+                dbgprint('setting near future - ' + nearFutureWeather.iconName)
+                break
+            }
+        }
+        
+        dbgprint('result currentWeatherModel count: ' + currentWeatherModel.count)
+        dbgprint('result nearFutureWeather.iconName: ' + nearFutureWeather.iconName)
+        
+    }
+    
+    function updateNextDaysModel(nextDaysWeatherModel, originalXmlModel) {
         
         var nextDaysFixedCount = nextDaysCount
         
@@ -199,9 +251,7 @@ Item {
         
         dbgprint('orig: ' + originalXmlModel.count)
 
-        var todayObject = null
         var newObjectArray = []
-        var lastObject = null
         var addingStarted = false
         
         var interestingTimeObj = null
@@ -210,84 +260,44 @@ Item {
         
         for (var i = 0; i < originalXmlModel.count; i++) {
             var timeObj = originalXmlModel.get(i)
-            var dateFrom = new Date(timeObj.from)
-            var dateTo = new Date(timeObj.to)
-//             dbgprint('from=' + dateFrom + ', to=' + dateTo + ', now=' + now + ', i=' + i)
+            var dateFrom = Date.fromLocaleString(main.locale, timeObj.date, 'yyyy-MM-dd')
+            var dateTo = new Date(dateFrom.getTime())
+            dateTo.setDate(dateTo.getDate() + 1);
+            dateTo = new Date(dateTo.getTime() - 1)
+            dbgprint('dateFrom=' + dateFrom + ', dateTo=' + dateTo + ', now=' + now + ', i=' + i)
             
-            // prepare current models
-            if (!currentWeatherModelsSet
-                && ((i === 0 && now < dateFrom) || (dateFrom < now && now < dateTo))) {
-                
-                interestingTimeObj = timeObj
-                if (i + 1 < originalXmlModel.count) {
-                    nextInterestingTimeObj = originalXmlModel.get(i + 1)
-                }
-                currentWeatherModelsSet = true
+            // encountered old data -> continue to next
+            if (now > dateTo) {
+                dbgprint('skipping this day')
+                continue
             }
             
-            if (!addingStarted) {
-                addingStarted = dateTo >= nextDayStart && timeObj.period === '0'
-                
-                if (!addingStarted) {
-                    
-                    // add today object
-                    if (todayObject === null) {
-                        todayObject = ModelUtils.createEmptyNextDaysObject()
-                        todayObject.dayTitle = i18n('today')
-                    }
-                    todayObject.temperatureArray.push(timeObj.temperature)
-                    todayObject.iconNameArray.push(timeObj.iconName)
-                    
-                    continue
-                }
-                dbgprint('found start!')
-            }
+            var lastObject = ModelUtils.createEmptyNextDaysObject()
             
-            var periodNo = parseInt(timeObj.period)
-            if (periodNo === 0) {
-                dbgprint('period 0, array: ' + newObjectArray.length + ', nextDaysCount: ' + nextDaysFixedCount)
-                if (newObjectArray.length === nextDaysFixedCount) {
-                    dbgprint('breaking')
-                    break
-                }
-                lastObject = ModelUtils.createEmptyNextDaysObject()
+            if (dateFrom <= now && now <= dateTo) {
+                dbgprint('setting today')
+                lastObject.dayTitle = i18n('today')
+            } else {
                 lastObject.dayTitle = Qt.locale().dayName(dateTo.getDay(), Locale.ShortFormat) + ' ' + dateTo.getDate() + '.' + (dateTo.getMonth() + 1) + '.'
-                newObjectArray.push(lastObject)
             }
             
-            lastObject.temperatureArray.push(timeObj.temperature)
+            newObjectArray.push(lastObject)
+            lastObject.temperatureArray.push(toCelsiaStr(timeObj.temperatureMorning))
+            lastObject.temperatureArray.push(toCelsiaStr(timeObj.temperatureDay))
+            lastObject.temperatureArray.push(toCelsiaStr(timeObj.temperatureEvening))
+            lastObject.temperatureArray.push(toCelsiaStr(timeObj.temperatureNight))
+            lastObject.iconNameArray.push(timeObj.iconName)
+            lastObject.iconNameArray.push(timeObj.iconName)
+            lastObject.iconNameArray.push(timeObj.iconName)
             lastObject.iconNameArray.push(timeObj.iconName)
             
-//             dbgprint('lastObject.temperatureArray: ', lastObject.temperatureArray)
-        }
-
-        // set current models
-        currentWeatherModel.clear()
-        if (interestingTimeObj !== null) {
-            currentWeatherModel.append(interestingTimeObj)
-        }
-        nearFutureWeather.iconName = null
-        nearFutureWeather.temperature = null
-        if (nextInterestingTimeObj !== null) {
-            nearFutureWeather.iconName = nextInterestingTimeObj.iconName
-            nearFutureWeather.temperature = nextInterestingTimeObj.temperature
+            dbgprint('lastObject.temperatureArray: ' + lastObject.temperatureArray.length)
         }
 
         //
         // set next days model
         //
         nextDaysWeatherModel.clear()
-        
-        // prepend today object
-        if (todayObject !== null) {
-            while (todayObject.temperatureArray.length < 4) {
-                todayObject.temperatureArray.unshift(null)
-                todayObject.iconNameArray.unshift(null)
-            }
-            ModelUtils.populateNextDaysObject(todayObject)
-            nextDaysWeatherModel.append(todayObject)
-        }
-        
         newObjectArray.forEach(function (objToAdd) {
             if (nextDaysWeatherModel.count >= nextDaysFixedCount) {
                 return
@@ -299,9 +309,11 @@ Item {
             nextDaysWeatherModel.append(ModelUtils.createEmptyNextDaysObject())
         }
         
-        dbgprint('result currentWeatherModel count: ', currentWeatherModel.count)
-        dbgprint('result nearFutureWeather.iconName: ', nearFutureWeather.iconName)
-        dbgprint('result nextDaysWeatherModel count: ', nextDaysWeatherModel.count)
+        dbgprint('result nextDaysWeatherModel count: ' + nextDaysWeatherModel.count)
+    }
+    
+    function toCelsiaStr(kelvinStr) {
+        return String(TemperatureUtils.kelvinToCelsia(parseFloat(kelvinStr)))
     }
     
     /**
@@ -310,7 +322,7 @@ Item {
      */
     function loadDataFromInternet(successCallback, failureCallback, locationObject) {
 
-        var townString = locationObject.townString
+        var placeIdentifier = locationObject.placeIdentifier
         
         var loadedCounter = 0
         
@@ -335,8 +347,8 @@ Item {
             }
         }
         
-        DataLoader.fetchXmlFromInternet(urlPrefix + '/daily?id=' + townString + '&cnt=14' + appIdAndModeSuffix, successLongTerm, failureCallback)
-        DataLoader.fetchXmlFromInternet(urlPrefix + '?id=' + townString + appIdAndModeSuffix, successHourByHour, failureCallback)
+        DataLoader.fetchXmlFromInternet(urlPrefix + '/daily?id=' + placeIdentifier + '&cnt=14' + appIdAndModeSuffix, successLongTerm, failureCallback)
+        DataLoader.fetchXmlFromInternet(urlPrefix + '?id=' + placeIdentifier + appIdAndModeSuffix, successHourByHour, failureCallback)
         
     }
     
@@ -344,19 +356,25 @@ Item {
         if (!cacheContent.longTerm || !cacheContent.hourByHour) {
             return false
         }
+        xmlModelLongTerm.xml = ''
+        xmlModelSunRiseSet.xml = ''
+        xmlModelHourByHour.xml = ''
         xmlModelLongTerm.xml = cacheContent.longTerm
         xmlModelSunRiseSet.xml = cacheContent.longTerm
         xmlModelHourByHour.xml = cacheContent.hourByHour
         return true
     }
     
-    function getCreditLabel(townString) {
+    function getCreditLabel(placeIdentifier) {
         return 'Open Weather Map'
     }
     
-    //TODO
-    function getCreditLink(townString) {
-        return urlPrefix
+    function getCreditLink(placeIdentifier) {
+        return 'http://openweathermap.org/city/' + placeIdentifier
+    }
+    
+    function reloadMeteogramImage(placeIdentifier) {
+        main.overviewImageSource = ''
     }
     
 }

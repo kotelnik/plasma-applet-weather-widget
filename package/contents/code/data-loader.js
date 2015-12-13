@@ -1,10 +1,5 @@
 var scheduledDataReload = null
 
-var DataType = {
-    YRNO: 1,
-    OWP: 2
-}
-
 function isReadyToReload(reloadIntervalMs, lastReloaded) {
     var now = new Date().getTime()
     if (loadingError && scheduledDataReload !== null) {
@@ -23,8 +18,8 @@ function setReloaded() {
 
 function getLastReloadedTimeText(lastReloaded) {
     var reloadedAgoMs = getReloadedAgoMs(lastReloaded)
-    var mins = reloadedAgoMs / 60000;
     
+    var mins = reloadedAgoMs / 60000
     if (mins <= 180) {
         return Math.round(mins) + 'm'
     }
@@ -64,12 +59,12 @@ function getPlasmoidStatus(lastReloaded, inTrayActiveTimeoutSec) {
     }
 }
 
-function generateCacheKey(townStr) {
-    return 'cache_' + Qt.md5(townStr)
+function generateCacheKey(placeIdentifier) {
+    return 'cache_' + Qt.md5(placeIdentifier)
 }
 
 function isXmlStringValid(xmlString) {
-    return xmlString.indexOf('<?xml ') === 0
+    return xmlString.indexOf('<?xml ') === 0 || xmlString.indexOf('<weatherdata>') === 0
 }
 
 function fetchXmlFromInternet(getUrl, successCallback, failureCallback) {

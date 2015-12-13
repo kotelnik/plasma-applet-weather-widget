@@ -6,22 +6,18 @@
     <kcfgfile name=""/>
 
     <group name="General">
-        <entry name="townStringIndex" type="Int">
+        <entry name="placeIndex" type="Int">
             <default>0</default>
         </entry>
-        <entry name="townStrings" type="String">
-            <default>[{ "townString": "Germany/North_Rhine-Westphalia/Bonn", "placeAlias":"Bonn" }, { "townString": "USA/New_York/New_York", "placeAlias": "New York" }]</default>
+        <entry name="places" type="String">
+            <default>[{ "providerId": "yrno", "placeIdentifier": "Germany/North_Rhine-Westphalia/Bonn", "placeAlias":"Bonn" }, { "providerId": "yrno", "placeIdentifier": "USA/New_York/New_York", "placeAlias": "New York" }]</default>
         </entry>
         <entry name="reloadIntervalMin" type="Int">
             <default>60</default>
         </entry>
         
-        
         <entry name="xmlCacheJson" type="String">
             <default></default>
-        </entry>
-        <entry name="townStringIndex" type="Int">
-            <default>0</default>
         </entry>
         <entry name="lastReloadedMsJson" type="String">
             <default></default>

@@ -172,9 +172,11 @@ Item {
         
         for (var i = 0; i < originalXmlModel.count; i++) {
             var obj = originalXmlModel.get(i)
+            var dateFrom = Date.fromLocaleString(locale, obj.from, datetimeFormat)
+            var dateTo = Date.fromLocaleString(locale, obj.to, datetimeFormat)
             meteogramModel.append({
-                from: obj.from,
-                to: obj.to,
+                from: dateFrom,
+                to: dateTo,
                 temperature: parseInt(obj.temperature),
                 precipitationAvg: obj.precipitationAvg,
                 precipitationMin: obj.precipitationMin,
@@ -309,7 +311,7 @@ Item {
      */
     function loadDataFromInternet(successCallback, failureCallback, locationObject) {
 
-        var townString = locationObject.townString
+        var placeIdentifier = locationObject.placeIdentifier
         
         var loadedCounter = 0
         
@@ -334,8 +336,8 @@ Item {
             }
         }
         
-        DataLoader.fetchXmlFromInternet(urlPrefix + townString + '/forecast.xml', successLongTerm, failureCallback)
-        DataLoader.fetchXmlFromInternet(urlPrefix + townString + '/forecast_hour_by_hour.xml', successHourByHour, failureCallback)
+        DataLoader.fetchXmlFromInternet(urlPrefix + placeIdentifier + '/forecast.xml', successLongTerm, failureCallback)
+        DataLoader.fetchXmlFromInternet(urlPrefix + placeIdentifier + '/forecast_hour_by_hour.xml', successHourByHour, failureCallback)
         
     }
     
@@ -349,12 +351,18 @@ Item {
         return true
     }
     
-    function getCreditLabel(townString) {
+    function getCreditLabel(placeIdentifier) {
         return 'Weather forecast from yr.no, delivered by the Norwegian Meteorological Institute and the NRK'
     }
     
-    function getCreditLink(townString) {
-        return urlPrefix + townString + '/'
+    function getCreditLink(placeIdentifier) {
+        return urlPrefix + placeIdentifier + '/'
+    }
+    
+    function reloadMeteogramImage(placeIdentifier) {
+        dbgprint('reloading image')
+        main.overviewImageSource = ''
+        main.overviewImageSource = yrnoUrlPreifx + placeIdentifier + '/avansert_meteogram.png'
     }
     
 }

@@ -9,3 +9,7 @@ function getTemperatureNumber(temperatureStr, fahrenheitEnabled) {
     }
     return Math.round(fl)
 }
+
+function kelvinToCelsia(kelvin) {
+    return kelvin - 273.15
+}

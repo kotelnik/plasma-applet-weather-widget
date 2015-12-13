@@ -63,7 +63,7 @@ Item {
             anchors.centerIn: parent
             
             font.family: 'weathericons'
-            text: hidden ? '' : IconTools.getIconCode(iconName, true, partOfDay)
+            text: hidden ? '' : IconTools.getIconCode(iconName, currentProvider.providerId, partOfDay)
         }
     }
     

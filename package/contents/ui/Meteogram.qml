@@ -67,8 +67,8 @@ Item {
     
     function _appendHorizontalModel(meteogramModelObj) {
         var oneHourMs = 3600000
-        var dateFrom = Date.fromLocaleString(locale, meteogramModelObj.from, datetimeFormat)
-        var dateTo = Date.fromLocaleString(locale, meteogramModelObj.to, datetimeFormat)
+        var dateFrom = meteogramModelObj.from
+        var dateTo = meteogramModelObj.to
         var differenceHours = Math.round((dateTo.getTime() - dateFrom.getTime()) / oneHourMs)
         dbgprint('differenceHours=' + differenceHours + ', oneHourMs=' + oneHourMs + ', dateFrom=' + dateFrom + ', dateTo=' + dateTo)
         if (differenceHours > 20) {
@@ -93,13 +93,20 @@ Item {
         hourGridModel.setProperty(hourGridModel.count - 1, 'canShowPrec', false)
     }
     
+    function clearCanvas() {
+        temperaturePath.pathElements = []
+        pressurePath.pathElements = []
+        meteogramCanvas.requestPaint()
+    }
+    
     function modelUpdated() {
         
         dbgprint('meteogram model updated ' + meteogramModel.count)
         dataArraySize = meteogramModel.count
         
         if (dataArraySize === 0) {
-            dbgprint('model is empty')
+            dbgprint('model is empty -> clearing canvas and exiting')
+            clearCanvas()
             return
         }
         
@@ -181,6 +188,15 @@ Item {
         
         meteogramCanvas.requestPaint()
         
+    }
+    
+    function precipitationFormat(precFloat) {
+        if (precFloat >= 0.1) {
+            var result = Math.round(precFloat * 10) / 10
+            dbgprint('precipitationFormat returns ' + result)
+            return String(result)
+        }
+        return ''
     }
     
     ListModel {
@@ -280,7 +296,10 @@ Item {
                 property double precAvg: parseFloat(precipitationAvg) || 0
                 property double precMax: parseFloat(precipitationMax) || 0
                 
-                property bool precLabelVisible: precAvg > 0 || precMax > 0
+                property bool precLabelVisible: precAvg >= 0.1 || precMax >= 0.1
+                
+                property string precAvgStr: precipitationFormat(precAvg)
+                property string precMaxStr: precipitationFormat(precMax)
                 
                 PlasmaComponents.Label {
                     id: dayTest
@@ -362,7 +381,7 @@ Item {
                     }
 
                     PlasmaComponents.Label {
-                        text: precipitationMax || precipitationAvg
+                        text: precMaxStr || precAvgStr
                         verticalAlignment: Text.AlignBottom
                         horizontalAlignment: Text.AlignHCenter
                         anchors.bottom: precipitationMaxRect.top
@@ -373,7 +392,7 @@ Item {
                 }
                 
                 Component.onCompleted: {
-                    dbgprint('avg=' + precipitationAvg + ', max=' + precipitationMax + ', min=' + precipitationMin)
+                    dbgprint('avg=' + precAvgStr + ', max=' + precMaxStr + ', min=' + precipitationMin)
                 }
                 
             }

@@ -8,73 +8,160 @@ import "../../code/config-utils.js" as ConfigUtils
 Item {
 
     property alias cfg_reloadIntervalMin: reloadIntervalMin.value
-    property string cfg_townStrings
+    property string cfg_places
     
     ListModel {
-        id: townStringsModel
+        id: placesModel
     }
     
     Component.onCompleted: {
-        var townStrings = ConfigUtils.getTownStringArray()
-        for (var i = 0; i < townStrings.length; i++) {
-            townStringsModel.append({
-                townString: townStrings[i].townString,
-                placeAlias: townStrings[i].placeAlias
+        var places = ConfigUtils.getPlacesArray()
+        ConfigUtils.getPlacesArray().forEach(function (placeObj) {
+            placesModel.append({
+                providerId: placeObj.providerId,
+                placeIdentifier: placeObj.placeIdentifier,
+                placeAlias: placeObj.placeAlias
             })
-        }
+        })
     }
     
-    function townStringsModelChanged() {
-        var newTownStringsArray = []
-        for (var i = 0; i < townStringsModel.count; i++) {
-            var townString = townStringsModel.get(i).townString
-            var placeAlias = townStringsModel.get(i).placeAlias
-            newTownStringsArray.push({
-                townString: townString,
-                placeAlias: placeAlias
+    function placesModelChanged() {
+        var newPlacesArray = []
+        for (var i = 0; i < placesModel.count; i++) {
+            var placeObj = placesModel.get(i)
+            newPlacesArray.push({
+                providerId: placeObj.providerId,
+                placeIdentifier: placeObj.placeIdentifier,
+                placeAlias: placeObj.placeAlias
             })
         }
-        cfg_townStrings = JSON.stringify(newTownStringsArray)
-        print('[weatherWidget] townStrings: ' + cfg_townStrings)
+        cfg_places = JSON.stringify(newPlacesArray)
+        print('[weatherWidget] places: ' + cfg_places)
     }
     
     
     Dialog {
-        id: addTownStringDialog
-        title: 'Add Place'
+        id: addYrNoTownStringDialog
+        title: 'Add yr.no Place'
         
         width: 500
         
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         
         onAccepted: {
-            //http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/
-            var url = newTownStringField.text
+            // http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/
+            var url = newYrNoTownStringField.text
             var match = /https?:\/\/www\.yr\.no\/[a-zA-Z]+\/(([^\/ ]+\/){2,}[^\/ ]+)\/[^\/ ]*/.exec(url)
             var resultString = null
             if (match !== null) {
                 resultString = match[1]
             }
             if (!resultString) {
-                newTownStringField.text = 'Error parsing url.'
+                newYrNoTownStringField.text = 'Error parsing url.'
                 return
             }
             
             var placeAlias = resultString.substring(resultString.lastIndexOf('/') + 1).replace(/_/g, ' ')
             
-            townStringsModel.append({
-                townString: decodeURI(resultString),
+            placesModel.append({
+                providerId: 'yrno',
+                placeIdentifier: decodeURI(resultString),
                 placeAlias: decodeURI(placeAlias)
             })
-            townStringsModelChanged()
-            addTownStringDialog.close()
+            placesModelChanged()
+            close()
         }
         
         TextField {
-            id: newTownStringField
+            id: newYrNoTownStringField
             placeholderText: 'Paste URL here'
             width: parent.width
         }
+        
+        Label {
+            anchors.top: newYrNoTownStringField.bottom
+            anchors.topMargin: 10
+            font.italic: true
+            text: 'Find your town string in yr.no (english version)\nand use the URL from your browser to add a new location. E.g. paste this:\nhttp://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/'
+            Layout.columnSpan: 2
+        }
+    }
+    
+    Dialog {
+        id: addOwmCityIdDialog
+        title: 'Add Open Weather Map Place'
+        
+        width: 500
+        
+        standardButtons: StandardButton.Ok | StandardButton.Cancel
+        
+        onAccepted: {
+            var url = newOwmCityIdField.text
+            var match = /https?:\/\/openweathermap\.org\/city\/([0-9]+)(\/)?/.exec(url)
+            var resultString = null
+            if (match !== null) {
+                resultString = match[1]
+            }
+            
+            if (resultString === null) {
+                return
+            }
+            
+            placesModel.append({
+                providerId: 'owm',
+                placeIdentifier: resultString,
+                placeAlias: resultString
+            })
+            placesModelChanged()
+            close()
+        }
+        
+        TextField {
+            id: newOwmCityIdField
+            placeholderText: 'Paste City ID'
+            width: parent.width
+        }
+        
+        Label {
+            id: owmInfo
+            anchors.top: newOwmCityIdField.bottom
+            anchors.topMargin: 10
+            font.italic: true
+            text: 'Find your city ID by searching here:'
+        }
+        
+        Label {
+            id: owmLink
+            anchors.top: owmInfo.bottom
+            font.italic: true
+            text: 'http://openweathermap.org/find'
+        }
+        
+        MouseArea {
+            cursorShape: Qt.PointingHandCursor
+            anchors.fill: owmLink
+            
+            hoverEnabled: true
+            
+            onClicked: {
+                Qt.openUrlExternally(owmLink.text)
+            }
+            
+            onEntered: {
+                owmLink.font.underline = true
+            }
+            
+            onExited: {
+                owmLink.font.underline = false
+            }
+        }
+        
+        Label {
+            anchors.top: owmLink.bottom
+            font.italic: true
+            text: '...and paste here the whole URL\ne.g. http://openweathermap.org/city/2946447 for Bonn, Germany.'
+        }
+        
     }
     
     Dialog {
@@ -84,11 +171,8 @@ Item {
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         
         onAccepted: {
-            var newPlaceAlias = newPlaceAliasField.text
-            
-            townStringsModel.setProperty(changePlaceAliasDialog.tableIndex, 'placeAlias', newPlaceAlias)
-            
-            townStringsModelChanged()
+            placesModel.setProperty(changePlaceAliasDialog.tableIndex, 'placeAlias', newPlaceAliasField.text)
+            placesModelChanged()
             changePlaceAliasDialog.close()
         }
         
@@ -118,19 +202,25 @@ Item {
         }
         
         TableView {
-            id: townStringTable
+            id: placesTable
             headerVisible: false
             width: parent.width
             
             TableViewColumn {
-                role: 'townString'
-                title: 'Town String'
-                width: parent.width * 0.5
+                role: 'providerId'
+                title: i18n('Provider')
+                width: parent.width * 0.1
+            }
+            
+            TableViewColumn {
+                role: 'placeIdentifier'
+                title: i18n('Place Identifier')
+                width: parent.width * 0.4
             }
             
             TableViewColumn {
                 role: 'placeAlias'
-                title: 'Place Alias'
+                title: i18n('Alias')
                 width: parent.width * 0.2
                 
                 delegate: MouseArea {
@@ -169,8 +259,8 @@ Item {
                             iconName: 'go-up'
                             Layout.fillHeight: true
                             onClicked: {
-                                townStringsModel.move(styleData.row, styleData.row - 1, 1)
-                                townStringsModelChanged()
+                                placesModel.move(styleData.row, styleData.row - 1, 1)
+                                placesModelChanged()
                             }
                             enabled: styleData.row > 0
                         }
@@ -179,56 +269,59 @@ Item {
                             iconName: 'go-down'
                             Layout.fillHeight: true
                             onClicked: {
-                                townStringsModel.move(styleData.row, styleData.row + 1, 1)
-                                townStringsModelChanged()
+                                placesModel.move(styleData.row, styleData.row + 1, 1)
+                                placesModelChanged()
                             }
-                            enabled: styleData.row < townStringsModel.count - 1
+                            enabled: styleData.row < placesModel.count - 1
                         }
                         
                         Button {
                             iconName: 'list-remove'
                             Layout.fillHeight: true
                             onClicked: {
-                                townStringsModel.remove(styleData.row)
-                                townStringsModelChanged()
+                                placesModel.remove(styleData.row)
+                                placesModelChanged()
                             }
                         }
                     }
                 }
                 
             }
-            model: townStringsModel
+            model: placesModel
             Layout.preferredHeight: 150
             Layout.preferredWidth: parent.width
             Layout.columnSpan: 2
         }
-        Button {
-            iconName: 'list-add'
-            Layout.preferredWidth: 100
+        
+        Row {
             Layout.columnSpan: 2
-            onClicked: {
-                addTownStringDialog.open()
-                newTownStringField.text = ''
-                newTownStringField.focus = true
+            
+            Button {
+                iconName: 'list-add'
+                text: 'yr.no'
+                width: 100
+                onClicked: {
+                    addYrNoTownStringDialog.open()
+                    newYrNoTownStringField.text = ''
+                    newYrNoTownStringField.focus = true
+                }
+            }
+            
+            Button {
+                iconName: 'list-add'
+                text: 'OWM'
+                width: 100
+                onClicked: {
+                    addOwmCityIdDialog.open()
+                    newOwmCityIdField.text = ''
+                    newOwmCityIdField.focus = true
+                }
             }
         }
         
         Item {
             width: 2
             height: 20
-            Layout.columnSpan: 2
-        }
-        
-        Label {
-            font.italic: true
-            text: 'Find your town string in yr.no (english version)\nand use the URL from your browser to add a new location. E.g. paste this:\nhttp://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/'
-            //Layout.preferredWidth: parent.width
-            Layout.columnSpan: 2
-        }
-        
-        Label {
-            text: 'NOTE: This will get automated in future versions.'
-            //Layout.preferredWidth: parent.width
             Layout.columnSpan: 2
         }
         
