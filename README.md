@@ -2,6 +2,7 @@
 Plasma 5 applet for displaying weather information from yr.no (and other) server.
 
 ## Requirements
+* Plasma 5 & Qt 5.4+
 * Qt5 Graphical Effects
 * Extra CMake Modules (only for building)
 
