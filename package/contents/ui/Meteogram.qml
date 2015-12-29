@@ -18,7 +18,7 @@ import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import QtGraphicalEffects 1.0
 import org.kde.plasma.components 2.0 as PlasmaComponents
-import "../code/temperature-utils.js" as TemperatureUtils
+import "../code/unit-utils.js" as UnitUtils
 
 Item {
     id: meteogram
@@ -54,7 +54,7 @@ Item {
     property int precipitationHeightMultiplier: 15
     property int precipitationLabelMargin: 10
     
-    property color pressureColor: Qt.rgba(0.3, 1.0, 0.3, 1.0)
+    property color pressureColor: textColorLight ? Qt.rgba(0.3, 1.0, 0.3, 1.0) : Qt.rgba(0.0, 0.6, 0.0, 1.0)
     
     property bool textColorLight: ((theme.textColor.r + theme.textColor.g + theme.textColor.b) / 3) > 0.5
     property color gridColor: textColorLight ? Qt.tint(theme.textColor, '#80000000') : Qt.tint(theme.textColor, '#80FFFFFF')
@@ -246,7 +246,7 @@ Item {
                 }
                 
                 PlasmaComponents.Label {
-                    text: TemperatureUtils.getTemperatureNumber(-temperatureAdditiveY + (temperatureSizeY - num), fahrenheitEnabled) + '°'
+                    text: UnitUtils.getTemperatureNumber(-temperatureAdditiveY + (temperatureSizeY - num), fahrenheitEnabled) + '°'
                     height: parent.height
                     width: graphLeftMargin - 2
                     horizontalAlignment: Text.AlignRight
@@ -256,7 +256,7 @@ Item {
                 }
                 
                 PlasmaComponents.Label {
-                    text: (-pressureAdditiveY + (pressureSizeY - 1 - num * pressureMultiplier))
+                    text: String(UnitUtils.getPressureNumber(-pressureAdditiveY + (pressureSizeY - 1 - num * pressureMultiplier), inhgEnabled))
                     height: parent.height
                     width: graphLeftMargin - 2
                     horizontalAlignment: Text.AlignLeft
@@ -264,6 +264,20 @@ Item {
                     anchors.rightMargin: -graphLeftMargin
                     font.pixelSize: 10
                     color: pressureColor
+                }
+                
+                PlasmaComponents.Label {
+                    text: UnitUtils.getPressureEnding(inhgEnabled)
+                    height: parent.height
+                    width: graphLeftMargin - 2
+                    horizontalAlignment: Text.AlignLeft
+                    anchors.right: parent.right
+                    anchors.rightMargin: -graphLeftMargin
+                    font.pixelSize: 10
+                    color: pressureColor
+                    anchors.top: parent.top
+                    anchors.topMargin: -14
+                    visible: num === 0
                 }
             }
         }
@@ -290,8 +304,11 @@ Item {
                 width: hourGrid.hourItemWidth
                 
                 property int hourFrom: dateFrom.getHours()
+                property string hourFromStr: UnitUtils.getHourText(hourFrom, twelveHourClockEnabled)
+                property string hourFromEnding: twelveHourClockEnabled ? UnitUtils.getAmOrPm(hourFrom) : '00'
                 property bool dayBegins: hourFrom === 0
                 property bool hourVisible: hourFrom % 2 === 0
+                property bool textVisible: hourVisible && index < hourGridModel.count-1
                 
                 property double precAvg: parseFloat(precipitationAvg) || 0
                 property double precMax: parseFloat(precipitationMax) || 0
@@ -323,7 +340,7 @@ Item {
                 
                 PlasmaComponents.Label {
                     id: hourText
-                    text: (hourFrom < 10 ? '0' + hourFrom : hourFrom)
+                    text: hourFromStr
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignHCenter
                     height: graphTopMargin - 2
@@ -331,17 +348,17 @@ Item {
                     anchors.bottomMargin: -graphTopMargin
                     anchors.horizontalCenter: parent.horizontalCenter
                     font.pixelSize: 10
-                    visible: hourVisible
+                    visible: textVisible
                 }
                 
                 PlasmaComponents.Label {
-                    text: '00'
+                    text: hourFromEnding
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignLeft
                     anchors.top: hourText.top
                     anchors.left: hourText.right
                     font.pixelSize: 7
-                    visible: hourVisible
+                    visible: textVisible
                 }
                 
                 Item {

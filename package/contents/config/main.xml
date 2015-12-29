@@ -28,9 +28,6 @@
         <entry name="renderMeteogram" type="Bool">
             <default>false</default>
         </entry>
-        <entry name="fahrenheitEnabled" type="Bool">
-            <default>false</default>
-        </entry>
         <entry name="layoutType" type="Enum">
             <choices>
                 <choice name="Horizontal"/>
@@ -41,6 +38,18 @@
         </entry>
         <entry name="inTrayActiveTimeoutSec" type="Int">
             <default>3600</default>
+        </entry>
+    </group>
+    
+    <group name="Units">
+        <entry name="fahrenheitEnabled" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="inhgEnabled" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="mphEnabled" type="Bool">
+            <default>false</default>
         </entry>
     </group>
 

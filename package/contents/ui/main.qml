@@ -22,7 +22,7 @@ import QtQuick.Controls 1.0
 import "../code/data-loader.js" as DataLoader
 import "../code/config-utils.js" as ConfigUtils
 import "../code/icons.js" as IconTools
-import "../code/temperature-utils.js" as TemperatureUtils
+import "../code/unit-utils.js" as UnitUtils
 import "providers"
 
 Item {
@@ -37,10 +37,13 @@ Item {
     property var lastReloadedMsMap: {}
     property bool renderMeteogram: plasmoid.configuration.renderMeteogram
     property bool fahrenheitEnabled: plasmoid.configuration.fahrenheitEnabled
+    property bool inhgEnabled: plasmoid.configuration.inhgEnabled
+    property bool mphEnabled: plasmoid.configuration.mphEnabled
+    property bool twelveHourClockEnabled: Qt.locale().timeFormat(Locale.ShortFormat).toString().indexOf('AP') > -1
     property bool placesJsonStr: plasmoid.configuration.places
     
     property string datetimeFormat: 'yyyy-MM-dd\'T\'hh:mm:ss'
-    property var locale: Qt.locale('en_GB')
+    property var xmlLocale: Qt.locale('en_GB')
     property var additionalWeatherInfo: {}
     
     property string overviewImageSource
@@ -63,6 +66,8 @@ Item {
     property int inTrayActiveTimeoutSec: plasmoid.configuration.inTrayActiveTimeoutSec
     
     property int nextDaysCount: 8
+    
+    property bool textColorLight: ((theme.textColor.r + theme.textColor.g + theme.textColor.b) / 3) > 0.5
     
     // 0 - standard
     // 1 - vertical
@@ -87,7 +92,7 @@ Item {
     Plasmoid.compactRepresentation: cr
     Plasmoid.fullRepresentation: fr
     
-    property bool debugLogging: true
+    property bool debugLogging: false
     
     function dbgprint(msg) {
         if (!debugLogging) {
@@ -132,8 +137,8 @@ Item {
     Component.onCompleted: {
         
         additionalWeatherInfo = {
-            sunRise: Date.fromLocaleString(locale, '2000-01-01T06:00:00', datetimeFormat),
-            sunSet: Date.fromLocaleString(locale, '2000-01-01T18:00:00', datetimeFormat),
+            sunRise: Date.fromLocaleString(xmlLocale, '2000-01-01T06:00:00', datetimeFormat),
+            sunSet: Date.fromLocaleString(xmlLocale, '2000-01-01T18:00:00', datetimeFormat),
             sunRiseTime: '6:00',
             sunSetTime: '18:00',
             nearFutureWeather: {
@@ -336,7 +341,22 @@ Item {
         plasmoid.status = DataLoader.getPlasmoidStatus(lastReloadedMs, inTrayActiveTimeoutSec)
     }
     
-    function refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled) {
+    function updateAdditionalWeatherInfoText() {
+        var sunRise = additionalWeatherInfo.sunRise
+        var sunSet = additionalWeatherInfo.sunSet
+        var now = new Date()
+        sunRise.setFullYear(now.getFullYear())
+        sunRise.setMonth(now.getMonth())
+        sunRise.setDate(now.getDate())
+        sunSet.setFullYear(now.getFullYear())
+        sunSet.setMonth(now.getMonth())
+        sunSet.setDate(now.getDate())
+        additionalWeatherInfo.sunRiseTime = Qt.formatTime(sunRise, Qt.locale().timeFormat(Locale.ShortFormat))
+        additionalWeatherInfo.sunSetTime = Qt.formatTime(sunSet, Qt.locale().timeFormat(Locale.ShortFormat))
+        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
+    }
+    
+    function refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo) {
         dbgprint('refreshing sub text')
         if (additionalWeatherInfo === undefined || additionalWeatherInfo.nearFutureWeather.iconName === null || actualWeatherModel.count === 0) {
             dbgprint('model not yet ready')
@@ -348,17 +368,17 @@ Item {
         var subText = ''
         
         if (inTray) {
-            subText += '<br /><font size="4"> ' + actualWeatherModel.get(0).windSpeedMps + ' m/s</s</font>'
-            subText += '<br /><font size="4">' + actualWeatherModel.get(0).pressureHpa + ' hPa</font>'
+            subText += '<br /><font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, mphEnabled) + '</font>'
+            subText += '<br /><font size="4">' + UnitUtils.getPressureText(actualWeatherModel.get(0).pressureHpa, inhgEnabled) + '</font>'
             subText += '<br /><font size="4">⬆&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;⬇&nbsp;' + additionalWeatherInfo.sunSetTime + '</font>'
             subText += '<br /><br />'
-            subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(nearFutureWeather.temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
+            subText += '<font size="6">~><b><font color="transparent">__</font>' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
         } else {
-            subText += '<br /><font size="4" style="font-family: weathericons">' + windDirectionIcon + '</font><font size="4"> ' + actualWeatherModel.get(0).windSpeedMps + ' m/s</s</font>'
-            subText += '<br /><font size="4">' + actualWeatherModel.get(0).pressureHpa + ' hPa</font>'
+            subText += '<br /><font size="4" style="font-family: weathericons">' + windDirectionIcon + '</font><font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, mphEnabled) + '</font>'
+            subText += '<br /><font size="4">' + UnitUtils.getPressureText(actualWeatherModel.get(0).pressureHpa, inhgEnabled) + '</font>'
             subText += '<br /><font size="4"><font style="font-family: weathericons">\uf051</font>&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;<font style="font-family: weathericons">\uf052</font>&nbsp;' + additionalWeatherInfo.sunSetTime + '</font>'
             subText += '<br /><br />'
-            subText += '<font size="6">~><b><font color="transparent">__</font>' + TemperatureUtils.getTemperatureNumber(nearFutureWeather.temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
+            subText += '<font size="6">~><b><font color="transparent">__</font>' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
             subText += '<font color="transparent">__</font><font style="font-family: weathericons">' + futureWeatherIcon + '</font></b></font>'
         }
         
@@ -397,7 +417,19 @@ Item {
     }
     
     onFahrenheitEnabledChanged: {
-        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled)
+        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
+    }
+    
+    onInhgEnabledChanged: {
+        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
+    }
+    
+    onMphEnabledChanged: {
+        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
+    }
+    
+    onTwelveHourClockEnabledChanged: {
+        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
     }
     
 }

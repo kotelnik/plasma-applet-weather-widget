@@ -12,4 +12,9 @@ ConfigModel {
          icon: 'preferences-desktop-color'
          source: 'config/ConfigAppearance.qml'
     }
+    ConfigCategory {
+         name: i18n('Units')
+         icon: 'kronometer'
+         source: 'config/ConfigUnits.qml'
+    }
 }

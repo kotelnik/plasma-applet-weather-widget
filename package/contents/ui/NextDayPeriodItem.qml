@@ -17,12 +17,13 @@
 import QtQuick 2.2
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import "../code/icons.js" as IconTools
-import "../code/temperature-utils.js" as TemperatureUtils
+import "../code/unit-utils.js" as UnitUtils
 
 Item {
     property string temperature
     property string iconName
     property bool hidden
+    property bool past
     property int partOfDay
     property double pixelFontSize
     
@@ -32,6 +33,8 @@ Item {
             temperatureIcon.font.pixelSize = pixelFontSize
         }
     }
+    
+    opacity: past ? 0.5 : 1
     
     Item {
         id: temperatureTextItem
@@ -47,7 +50,7 @@ Item {
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
             
-            text: hidden ? '' : TemperatureUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
+            text: hidden ? '' : UnitUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
         }
     }
     

@@ -78,6 +78,7 @@ Item {
             temperature: temperature0
             iconName: iconName0
             hidden: hidden0
+            past: isPast0
             partOfDay: 1
             pixelFontSize: periodFontSize
         }
@@ -88,6 +89,7 @@ Item {
             temperature: temperature1
             iconName: iconName1
             hidden: hidden1
+            past: isPast1
             partOfDay: 0
             pixelFontSize: periodFontSize
         }
@@ -98,6 +100,7 @@ Item {
             temperature: temperature2
             iconName: iconName2
             hidden: hidden2
+            past: isPast2
             partOfDay: 0
             pixelFontSize: periodFontSize
         }
@@ -108,6 +111,7 @@ Item {
             temperature: temperature3
             iconName: iconName3
             hidden: hidden3
+            past: isPast3
             partOfDay: 1
             pixelFontSize: periodFontSize
         }

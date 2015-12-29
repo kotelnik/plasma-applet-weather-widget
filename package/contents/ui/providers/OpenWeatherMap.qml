@@ -18,7 +18,7 @@ import QtQuick 2.2
 import QtQuick.XmlListModel 2.0
 import "../../code/model-utils.js" as ModelUtils
 import "../../code/data-loader.js" as DataLoader
-import "../../code/temperature-utils.js" as TemperatureUtils
+import "../../code/unit-utils.js" as UnitUtils
 
 Item {
     id: owm
@@ -132,7 +132,7 @@ Item {
         }
         dbgprint('xmlModelLongTerm ready')
         updateNextDaysModel(nextDaysModel, xmlModelLongTerm)
-        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled)
+        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
     }
     
     onXmlModelSunRiseSetStatusChanged: {
@@ -140,20 +140,9 @@ Item {
             return
         }
         dbgprint('xmlModelSunRiseSet ready')
-        additionalWeatherInfo.sunRise = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
-        additionalWeatherInfo.sunSet = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
-        var sunRise = additionalWeatherInfo.sunRise
-        var sunSet = additionalWeatherInfo.sunSet
-        var now = new Date()
-        sunRise.setFullYear(now.getFullYear())
-        sunRise.setMonth(now.getMonth())
-        sunRise.setDate(now.getDate())
-        sunSet.setFullYear(now.getFullYear())
-        sunSet.setMonth(now.getMonth())
-        sunSet.setDate(now.getDate())
-        additionalWeatherInfo.sunRiseTime = Qt.formatTime(sunRise, Qt.locale().timeFormat(Locale.ShortFormat))
-        additionalWeatherInfo.sunSetTime = Qt.formatTime(sunSet, Qt.locale().timeFormat(Locale.ShortFormat))
-        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled)
+        additionalWeatherInfo.sunRise = Date.fromLocaleString(xmlLocale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
+        additionalWeatherInfo.sunSet = Date.fromLocaleString(xmlLocale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
+        updateAdditionalWeatherInfoText()
     }
     
     onXmlModelHourByHourStatusChanged: {
@@ -174,8 +163,8 @@ Item {
         
         for (var i = 0; i < originalXmlModel.count; i++) {
             var obj = originalXmlModel.get(i)
-            var dateFrom = Date.fromLocaleString(locale, obj.from, datetimeFormat)
-            var dateTo = Date.fromLocaleString(locale, obj.to, datetimeFormat)
+            var dateFrom = Date.fromLocaleString(xmlLocale, obj.from, datetimeFormat)
+            var dateTo = Date.fromLocaleString(xmlLocale, obj.to, datetimeFormat)
             dbgprint('meteo fill: i=' + i + ', from=' + obj.from + ', to=' + obj.to)
             var prec = obj.precipitationAvg
             meteogramModel.append({
@@ -258,9 +247,13 @@ Item {
         var nextInterestingTimeObj = null
         var currentWeatherModelsSet = false
         
+        var time0600 = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() + ModelUtils.hourDurationMs * 6)
+        var time1200 = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() + ModelUtils.hourDurationMs * 12)
+        var time1800 = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() + ModelUtils.hourDurationMs * 18)
+        
         for (var i = 0; i < originalXmlModel.count; i++) {
             var timeObj = originalXmlModel.get(i)
-            var dateFrom = Date.fromLocaleString(main.locale, timeObj.date, 'yyyy-MM-dd')
+            var dateFrom = Date.fromLocaleString(xmlLocale, timeObj.date, 'yyyy-MM-dd')
             var dateTo = new Date(dateFrom.getTime())
             dateTo.setDate(dateTo.getDate() + 1);
             dateTo = new Date(dateTo.getTime() - 1)
@@ -274,24 +267,36 @@ Item {
             
             var lastObject = ModelUtils.createEmptyNextDaysObject()
             
+            var isToday = false
             if (dateFrom <= now && now <= dateTo) {
                 dbgprint('setting today')
                 lastObject.dayTitle = i18n('today')
+                isToday = true
             } else {
                 lastObject.dayTitle = Qt.locale().dayName(dateTo.getDay(), Locale.ShortFormat) + ' ' + dateTo.getDate() + '.' + (dateTo.getMonth() + 1) + '.'
             }
             
             newObjectArray.push(lastObject)
-            lastObject.temperatureArray.push(toCelsiaStr(timeObj.temperatureMorning))
-            lastObject.temperatureArray.push(toCelsiaStr(timeObj.temperatureDay))
-            lastObject.temperatureArray.push(toCelsiaStr(timeObj.temperatureEvening))
-            lastObject.temperatureArray.push(toCelsiaStr(timeObj.temperatureNight))
-            lastObject.iconNameArray.push(timeObj.iconName)
-            lastObject.iconNameArray.push(timeObj.iconName)
-            lastObject.iconNameArray.push(timeObj.iconName)
-            lastObject.iconNameArray.push(timeObj.iconName)
-            
-            dbgprint('lastObject.temperatureArray: ' + lastObject.temperatureArray.length)
+            lastObject.tempInfoArray.push({
+                temperature: toCelsiaStr(timeObj.temperatureMorning),
+                iconName: timeObj.iconName,
+                isPast: isToday && now > time0600
+            })
+            lastObject.tempInfoArray.push({
+                temperature: toCelsiaStr(timeObj.temperatureDay),
+                iconName: timeObj.iconName,
+                isPast: isToday && now > time1200
+            })
+            lastObject.tempInfoArray.push({
+                temperature: toCelsiaStr(timeObj.temperatureEvening),
+                iconName: timeObj.iconName,
+                isPast: isToday && now > time1800
+            })
+            lastObject.tempInfoArray.push({
+                temperature: toCelsiaStr(timeObj.temperatureNight),
+                iconName: timeObj.iconName,
+                isPast: false
+            })
         }
 
         //
@@ -313,7 +318,7 @@ Item {
     }
     
     function toCelsiaStr(kelvinStr) {
-        return String(TemperatureUtils.kelvinToCelsia(parseFloat(kelvinStr)))
+        return String(UnitUtils.kelvinToCelsia(parseFloat(kelvinStr)))
     }
     
     /**

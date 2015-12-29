@@ -57,7 +57,6 @@ Item {
                 resultString = match[1]
             }
             if (!resultString) {
-                newYrNoTownStringField.text = 'Error parsing url.'
                 return
             }
             
@@ -118,7 +117,7 @@ Item {
         
         TextField {
             id: newOwmCityIdField
-            placeholderText: 'Paste City ID'
+            placeholderText: 'Paste URL here'
             width: parent.width
         }
         

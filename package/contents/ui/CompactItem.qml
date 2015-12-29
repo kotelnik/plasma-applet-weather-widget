@@ -19,7 +19,7 @@ import QtQuick.Layouts 1.1
 import QtGraphicalEffects 1.0
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import "../code/icons.js" as IconTools
-import "../code/temperature-utils.js" as TemperatureUtils
+import "../code/unit-utils.js" as UnitUtils
 
 Item {
     id: compactItem
@@ -75,7 +75,7 @@ Item {
     property double fontPixelSize: partHeight * (layoutType === 2 ? 0.7 : 0.7)
     
     property string iconNameStr:    actualWeatherModel.count > 0 ? IconTools.getIconCode(actualWeatherModel.get(0).iconName, currentProvider.providerId, getPartOfDayIndex()) : ''
-    property string temperatureStr: actualWeatherModel.count > 0 ? TemperatureUtils.getTemperatureNumber(actualWeatherModel.get(0).temperature, fahrenheitEnabled) + '°' : ''
+    property string temperatureStr: actualWeatherModel.count > 0 ? UnitUtils.getTemperatureNumber(actualWeatherModel.get(0).temperature, fahrenheitEnabled) + '°' : ''
     
     PlasmaComponents.Label {
         

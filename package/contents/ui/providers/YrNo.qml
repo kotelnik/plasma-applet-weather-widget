@@ -134,7 +134,7 @@ Item {
         }
         dbgprint('xmlModelLongTerm ready')
         updateWeatherModels(actualWeatherModel, additionalWeatherInfo.nearFutureWeather, nextDaysModel, xmlModelLongTerm)
-        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled)
+        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
     }
     
     onXmlModelSunRiseSetStatusChanged: {
@@ -142,20 +142,9 @@ Item {
             return
         }
         dbgprint('xmlModelSunRiseSet ready')
-        additionalWeatherInfo.sunRise = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
-        additionalWeatherInfo.sunSet = Date.fromLocaleString(locale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
-        var sunRise = additionalWeatherInfo.sunRise
-        var sunSet = additionalWeatherInfo.sunSet
-        var now = new Date()
-        sunRise.setFullYear(now.getFullYear())
-        sunRise.setMonth(now.getMonth())
-        sunRise.setDate(now.getDate())
-        sunSet.setFullYear(now.getFullYear())
-        sunSet.setMonth(now.getMonth())
-        sunSet.setDate(now.getDate())
-        additionalWeatherInfo.sunRiseTime = Qt.formatTime(sunRise, Qt.locale().timeFormat(Locale.ShortFormat))
-        additionalWeatherInfo.sunSetTime = Qt.formatTime(sunSet, Qt.locale().timeFormat(Locale.ShortFormat))
-        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo, fahrenheitEnabled)
+        additionalWeatherInfo.sunRise = Date.fromLocaleString(xmlLocale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
+        additionalWeatherInfo.sunSet = Date.fromLocaleString(xmlLocale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
+        updateAdditionalWeatherInfoText()
     }
     
     onXmlModelHourByHourStatusChanged: {
@@ -172,8 +161,8 @@ Item {
         
         for (var i = 0; i < originalXmlModel.count; i++) {
             var obj = originalXmlModel.get(i)
-            var dateFrom = Date.fromLocaleString(locale, obj.from, datetimeFormat)
-            var dateTo = Date.fromLocaleString(locale, obj.to, datetimeFormat)
+            var dateFrom = Date.fromLocaleString(xmlLocale, obj.from, datetimeFormat)
+            var dateTo = Date.fromLocaleString(xmlLocale, obj.to, datetimeFormat)
             meteogramModel.append({
                 from: dateFrom,
                 to: dateTo,
@@ -238,8 +227,11 @@ Item {
                         todayObject = ModelUtils.createEmptyNextDaysObject()
                         todayObject.dayTitle = i18n('today')
                     }
-                    todayObject.temperatureArray.push(timeObj.temperature)
-                    todayObject.iconNameArray.push(timeObj.iconName)
+                    todayObject.tempInfoArray.push({
+                        temperature: timeObj.temperature,
+                        iconName: timeObj.iconName,
+                        isPast: false
+                    })
                     
                     continue
                 }
@@ -258,8 +250,11 @@ Item {
                 newObjectArray.push(lastObject)
             }
             
-            lastObject.temperatureArray.push(timeObj.temperature)
-            lastObject.iconNameArray.push(timeObj.iconName)
+            lastObject.tempInfoArray.push({
+                temperature: timeObj.temperature,
+                iconName: timeObj.iconName,
+                isPast: false
+            })
         }
 
         // set current models
@@ -281,9 +276,8 @@ Item {
         
         // prepend today object
         if (todayObject !== null) {
-            while (todayObject.temperatureArray.length < 4) {
-                todayObject.temperatureArray.unshift(null)
-                todayObject.iconNameArray.unshift(null)
+            while (todayObject.tempInfoArray.length < 4) {
+                todayObject.tempInfoArray.unshift(null)
             }
             ModelUtils.populateNextDaysObject(todayObject)
             nextDaysWeatherModel.append(todayObject)
