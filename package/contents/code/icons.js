@@ -247,7 +247,6 @@ var iconCodeByWindDirectionCode = {
 }
 
 function getIconCode(iconName, providerId, partOfDay) {
-    console.log('DEBUG - iconName: ' + iconName)
     var iconCodeParts = null
     if (providerId === 'yrno') {
         iconCodeParts = WeatherFont.iconNameByYrNoCode[iconName]

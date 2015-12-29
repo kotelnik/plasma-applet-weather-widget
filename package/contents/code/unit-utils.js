@@ -23,7 +23,6 @@ function kelvinToCelsia(kelvin) {
 function getPressureNumber(hpa, inhgEnabled) {
     if (inhgEnabled) {
         return Math.round(hpa * 0.0295299830714 * 10) / 10
-//         return Math.round(hpa * 0.0295299830714)//TODO
     }
     return hpa
 }

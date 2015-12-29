@@ -32,7 +32,7 @@ Item {
             try {
                 cacheBackend = Qt.createQmlObject('import org.kde.private.weatherWidget 1.0 as WW; WW.Backend {}', weatherCache, 'cacheBackend')
             } catch (e) {
-                dbgprint('cacheBackend failed to initialize')
+                print('cacheBackend failed to initialize')
                 cacheBackendFailedToInitialize = true
             }
             dbgprint('initializing cacheBackend...DONE ' + cacheBackend)
