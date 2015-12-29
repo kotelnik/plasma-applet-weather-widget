@@ -17,7 +17,7 @@ cmake .. \
     -DLIB_INSTALL_DIR=lib \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON
 make
-make install
+sudo make install
 ```
 
 ## Repeated build and install
@@ -30,6 +30,6 @@ cmake .. \
     -DLIB_INSTALL_DIR=lib \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON
 make
-make install
+sudo make install
 killall plasmashell; plasmashell &
 ```
