@@ -202,19 +202,36 @@ Item {
         
         TableView {
             id: placesTable
-            headerVisible: false
             width: parent.width
             
             TableViewColumn {
                 role: 'providerId'
-                title: i18n('Provider')
+                title: i18n('Source')
                 width: parent.width * 0.1
+                
+                delegate: Label {
+                    text: styleData.value
+                    elide: Text.ElideRight
+                    anchors.left: parent.left
+                    anchors.leftMargin: 5
+                    anchors.right: parent.right
+                    anchors.rightMargin: 5
+                }
             }
             
             TableViewColumn {
                 role: 'placeIdentifier'
                 title: i18n('Place Identifier')
                 width: parent.width * 0.4
+                
+                delegate: Label {
+                    text: styleData.value
+                    elide: Text.ElideRight
+                    anchors.left: parent.left
+                    anchors.leftMargin: 5
+                    anchors.right: parent.right
+                    anchors.rightMargin: 5
+                }
             }
             
             TableViewColumn {
@@ -230,6 +247,10 @@ Item {
                         id: placeAliasText
                         text: styleData.value
                         height: parent.height
+                        anchors.left: parent.left
+                        anchors.leftMargin: 5
+                        anchors.right: parent.right
+                        anchors.rightMargin: 5
                     }
                     
                     cursorShape: Qt.PointingHandCursor
