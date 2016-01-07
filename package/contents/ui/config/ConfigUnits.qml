@@ -4,38 +4,53 @@ import QtQuick.Layouts 1.1
 
 Item {
     
-    property bool cfg_fahrenheitEnabled
-    property bool cfg_inhgEnabled
-    property bool cfg_mphEnabled
+    property int cfg_temperatureType
+    property int cfg_pressureType
+    property int cfg_windSpeedType
     
-    onCfg_fahrenheitEnabledChanged: {
-        if (cfg_fahrenheitEnabled) {
-            temperatureTypeGroup.current = temperatureFahrenheit
-        } else {
-            temperatureTypeGroup.current = temperatureCelsius
+    onCfg_temperatureTypeChanged: {
+        switch (cfg_temperatureType) {
+        case 0:
+            temperatureTypeGroup.current = temperatureTypeRadioCelsius;
+            break;
+        case 1:
+            temperatureTypeGroup.current = temperatureTypeRadioFahrenheit;
+            break;
+        default:
         }
     }
     
-    onCfg_inhgEnabledChanged: {
-        if (cfg_inhgEnabled) {
-            pressureTypeGroup.current = pressureInhg
-        } else {
-            pressureTypeGroup.current = pressureHpa
+    onCfg_pressureTypeChanged: {
+        switch (cfg_pressureType) {
+        case 0:
+            pressureTypeGroup.current = pressureTypeRadioHpa;
+            break;
+        case 1:
+            pressureTypeGroup.current = pressureTypeRadioInhg;
+            break;
+        case 2:
+            pressureTypeGroup.current = pressureTypeRadioMmhg;
+            break;
+        default:
         }
     }
     
-    onCfg_mphEnabledChanged: {
-        if (cfg_mphEnabled) {
-            windSpeedTypeGroup.current = speedMph
-        } else {
-            windSpeedTypeGroup.current = speedMps
+    onCfg_windSpeedTypeChanged: {
+        switch (cfg_windSpeedType) {
+        case 0:
+            windSpeedTypeGroup.current = windSpeedTypeRadioMps;
+            break;
+        case 1:
+            windSpeedTypeGroup.current = windSpeedTypeRadioMph;
+            break;
+        default:
         }
     }
     
     Component.onCompleted: {
-        cfg_fahrenheitEnabledChanged()
-        cfg_inhgEnabledChanged()
-        cfg_mphEnabledChanged()
+        cfg_temperatureTypeChanged()
+        cfg_pressureTypeChanged()
+        cfg_windSpeedTypeChanged()
     }
     
     ExclusiveGroup {
@@ -58,10 +73,10 @@ Item {
             Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
         }
         RadioButton {
-            id: temperatureCelsius
+            id: temperatureTypeRadioCelsius
             exclusiveGroup: temperatureTypeGroup
             text: i18n("°C")
-            onCheckedChanged: if (checked) cfg_fahrenheitEnabled = false
+            onCheckedChanged: if (checked) cfg_temperatureType = 0
         }
         Item {
             width: 2
@@ -69,10 +84,10 @@ Item {
             Layout.rowSpan: 1
         }
         RadioButton {
-            id: temperatureFahrenheit
+            id: temperatureTypeRadioFahrenheit
             exclusiveGroup: temperatureTypeGroup
             text: i18n("°F")
-            onCheckedChanged: if (checked) cfg_fahrenheitEnabled = true
+            onCheckedChanged: if (checked) cfg_temperatureType = 1
         }
         
         Item {
@@ -86,21 +101,27 @@ Item {
             Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
         }
         RadioButton {
-            id: pressureHpa
+            id: pressureTypeRadioHpa
             exclusiveGroup: pressureTypeGroup
             text: i18n("hPa")
-            onCheckedChanged: if (checked) cfg_inhgEnabled = false
+            onCheckedChanged: if (checked) cfg_pressureType = 0
         }
         Item {
             width: 2
             height: 2
-            Layout.rowSpan: 1
+            Layout.rowSpan: 2
         }
         RadioButton {
-            id: pressureInhg
+            id: pressureTypeRadioInhg
             exclusiveGroup: pressureTypeGroup
             text: i18n("inHg")
-            onCheckedChanged: if (checked) cfg_inhgEnabled = true
+            onCheckedChanged: if (checked) cfg_pressureType = 1
+        }
+        RadioButton {
+            id: pressureTypeRadioMmhg
+            exclusiveGroup: pressureTypeGroup
+            text: i18n("mmHg")
+            onCheckedChanged: if (checked) cfg_pressureType = 2
         }
         
         Item {
@@ -114,10 +135,10 @@ Item {
             Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
         }
         RadioButton {
-            id: speedMps
+            id: windSpeedTypeRadioMps
             exclusiveGroup: windSpeedTypeGroup
             text: i18n("m/s")
-            onCheckedChanged: if (checked) cfg_mphEnabled = false
+            onCheckedChanged: if (checked) cfg_windSpeedType = 0
         }
         Item {
             width: 2
@@ -125,10 +146,10 @@ Item {
             Layout.rowSpan: 1
         }
         RadioButton {
-            id: speedMph
+            id: windSpeedTypeRadioMph
             exclusiveGroup: windSpeedTypeGroup
             text: i18n("mph")
-            onCheckedChanged: if (checked) cfg_mphEnabled = true
+            onCheckedChanged: if (checked) cfg_windSpeedType = 1
         }
     }
     

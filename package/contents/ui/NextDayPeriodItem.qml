@@ -44,13 +44,15 @@ Item {
         PlasmaComponents.Label {
             id: temperatureText
             
+            font.pointSize: -1
+            
             width: parent.width
             height: parent.height
             
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
             
-            text: hidden ? '' : UnitUtils.getTemperatureNumber(temperature, fahrenheitEnabled) + '°'
+            text: hidden ? '' : UnitUtils.getTemperatureNumber(temperature, temperatureType) + '°'
         }
     }
     
@@ -62,6 +64,8 @@ Item {
         
         PlasmaComponents.Label {
             id: temperatureIcon
+            
+            font.pointSize: -1
             
             anchors.centerIn: parent
             

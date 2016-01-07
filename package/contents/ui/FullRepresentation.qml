@@ -123,6 +123,7 @@ Item {
             anchors.top: parent.top
             anchors.right: parent.right
             font.pixelSize: defaultFontPixelSize * 0.8
+            font.pointSize: -1
             verticalAlignment: Text.AlignTop
             opacity: 0.6
         }
@@ -134,6 +135,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: defaultFontPixelSize
+            font.pointSize: -1
             opacity: 0.6
         }
         PlasmaComponents.Label {
@@ -142,6 +144,7 @@ Item {
             anchors.right: parent.right
             verticalAlignment: Text.AlignBottom
             font.pixelSize: defaultFontPixelSize * 0.8
+            font.pointSize: -1
             opacity: 0.6
         }
     }

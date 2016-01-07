@@ -36,9 +36,9 @@ Item {
     property var cacheMap: {}
     property var lastReloadedMsMap: {}
     property bool renderMeteogram: plasmoid.configuration.renderMeteogram
-    property bool fahrenheitEnabled: plasmoid.configuration.fahrenheitEnabled
-    property bool inhgEnabled: plasmoid.configuration.inhgEnabled
-    property bool mphEnabled: plasmoid.configuration.mphEnabled
+    property int temperatureType: plasmoid.configuration.temperatureType
+    property int pressureType: plasmoid.configuration.pressureType
+    property int windSpeedType: plasmoid.configuration.windSpeedType
     property bool twelveHourClockEnabled: Qt.locale().timeFormat(Locale.ShortFormat).toString().indexOf('AP') > -1
     property bool placesJsonStr: plasmoid.configuration.places
     
@@ -368,17 +368,17 @@ Item {
         var subText = ''
         
         if (inTray) {
-            subText += '<br /><font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, mphEnabled) + '</font>'
-            subText += '<br /><font size="4">' + UnitUtils.getPressureText(actualWeatherModel.get(0).pressureHpa, inhgEnabled) + '</font>'
+            subText += '<br /><font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, windSpeedType) + '</font>'
+            subText += '<br /><font size="4">' + UnitUtils.getPressureText(actualWeatherModel.get(0).pressureHpa, pressureType) + '</font>'
             subText += '<br /><font size="4">⬆&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;⬇&nbsp;' + additionalWeatherInfo.sunSetTime + '</font>'
             subText += '<br /><br />'
-            subText += '<font size="6">~><b><font color="transparent">__</font>' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
+            subText += '<font size="6">~><b><font color="transparent">__</font>' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, temperatureType) + UnitUtils.getTemperatureEnding(temperatureType)
         } else {
-            subText += '<br /><font size="4" style="font-family: weathericons">' + windDirectionIcon + '</font><font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, mphEnabled) + '</font>'
-            subText += '<br /><font size="4">' + UnitUtils.getPressureText(actualWeatherModel.get(0).pressureHpa, inhgEnabled) + '</font>'
+            subText += '<br /><font size="4" style="font-family: weathericons">' + windDirectionIcon + '</font><font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, windSpeedType) + '</font>'
+            subText += '<br /><font size="4">' + UnitUtils.getPressureText(actualWeatherModel.get(0).pressureHpa, pressureType) + '</font>'
             subText += '<br /><font size="4"><font style="font-family: weathericons">\uf051</font>&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;<font style="font-family: weathericons">\uf052</font>&nbsp;' + additionalWeatherInfo.sunSetTime + '</font>'
             subText += '<br /><br />'
-            subText += '<font size="6">~><b><font color="transparent">__</font>' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, fahrenheitEnabled) + '°' + (fahrenheitEnabled ? 'F' : 'C')
+            subText += '<font size="6">~><b><font color="transparent">__</font>' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, temperatureType) + UnitUtils.getTemperatureEnding(temperatureType)
             subText += '<font color="transparent">__</font><font style="font-family: weathericons">' + futureWeatherIcon + '</font></b></font>'
         }
         
@@ -416,15 +416,15 @@ Item {
         }
     }
     
-    onFahrenheitEnabledChanged: {
+    onTemperatureTypeChanged: {
         refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
     }
     
-    onInhgEnabledChanged: {
+    onPressureTypeChanged: {
         refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
     }
     
-    onMphEnabledChanged: {
+    onWindSpeedTypeChanged: {
         refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
     }
     

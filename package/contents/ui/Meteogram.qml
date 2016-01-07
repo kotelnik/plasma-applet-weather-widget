@@ -150,7 +150,7 @@ Item {
     
     function redrawCanvas() {
         
-        print('redrawing canvas with temperatureMultiplierY=' + temperatureMultiplierY)
+        dbgprint('redrawing canvas with temperatureMultiplierY=' + temperatureMultiplierY)
         
         var newPathElements = []
         var newPressureElements = []
@@ -246,34 +246,37 @@ Item {
                 }
                 
                 PlasmaComponents.Label {
-                    text: UnitUtils.getTemperatureNumber(-temperatureAdditiveY + (temperatureSizeY - num), fahrenheitEnabled) + '°'
+                    text: UnitUtils.getTemperatureNumber(-temperatureAdditiveY + (temperatureSizeY - num), temperatureType) + '°'
                     height: parent.height
                     width: graphLeftMargin - 2
                     horizontalAlignment: Text.AlignRight
                     anchors.left: parent.left
                     anchors.leftMargin: -graphLeftMargin
                     font.pixelSize: 10
+                    font.pointSize: -1
                 }
                 
                 PlasmaComponents.Label {
-                    text: String(UnitUtils.getPressureNumber(-pressureAdditiveY + (pressureSizeY - 1 - num * pressureMultiplier), inhgEnabled))
+                    text: String(UnitUtils.getPressureNumber(-pressureAdditiveY + (pressureSizeY - 1 - num * pressureMultiplier), pressureType))
                     height: parent.height
                     width: graphLeftMargin - 2
                     horizontalAlignment: Text.AlignLeft
                     anchors.right: parent.right
                     anchors.rightMargin: -graphLeftMargin
                     font.pixelSize: 10
+                    font.pointSize: -1
                     color: pressureColor
                 }
                 
                 PlasmaComponents.Label {
-                    text: UnitUtils.getPressureEnding(inhgEnabled)
+                    text: UnitUtils.getPressureEnding(pressureType)
                     height: parent.height
                     width: graphLeftMargin - 2
                     horizontalAlignment: Text.AlignLeft
                     anchors.right: parent.right
                     anchors.rightMargin: -graphLeftMargin
                     font.pixelSize: 10
+                    font.pointSize: -1
                     color: pressureColor
                     anchors.top: parent.top
                     anchors.topMargin: -14
@@ -327,6 +330,7 @@ Item {
                     anchors.left: parent.left
                     anchors.leftMargin: parent.width / 2
                     font.pixelSize: theme.defaultFont.pixelSize
+                    font.pointSize: -1
                     visible: dayBegins && canShowDay
                 }
                 
@@ -348,6 +352,7 @@ Item {
                     anchors.bottomMargin: -graphTopMargin
                     anchors.horizontalCenter: parent.horizontalCenter
                     font.pixelSize: 10
+                    font.pointSize: -1
                     visible: textVisible
                 }
                 
@@ -358,6 +363,7 @@ Item {
                     anchors.top: hourText.top
                     anchors.left: hourText.right
                     font.pixelSize: 7
+                    font.pointSize: -1
                     visible: textVisible
                 }
                 
@@ -394,6 +400,7 @@ Item {
                         anchors.topMargin: -precipitationLabelMargin
                         anchors.horizontalCenter: precipitationAvgRect.horizontalCenter
                         font.pixelSize: precipitationFontPixelSize
+                        font.pointSize: -1
                         visible: precLabelVisible
                     }
 
@@ -404,6 +411,7 @@ Item {
                         anchors.bottom: precipitationMaxRect.top
                         anchors.horizontalCenter: precipitationAvgRect.horizontalCenter
                         font.pixelSize: precipitationFontPixelSize
+                        font.pointSize: -1
                         visible: precLabelVisible
                     }
                 }
