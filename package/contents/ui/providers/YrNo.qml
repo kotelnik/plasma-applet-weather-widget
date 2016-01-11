@@ -176,11 +176,23 @@ Item {
     function updateMeteogramModel(meteogramModel, originalXmlModel) {
         
         meteogramModel.clear()
+        var now = new Date()
         
         for (var i = 0; i < originalXmlModel.count; i++) {
             var obj = originalXmlModel.get(i)
             var dateFrom = parseDate(obj.from)
+            dbgprint('yr meteogram from adding: ' + dateFrom)
             var dateTo = parseDate(obj.to)
+            
+            if (now > dateTo) {
+                continue;
+            }
+            
+            if (dateFrom <= now && now <= dateTo) {
+                dbgprint('foundNow')
+                dateFrom = now
+            }
+            
             meteogramModel.append({
                 from: dateFrom,
                 to: dateTo,
