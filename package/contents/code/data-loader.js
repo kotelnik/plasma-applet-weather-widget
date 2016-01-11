@@ -64,7 +64,7 @@ function generateCacheKey(placeIdentifier) {
 }
 
 function isXmlStringValid(xmlString) {
-    return xmlString.indexOf('<?xml ') === 0 || xmlString.indexOf('<weatherdata>') === 0
+    return xmlString.indexOf('<?xml ') === 0 || xmlString.indexOf('<weatherdata>') === 0 || xmlString.indexOf('<current>') === 0
 }
 
 function fetchXmlFromInternet(getUrl, successCallback, failureCallback) {

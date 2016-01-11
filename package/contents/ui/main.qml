@@ -92,7 +92,7 @@ Item {
     Plasmoid.compactRepresentation: cr
     Plasmoid.fullRepresentation: fr
     
-    property bool debugLogging: false
+    property bool debugLogging: true
     
     function dbgprint(msg) {
         if (!debugLogging) {
@@ -137,10 +137,10 @@ Item {
     Component.onCompleted: {
         
         additionalWeatherInfo = {
-            sunRise: Date.fromLocaleString(xmlLocale, '2000-01-01T06:00:00', datetimeFormat),
-            sunSet: Date.fromLocaleString(xmlLocale, '2000-01-01T18:00:00', datetimeFormat),
-            sunRiseTime: '6:00',
-            sunSetTime: '18:00',
+            sunRise: new Date('2000-01-01T00:00:00'),
+            sunSet: new Date('2000-01-01T00:00:00'),
+            sunRiseTime: '0:00',
+            sunSetTime: '0:00',
             nearFutureWeather: {
                 iconName: null,
                 temperature: null
@@ -353,10 +353,10 @@ Item {
         sunSet.setDate(now.getDate())
         additionalWeatherInfo.sunRiseTime = Qt.formatTime(sunRise, Qt.locale().timeFormat(Locale.ShortFormat))
         additionalWeatherInfo.sunSetTime = Qt.formatTime(sunSet, Qt.locale().timeFormat(Locale.ShortFormat))
-        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
+        refreshTooltipSubText()
     }
     
-    function refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo) {
+    function refreshTooltipSubText() {
         dbgprint('refreshing sub text')
         if (additionalWeatherInfo === undefined || additionalWeatherInfo.nearFutureWeather.iconName === null || actualWeatherModel.count === 0) {
             dbgprint('model not yet ready')
@@ -368,18 +368,42 @@ Item {
         var subText = ''
         
         if (inTray) {
-            subText += '<br /><font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, windSpeedType) + '</font>'
+            subText += '<font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, windSpeedType) + '</font>'
             subText += '<br /><font size="4">' + UnitUtils.getPressureText(actualWeatherModel.get(0).pressureHpa, pressureType) + '</font>'
+            if (typeof(actualWeatherModel.get(0).humidity) === 'string' && typeof(actualWeatherModel.get(0).cloudiness) === 'string') {
+                subText += '<br /><font size="4">' + actualWeatherModel.get(0).humidity + '% humidity</font>'
+                subText += '<br /><font size="4">' + actualWeatherModel.get(0).cloudiness + '% clouds</font>'
+            }
             subText += '<br /><font size="4">⬆&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;⬇&nbsp;' + additionalWeatherInfo.sunSetTime + '</font>'
-            subText += '<br /><br />'
-            subText += '<font size="6">~><b><font color="transparent">__</font>' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, temperatureType) + UnitUtils.getTemperatureEnding(temperatureType)
+            subText += '<br />'
+            subText += '<font size="3">near future</font>'
+            subText += '<b>'
+            subText += '<font size="6">&nbsp;&nbsp;' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, temperatureType) + UnitUtils.getTemperatureEnding(temperatureType) + '</font>'
+            subText += '</b>'
         } else {
             subText += '<br /><font size="4" style="font-family: weathericons">' + windDirectionIcon + '</font><font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, windSpeedType) + '</font>'
             subText += '<br /><font size="4">' + UnitUtils.getPressureText(actualWeatherModel.get(0).pressureHpa, pressureType) + '</font>'
-            subText += '<br /><font size="4"><font style="font-family: weathericons">\uf051</font>&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;<font style="font-family: weathericons">\uf052</font>&nbsp;' + additionalWeatherInfo.sunSetTime + '</font>'
+            subText += '<br /><table>'
+            if (typeof(actualWeatherModel.get(0).humidity) === 'string' && typeof(actualWeatherModel.get(0).cloudiness) === 'string') {
+                subText += '<tr>'
+                subText += '<td><font size="4"><font style="font-family: weathericons">\uf07a</font>&nbsp;' + actualWeatherModel.get(0).humidity + '%</font></td>'
+                subText += '<td><font size="4"><font style="font-family: weathericons">\uf013</font>&nbsp;' + actualWeatherModel.get(0).cloudiness + '%</font></td>'
+                subText += '</tr>'
+                subText += '<tr><td>&nbsp;</td><td></td></tr>'
+            }
+            subText += '<tr>'
+            subText += '<td><font size="4"><font style="font-family: weathericons">\uf051</font>&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;</font></td>'
+            subText += '<td><font size="4"><font style="font-family: weathericons">\uf052</font>&nbsp;' + additionalWeatherInfo.sunSetTime + '</font></td>'
+            subText += '</tr>'
+            subText += '</table>'
+            
             subText += '<br /><br />'
-            subText += '<font size="6">~><b><font color="transparent">__</font>' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, temperatureType) + UnitUtils.getTemperatureEnding(temperatureType)
-            subText += '<font color="transparent">__</font><font style="font-family: weathericons">' + futureWeatherIcon + '</font></b></font>'
+            subText += '<font size="3">near future</font>'
+            subText += '<b>'
+            subText += '<font size="6">&nbsp;&nbsp;&nbsp;' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, temperatureType) + UnitUtils.getTemperatureEnding(temperatureType)
+            subText += '&nbsp;&nbsp;&nbsp;<font style="font-family: weathericons">' + futureWeatherIcon + '</font></font>'
+            subText += '</b>'
+            
         }
         
         tooltipSubText = subText
@@ -417,19 +441,19 @@ Item {
     }
     
     onTemperatureTypeChanged: {
-        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
+        refreshTooltipSubText()
     }
     
     onPressureTypeChanged: {
-        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
+        refreshTooltipSubText()
     }
     
     onWindSpeedTypeChanged: {
-        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
+        refreshTooltipSubText()
     }
     
     onTwelveHourClockEnabledChanged: {
-        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
+        refreshTooltipSubText()
     }
     
 }

@@ -205,6 +205,7 @@ Item {
             width: parent.width
             
             TableViewColumn {
+                id: providerIdCol
                 role: 'providerId'
                 title: i18n('Source')
                 width: parent.width * 0.1
@@ -212,14 +213,15 @@ Item {
                 delegate: Label {
                     text: styleData.value
                     elide: Text.ElideRight
-                    anchors.left: parent.left
+                    anchors.left: parent ? parent.left : undefined
                     anchors.leftMargin: 5
-                    anchors.right: parent.right
+                    anchors.right: parent ? parent.right : undefined
                     anchors.rightMargin: 5
                 }
             }
             
             TableViewColumn {
+                id: placeIdentifierCol
                 role: 'placeIdentifier'
                 title: i18n('Place Identifier')
                 width: parent.width * 0.4
@@ -227,9 +229,9 @@ Item {
                 delegate: Label {
                     text: styleData.value
                     elide: Text.ElideRight
-                    anchors.left: parent.left
+                    anchors.left: parent ? parent.left : undefined
                     anchors.leftMargin: 5
-                    anchors.right: parent.right
+                    anchors.right: parent ? parent.right : undefined
                     anchors.rightMargin: 5
                 }
             }

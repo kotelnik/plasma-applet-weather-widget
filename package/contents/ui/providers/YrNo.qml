@@ -112,21 +112,35 @@ Item {
     
     XmlListModel {
         id: xmlModelSunRiseSet
-        query: '/weatherdata/sun'
+        query: '/weatherdata'
 
         XmlRole {
+            name: 'utcOffsetMinutes'
+            query: 'location/timezone/@utcoffsetMinutes/string()'
+        }
+        XmlRole {
             name: 'rise'
-            query: '@rise/string()'
+            query: 'sun/@rise/string()'
         }
         XmlRole {
             name: 'set'
-            query: '@set/string()'
+            query: 'sun/@set/string()'
         }
     }
     
     property var xmlModelLongTermStatus: xmlModelLongTerm.status
     property var xmlModelSunRiseSetStatus: xmlModelSunRiseSet.status
     property var xmlModelHourByHourStatus: xmlModelHourByHour.status
+    
+    property int utcOffsetMinutes: 0
+    
+    function parseDate(dateString) {
+        var minutes = utcOffsetMinutes % 60
+        var hours = (utcOffsetMinutes - minutes) / 60
+        var preparedDateString = dateString + '.000' + (utcOffsetMinutes < 0 ? '-' : '+') + ('0' + Math.abs(hours)).slice(-2) + ':' + ('0' + Math.abs(minutes)).slice(-2)
+        dbgprint('prepared date string: ' + preparedDateString)
+        return new Date(preparedDateString)
+    }
 
     onXmlModelLongTermStatusChanged: {
         if (xmlModelLongTerm.status != XmlListModel.Ready) {
@@ -134,7 +148,8 @@ Item {
         }
         dbgprint('xmlModelLongTerm ready')
         updateWeatherModels(actualWeatherModel, additionalWeatherInfo.nearFutureWeather, nextDaysModel, xmlModelLongTerm)
-        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
+        refreshTooltipSubText()
+        dbgprint('xmlModelLongTerm all set up')
     }
     
     onXmlModelSunRiseSetStatusChanged: {
@@ -142,9 +157,11 @@ Item {
             return
         }
         dbgprint('xmlModelSunRiseSet ready')
-        additionalWeatherInfo.sunRise = Date.fromLocaleString(xmlLocale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
-        additionalWeatherInfo.sunSet = Date.fromLocaleString(xmlLocale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
+        utcOffsetMinutes = xmlModelSunRiseSet.get(0).utcOffsetMinutes
+        additionalWeatherInfo.sunRise = parseDate(xmlModelSunRiseSet.get(0).rise)
+        additionalWeatherInfo.sunSet = parseDate(xmlModelSunRiseSet.get(0).set)
         updateAdditionalWeatherInfoText()
+        dbgprint('xmlModelSunRiseSet all set up')
     }
     
     onXmlModelHourByHourStatusChanged: {
@@ -153,6 +170,7 @@ Item {
         }
         dbgprint('xmlModelHourByHour ready')
         updateMeteogramModel(meteogramModel, xmlModelHourByHour)
+        dbgprint('xmlModelHourByHour all set up')
     }
     
     function updateMeteogramModel(meteogramModel, originalXmlModel) {
@@ -161,8 +179,8 @@ Item {
         
         for (var i = 0; i < originalXmlModel.count; i++) {
             var obj = originalXmlModel.get(i)
-            var dateFrom = Date.fromLocaleString(xmlLocale, obj.from, datetimeFormat)
-            var dateTo = Date.fromLocaleString(xmlLocale, obj.to, datetimeFormat)
+            var dateFrom = parseDate(obj.from)
+            var dateTo = parseDate(obj.to)
             meteogramModel.append({
                 from: dateFrom,
                 to: dateTo,
@@ -203,8 +221,8 @@ Item {
         
         for (var i = 0; i < originalXmlModel.count; i++) {
             var timeObj = originalXmlModel.get(i)
-            var dateFrom = new Date(timeObj.from)
-            var dateTo = new Date(timeObj.to)
+            var dateFrom = parseDate(timeObj.from)
+            var dateTo = parseDate(timeObj.to)
             
             // prepare current models
             if (!currentWeatherModelsSet
@@ -339,8 +357,11 @@ Item {
         if (!cacheContent.longTerm || !cacheContent.hourByHour) {
             return false
         }
-        xmlModelLongTerm.xml = cacheContent.longTerm
+        xmlModelSunRiseSet.xml = ''
         xmlModelSunRiseSet.xml = cacheContent.longTerm
+        xmlModelLongTerm.xml = ''
+        xmlModelLongTerm.xml = cacheContent.longTerm
+        xmlModelHourByHour.xml = ''
         xmlModelHourByHour.xml = cacheContent.hourByHour
         return true
     }

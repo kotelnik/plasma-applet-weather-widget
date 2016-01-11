@@ -25,8 +25,8 @@ Item {
     
     property string providerId: 'owm'
     
-    property string urlPrefix: 'http://api.openweathermap.org/data/2.5/forecast'
-    property string appIdAndModeSuffix: '&mode=xml&appid=5819a34c58f8f07bc282820ca08948f1'
+    property string urlPrefix: 'http://api.openweathermap.org/data/2.5'
+    property string appIdAndModeSuffix: '&units=metric&mode=xml&appid=5819a34c58f8f07bc282820ca08948f1'
     
     XmlListModel {
         id: xmlModelLongTerm
@@ -109,39 +109,67 @@ Item {
     }
     
     XmlListModel {
-        id: xmlModelSunRiseSet
-        query: '/weatherdata/sun'
+        id: xmlModelCurrent
+        query: '/current'
 
         XmlRole {
+            name: 'temperature'
+            query: 'temperature/@value/string()'
+        }
+        XmlRole {
+            name: 'iconName'
+            query: 'weather/@number/string()'
+        }
+        XmlRole {
+            name: 'humidity'
+            query: 'humidity/@value/string()'
+        }
+        XmlRole {
+            name: 'pressureHpa'
+            query: 'pressure/@value/string()'
+        }
+        XmlRole {
+            name: 'windSpeedMps'
+            query: 'wind/speed/@value/string()'
+        }
+        XmlRole {
+            name: 'windDirection'
+            query: 'wind/direction/@code/string()'
+        }
+        XmlRole {
+            name: 'cloudiness'
+            query: 'clouds/@value/string()'
+        }
+        XmlRole {
+            name: 'updated'
+            query: 'lastupdate/@value/string()'
+        }
+        XmlRole {
             name: 'rise'
-            query: '@rise/string()'
+            query: 'city/sun/@rise/string()'
         }
         XmlRole {
             name: 'set'
-            query: '@set/string()'
+            query: 'city/sun/@set/string()'
         }
     }
     
     property var xmlModelLongTermStatus: xmlModelLongTerm.status
-    property var xmlModelSunRiseSetStatus: xmlModelSunRiseSet.status
+    property var xmlModelCurrentStatus: xmlModelCurrent.status
     property var xmlModelHourByHourStatus: xmlModelHourByHour.status
-
-    onXmlModelLongTermStatusChanged: {
-        if (xmlModelLongTerm.status != XmlListModel.Ready) {
-            return
-        }
-        dbgprint('xmlModelLongTerm ready')
-        updateNextDaysModel(nextDaysModel, xmlModelLongTerm)
-        refreshTooltipSubText(actualWeatherModel, additionalWeatherInfo)
+    
+    function parseDate(dateString) {
+        return new Date(dateString + '.000Z')
     }
     
-    onXmlModelSunRiseSetStatusChanged: {
-        if (xmlModelSunRiseSet.status != XmlListModel.Ready) {
+    onXmlModelCurrentStatusChanged: {
+        if (xmlModelCurrent.status != XmlListModel.Ready) {
             return
         }
-        dbgprint('xmlModelSunRiseSet ready')
-        additionalWeatherInfo.sunRise = Date.fromLocaleString(xmlLocale, xmlModelSunRiseSet.get(0).rise, datetimeFormat)
-        additionalWeatherInfo.sunSet = Date.fromLocaleString(xmlLocale, xmlModelSunRiseSet.get(0).set, datetimeFormat)
+        dbgprint('xmlModelCurrent ready')
+        additionalWeatherInfo.sunRise = parseDate(xmlModelCurrent.get(0).rise)
+        additionalWeatherInfo.sunSet = parseDate(xmlModelCurrent.get(0).set)
+        updateTodayModel()
         updateAdditionalWeatherInfoText()
     }
     
@@ -150,70 +178,58 @@ Item {
             return
         }
         dbgprint('xmlModelHourByHour ready')
-        updateTodayModels(actualWeatherModel, additionalWeatherInfo.nearFutureWeather, xmlModelHourByHour)
-        updateMeteogramModel(meteogramModel, xmlModelHourByHour)
+        updateTodayModels(xmlModelHourByHour)
+        updateMeteogramModel(xmlModelHourByHour)
     }
-    
-    function updateMeteogramModel(meteogramModel, originalXmlModel) {
-        
-        meteogramModel.clear()
-        
-        var firstFromMs = null
-        var limitMsDifference = 1000 * 60 * 60 * 54 // 2.25 days
-        
-        for (var i = 0; i < originalXmlModel.count; i++) {
-            var obj = originalXmlModel.get(i)
-            var dateFrom = Date.fromLocaleString(xmlLocale, obj.from, datetimeFormat)
-            var dateTo = Date.fromLocaleString(xmlLocale, obj.to, datetimeFormat)
-            dbgprint('meteo fill: i=' + i + ', from=' + obj.from + ', to=' + obj.to)
-            var prec = obj.precipitationAvg
-            meteogramModel.append({
-                from: dateFrom,
-                to: dateTo,
-                temperature: parseInt(obj.temperature),
-                precipitationAvg: obj.precipitationAvg,
-                precipitationMin: '',
-                precipitationMax: obj.precipitationAvg,
-                windDirection: obj.windDirection,
-                windSpeedMps: parseFloat(obj.windSpeedMps),
-                pressureHpa: parseFloat(obj.pressureHpa),
-                iconName: obj.iconName
-            })
-            
-            if (firstFromMs === null) {
-                firstFromMs = dateFrom.getTime()
-            }
-            
-            if (dateTo.getTime() - firstFromMs > limitMsDifference) {
-                dbgprint('breaking')
-                break
-            }
+
+    onXmlModelLongTermStatusChanged: {
+        if (xmlModelLongTerm.status != XmlListModel.Ready) {
+            return
         }
-        
-        dbgprint('meteogramModel.count = ' + meteogramModel.count)
-        
-        main.meteogramModelChanged = !main.meteogramModelChanged
+        dbgprint('xmlModelLongTerm ready')
+        updateNextDaysModel(xmlModelLongTerm)
+        refreshTooltipSubText()
     }
     
-    function updateTodayModels(currentWeatherModel, nearFutureWeather, originalXmlModelHourByHour) {
+    function updateTodayModel() {
+        var currentTimeObj = xmlModelCurrent.get(0)
+        additionalWeatherInfo.sunRise = parseDate(currentTimeObj.rise)
+        additionalWeatherInfo.sunSet = parseDate(currentTimeObj.set)
+        dbgprint('setting actual weather from current xml model')
+        actualWeatherModel.clear()
+        actualWeatherModel.append(currentTimeObj)
+    }
+    
+    function updateTodayModels(xmlModelHourByHour) {
+        
+        dbgprint('updating today models')
         
         var now = new Date()
+        var tooOldCurrentDataLimit = new Date(now.getTime() - (2 * 60 * 60 * 1000))
+        var nearFutureWeather = additionalWeatherInfo.nearFutureWeather
+        
+        // check if actual weather is not too old or empty
+        if (actualWeatherModel.count > 0 && parseDate(actualWeatherModel.get(0).updated) < tooOldCurrentDataLimit) {
+            actualWeatherModel.clear()
+        }
         
         // set current models
-        currentWeatherModel.clear()
         nearFutureWeather.iconName = null
         nearFutureWeather.temperature = null
         var foundNow = false
-        for (var i = 0; i < originalXmlModelHourByHour.count; i++) {
-            var timeObj = originalXmlModelHourByHour.get(i)
-            var dateFrom = new Date(timeObj.from)
-            var dateTo = new Date(timeObj.to)
+        for (var i = 0; i < xmlModelHourByHour.count; i++) {
+            var timeObj = xmlModelHourByHour.get(i)
+            var dateFrom = parseDate(timeObj.from)
+            var dateTo = parseDate(timeObj.to)
             dbgprint('HOUR BY HOUR: dateFrom=' + dateFrom + ', dateTo=' + dateTo + ', now=' + now + ', i=' + i)
             
-            if (dateFrom <= now && now <= dateTo) {
-                dbgprint('foundNow setting to true and adding to currentWeatherModel - temperature: ' + timeObj.temperature + ', iconName: ' + timeObj.iconName)
+            if (!foundNow && dateFrom <= now && now <= dateTo) {
+                dbgprint('foundNow setting to true')
                 foundNow = true
-                currentWeatherModel.append(timeObj)
+                if (actualWeatherModel.count === 0) {
+                    dbgprint('adding to actualWeatherModel - temperature: ' + timeObj.temperature + ', iconName: ' + timeObj.iconName)
+                    actualWeatherModel.append(timeObj)
+                }
                 continue
             }
             
@@ -225,12 +241,12 @@ Item {
             }
         }
         
-        dbgprint('result currentWeatherModel count: ' + currentWeatherModel.count)
+        dbgprint('result actualWeatherModel count: ' + actualWeatherModel.count)
         dbgprint('result nearFutureWeather.iconName: ' + nearFutureWeather.iconName)
         
     }
     
-    function updateNextDaysModel(nextDaysWeatherModel, originalXmlModel) {
+    function updateNextDaysModel(xmlModelLongTerm) {
         
         var nextDaysFixedCount = nextDaysCount
         
@@ -238,7 +254,7 @@ Item {
         var nextDayStart = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() + ModelUtils.wholeDayDurationMs)
         dbgprint('next day start: ' + nextDayStart)
         
-        dbgprint('orig: ' + originalXmlModel.count)
+        dbgprint('orig: ' + xmlModelLongTerm.count)
 
         var newObjectArray = []
         var addingStarted = false
@@ -251,8 +267,8 @@ Item {
         var time1200 = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() + ModelUtils.hourDurationMs * 12)
         var time1800 = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() + ModelUtils.hourDurationMs * 18)
         
-        for (var i = 0; i < originalXmlModel.count; i++) {
-            var timeObj = originalXmlModel.get(i)
+        for (var i = 0; i < xmlModelLongTerm.count; i++) {
+            var timeObj = xmlModelLongTerm.get(i)
             var dateFrom = Date.fromLocaleString(xmlLocale, timeObj.date, 'yyyy-MM-dd')
             var dateTo = new Date(dateFrom.getTime())
             dateTo.setDate(dateTo.getDate() + 1);
@@ -302,23 +318,77 @@ Item {
         //
         // set next days model
         //
-        nextDaysWeatherModel.clear()
+        nextDaysModel.clear()
         newObjectArray.forEach(function (objToAdd) {
-            if (nextDaysWeatherModel.count >= nextDaysFixedCount) {
+            if (nextDaysModel.count >= nextDaysFixedCount) {
                 return
             }
             ModelUtils.populateNextDaysObject(objToAdd)
-            nextDaysWeatherModel.append(objToAdd)
+            nextDaysModel.append(objToAdd)
         })
-        for (var i = 0; i < (nextDaysFixedCount - nextDaysWeatherModel.count); i++) {
-            nextDaysWeatherModel.append(ModelUtils.createEmptyNextDaysObject())
+        for (var i = 0; i < (nextDaysFixedCount - nextDaysModel.count); i++) {
+            nextDaysModel.append(ModelUtils.createEmptyNextDaysObject())
         }
         
-        dbgprint('result nextDaysWeatherModel count: ' + nextDaysWeatherModel.count)
+        dbgprint('result nextDaysModel count: ' + nextDaysModel.count)
+    }
+    
+    function updateMeteogramModel(xmlModelHourByHour) {
+        
+        meteogramModel.clear()
+        
+        var firstFromMs = null
+        var limitMsDifference = 1000 * 60 * 60 * 54 // 2.25 days
+        var now = new Date()
+        
+        for (var i = 0; i < xmlModelHourByHour.count; i++) {
+            var obj = xmlModelHourByHour.get(i)
+            var dateFrom = parseDate(obj.from)
+            var dateTo = parseDate(obj.to)
+            dbgprint('meteo fill: i=' + i + ', from=' + obj.from + ', to=' + obj.to)
+            dbgprint('parsed: from=' + dateFrom + ', to=' + dateTo)
+            
+            if (now > dateTo) {
+                continue;
+            }
+            
+            if (dateFrom <= now && now <= dateTo) {
+                dbgprint('foundNow')
+                dateFrom = now
+            }
+            
+            var prec = obj.precipitationAvg
+            meteogramModel.append({
+                from: dateFrom,
+                to: dateTo,
+                temperature: parseInt(obj.temperature),
+                precipitationAvg: obj.precipitationAvg,
+                precipitationMin: '',
+                precipitationMax: obj.precipitationAvg,
+                windDirection: obj.windDirection,
+                windSpeedMps: parseFloat(obj.windSpeedMps),
+                pressureHpa: parseFloat(obj.pressureHpa),
+                iconName: obj.iconName
+            })
+            
+            if (firstFromMs === null) {
+                firstFromMs = dateFrom.getTime()
+            }
+            
+            if (dateTo.getTime() - firstFromMs > limitMsDifference) {
+                dbgprint('breaking')
+                break
+            }
+        }
+        
+        dbgprint('meteogramModel.count = ' + meteogramModel.count)
+        
+        main.meteogramModelChanged = !main.meteogramModelChanged
     }
     
     function toCelsiaStr(kelvinStr) {
-        return String(UnitUtils.kelvinToCelsia(parseFloat(kelvinStr)))
+        //return String(UnitUtils.kelvinToCelsia(parseFloat(kelvinStr)))
+        return kelvinStr
     }
     
     /**
@@ -332,40 +402,47 @@ Item {
         var loadedCounter = 0
         
         var loadedData = {
-            longTerm: null,
-            hourByHour: null
+            current: null,
+            hourByHour: null,
+            longTerm: null
         }
         
-        function successLongTerm(xmlString) {
-            loadedData.longTerm = xmlString
+        function checkIfDone() {
             loadedCounter++
-            if (loadedCounter === 2) {
+            if (loadedCounter === 3) {
                 successCallback(loadedData)
             }
+        }
+        
+        function successCurrent(xmlString) {
+            loadedData.current = xmlString
+            checkIfDone()
         }
         
         function successHourByHour(xmlString) {
             loadedData.hourByHour = xmlString
-            loadedCounter++
-            if (loadedCounter === 2) {
-                successCallback(loadedData)
-            }
+            checkIfDone()
         }
         
-        DataLoader.fetchXmlFromInternet(urlPrefix + '/daily?id=' + placeIdentifier + '&cnt=14' + appIdAndModeSuffix, successLongTerm, failureCallback)
-        DataLoader.fetchXmlFromInternet(urlPrefix + '?id=' + placeIdentifier + appIdAndModeSuffix, successHourByHour, failureCallback)
+        function successLongTerm(xmlString) {
+            loadedData.longTerm = xmlString
+            checkIfDone()
+        }
         
+        DataLoader.fetchXmlFromInternet(urlPrefix + '/weather?id=' + placeIdentifier + appIdAndModeSuffix, successCurrent, failureCallback)
+        DataLoader.fetchXmlFromInternet(urlPrefix + '/forecast?id=' + placeIdentifier + appIdAndModeSuffix, successHourByHour, failureCallback)
+        DataLoader.fetchXmlFromInternet(urlPrefix + '/forecast/daily?id=' + placeIdentifier + '&cnt=14' + appIdAndModeSuffix, successLongTerm, failureCallback)
     }
     
     function setWeatherContents(cacheContent) {
-        if (!cacheContent.longTerm || !cacheContent.hourByHour) {
+        if (!cacheContent.longTerm || !cacheContent.hourByHour || !cacheContent.current) {
             return false
         }
+        xmlModelCurrent.xml = ''
+        xmlModelCurrent.xml = cacheContent.current
         xmlModelLongTerm.xml = ''
-        xmlModelSunRiseSet.xml = ''
-        xmlModelHourByHour.xml = ''
         xmlModelLongTerm.xml = cacheContent.longTerm
-        xmlModelSunRiseSet.xml = cacheContent.longTerm
+        xmlModelHourByHour.xml = ''
         xmlModelHourByHour.xml = cacheContent.hourByHour
         return true
     }
