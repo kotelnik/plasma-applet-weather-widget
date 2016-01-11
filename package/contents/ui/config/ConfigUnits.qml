@@ -7,6 +7,7 @@ Item {
     property int cfg_temperatureType
     property int cfg_pressureType
     property int cfg_windSpeedType
+    property int cfg_timezoneType
     
     onCfg_temperatureTypeChanged: {
         switch (cfg_temperatureType) {
@@ -47,10 +48,23 @@ Item {
         }
     }
     
+    onCfg_timezoneTypeChanged: {
+        switch (cfg_timezoneType) {
+        case 0:
+            timezoneTypeGroup.current = timezoneTypeRadioUserLocalTime;
+            break;
+        case 1:
+            timezoneTypeGroup.current = timezoneTypeRadioUtc;
+            break;
+        default:
+        }
+    }
+    
     Component.onCompleted: {
         cfg_temperatureTypeChanged()
         cfg_pressureTypeChanged()
         cfg_windSpeedTypeChanged()
+        cfg_timezoneTypeChanged()
     }
     
     ExclusiveGroup {
@@ -63,6 +77,10 @@ Item {
     
     ExclusiveGroup {
         id: windSpeedTypeGroup
+    }
+    
+    ExclusiveGroup {
+        id: timezoneTypeGroup
     }
     
     GridLayout {
@@ -150,6 +168,34 @@ Item {
             exclusiveGroup: windSpeedTypeGroup
             text: i18n("mph")
             onCheckedChanged: if (checked) cfg_windSpeedType = 1
+        }
+        
+        Item {
+            width: 2
+            height: 10
+            Layout.columnSpan: 2
+        }
+        
+        Label {
+            text: i18n("Timezone:")
+            Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+        }
+        RadioButton {
+            id: timezoneTypeRadioUserLocalTime
+            exclusiveGroup: timezoneTypeGroup
+            text: i18n("My local-time")
+            onCheckedChanged: if (checked) cfg_timezoneType = 0
+        }
+        Item {
+            width: 2
+            height: 2
+            Layout.rowSpan: 1
+        }
+        RadioButton {
+            id: timezoneTypeRadioUtc
+            exclusiveGroup: timezoneTypeGroup
+            text: i18n("UTC")
+            onCheckedChanged: if (checked) cfg_timezoneType = 1
         }
     }
     

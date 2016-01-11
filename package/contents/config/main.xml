@@ -64,6 +64,13 @@
             </choices>
             <default>0</default>
         </entry>
+        <entry name="timezoneType" type="Enum">
+            <choices>
+                <choice name="userLocalTime"/>
+                <choice name="utc"/>
+            </choices>
+            <default>0</default>
+        </entry>
     </group>
 
 </kcfg>

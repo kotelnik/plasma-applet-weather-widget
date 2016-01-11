@@ -68,6 +68,11 @@ Item {
     function _appendHorizontalModel(meteogramModelObj) {
         var oneHourMs = 3600000
         var dateFrom = meteogramModelObj.from
+        // floor to hours
+        dateFrom.setMilliseconds(0)
+        dateFrom.setSeconds(0)
+        dateFrom.setMinutes(0)
+//         dateFrom = new Date(Math.floor(dateFrom.getTime() / 3600000) * 3600000)
         var dateTo = meteogramModelObj.to
         var differenceHours = Math.round((dateTo.getTime() - dateFrom.getTime()) / oneHourMs)
         dbgprint('differenceHours=' + differenceHours + ', oneHourMs=' + oneHourMs + ', dateFrom=' + dateFrom + ', dateTo=' + dateTo)
@@ -75,8 +80,9 @@ Item {
             return
         }
         for (var i = 0; i < differenceHours; i++) {
+            var preparedDate = new Date(dateFrom.getTime() + i * oneHourMs)
             hourGridModel.append({
-                dateFrom: new Date(dateFrom.getTime() + i * oneHourMs),
+                dateFrom: UnitUtils.convertDate(preparedDate, timezoneType),
                 precipitationAvg: meteogramModelObj.precipitationAvg,
                 precipitationMin: meteogramModelObj.precipitationMin,
                 precipitationMax: meteogramModelObj.precipitationMax,

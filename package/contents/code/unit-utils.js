@@ -100,3 +100,19 @@ function getAmOrPm(hourNumber) {
     }
     return hourNumber > 11 ? 'PM' : 'AM'
 }
+
+
+/*
+ * TIMEZONE
+ */
+var TimezoneType = {
+    USER_LOCAL_TIME: 0,
+    UTC: 1
+}
+
+function convertDate(date, timezoneType) {
+    if (timezoneType === TimezoneType.UTC) {
+        return new Date(date.getTime() + (date.getTimezoneOffset() * 60000))
+    }
+    return date
+}

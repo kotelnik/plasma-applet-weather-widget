@@ -39,6 +39,7 @@ Item {
     property int temperatureType: plasmoid.configuration.temperatureType
     property int pressureType: plasmoid.configuration.pressureType
     property int windSpeedType: plasmoid.configuration.windSpeedType
+    property int timezoneType: plasmoid.configuration.timezoneType
     property bool twelveHourClockEnabled: Qt.locale().timeFormat(Locale.ShortFormat).toString().indexOf('AP') > -1
     property bool placesJsonStr: plasmoid.configuration.places
     
@@ -345,12 +346,8 @@ Item {
         var sunRise = additionalWeatherInfo.sunRise
         var sunSet = additionalWeatherInfo.sunSet
         var now = new Date()
-        sunRise.setFullYear(now.getFullYear())
-        sunRise.setMonth(now.getMonth())
-        sunRise.setDate(now.getDate())
-        sunSet.setFullYear(now.getFullYear())
-        sunSet.setMonth(now.getMonth())
-        sunSet.setDate(now.getDate())
+        sunRise = UnitUtils.convertDate(sunRise, timezoneType)
+        sunSet = UnitUtils.convertDate(sunSet, timezoneType)
         additionalWeatherInfo.sunRiseTime = Qt.formatTime(sunRise, Qt.locale().timeFormat(Locale.ShortFormat))
         additionalWeatherInfo.sunSetTime = Qt.formatTime(sunSet, Qt.locale().timeFormat(Locale.ShortFormat))
         refreshTooltipSubText()
@@ -454,6 +451,11 @@ Item {
     
     onTwelveHourClockEnabledChanged: {
         refreshTooltipSubText()
+    }
+    
+    onTimezoneTypeChanged: {
+        meteogramModelChanged = !meteogramModelChanged
+        updateAdditionalWeatherInfoText()
     }
     
 }
