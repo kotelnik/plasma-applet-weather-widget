@@ -24,7 +24,7 @@ Item {
     property int imageWidth: 828
     property int imageHeight: 302
     
-    property double defaultFontPixelSize: theme.defaultFont.pixelSize
+    property double defaultFontPixelSize: 13
     property double footerHeight: defaultFontPixelSize
     
     property int nextDayItemSpacing: defaultFontPixelSize * 0.5
@@ -111,40 +111,48 @@ Item {
         }
     }
     
-    Item {
+    Column {
         id: hourLegend
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: footerHeight + nextDaysVerticalMargin + hourLegendBottomMargin
+        anchors.bottomMargin: footerHeight + nextDaysVerticalMargin
+        spacing: 1
         width: hourLegendMargin
-        height: nextDaysHeight - defaultFontPixelSize - hourLegendBottomMargin*2
+        height: nextDaysHeight - defaultFontPixelSize
         
         PlasmaComponents.Label {
-            text: '0h'
-            anchors.top: parent.top
-            anchors.right: parent.right
+            text: twelveHourClockEnabled ? '3AM' : '3h'
+            width: parent.width
+            height: parent.height / 4
             font.pixelSize: defaultFontPixelSize * 0.8
             font.pointSize: -1
-            verticalAlignment: Text.AlignTop
+            horizontalAlignment: Text.AlignRight
             opacity: 0.6
         }
         PlasmaComponents.Label {
-            text: '.\n.\n.\n.'
-            anchors.fill: parent
-            anchors.topMargin: - defaultFontPixelSize * 0.5
-            anchors.leftMargin: hourLegendMargin * 0.4
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: defaultFontPixelSize
+            text: twelveHourClockEnabled ? '9AM' : '9h'
+            width: parent.width
+            height: parent.height / 4
+            font.pixelSize: defaultFontPixelSize * 0.8
             font.pointSize: -1
+            horizontalAlignment: Text.AlignRight
             opacity: 0.6
         }
         PlasmaComponents.Label {
-            text: '24h'
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            verticalAlignment: Text.AlignBottom
+            text: twelveHourClockEnabled ? '3PM' : '15h'
+            width: parent.width
+            height: parent.height / 4
             font.pixelSize: defaultFontPixelSize * 0.8
             font.pointSize: -1
+            horizontalAlignment: Text.AlignRight
+            opacity: 0.6
+        }
+        PlasmaComponents.Label {
+            text: twelveHourClockEnabled ? '9PM' : '21h'
+            width: parent.width
+            height: parent.height / 4
+            font.pixelSize: defaultFontPixelSize * 0.8
+            font.pointSize: -1
+            horizontalAlignment: Text.AlignRight
             opacity: 0.6
         }
     }

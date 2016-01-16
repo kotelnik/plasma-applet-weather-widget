@@ -167,8 +167,6 @@ Item {
             return
         }
         dbgprint('xmlModelCurrent ready')
-        additionalWeatherInfo.sunRise = parseDate(xmlModelCurrent.get(0).rise)
-        additionalWeatherInfo.sunSet = parseDate(xmlModelCurrent.get(0).set)
         updateTodayModel()
         updateAdditionalWeatherInfoText()
     }
@@ -178,8 +176,8 @@ Item {
             return
         }
         dbgprint('xmlModelHourByHour ready')
-        updateTodayModels(xmlModelHourByHour)
-        updateMeteogramModel(xmlModelHourByHour)
+        updateTodayModels()
+        updateMeteogramModel()
     }
 
     onXmlModelLongTermStatusChanged: {
@@ -187,7 +185,7 @@ Item {
             return
         }
         dbgprint('xmlModelLongTerm ready')
-        updateNextDaysModel(xmlModelLongTerm)
+        updateNextDaysModel()
         refreshTooltipSubText()
     }
     
@@ -196,20 +194,25 @@ Item {
         additionalWeatherInfo.sunRise = parseDate(currentTimeObj.rise)
         additionalWeatherInfo.sunSet = parseDate(currentTimeObj.set)
         dbgprint('setting actual weather from current xml model')
+        dbgprint('sunRise: ' + additionalWeatherInfo.sunRise)
+        dbgprint('sunSet:  ' + additionalWeatherInfo.sunSet)
+        dbgprint('current: ' + currentTimeObj.temperature)
         actualWeatherModel.clear()
         actualWeatherModel.append(currentTimeObj)
     }
     
-    function updateTodayModels(xmlModelHourByHour) {
+    function updateTodayModels() {
         
         dbgprint('updating today models')
         
         var now = new Date()
+        dbgprint('now: ' + now)
         var tooOldCurrentDataLimit = new Date(now.getTime() - (2 * 60 * 60 * 1000))
         var nearFutureWeather = additionalWeatherInfo.nearFutureWeather
         
         // check if actual weather is not too old or empty
         if (actualWeatherModel.count > 0 && parseDate(actualWeatherModel.get(0).updated) < tooOldCurrentDataLimit) {
+            dbgprint('actual weather model is too old or empty - clearing')
             actualWeatherModel.clear()
         }
         
@@ -221,7 +224,7 @@ Item {
             var timeObj = xmlModelHourByHour.get(i)
             var dateFrom = parseDate(timeObj.from)
             var dateTo = parseDate(timeObj.to)
-            dbgprint('HOUR BY HOUR: dateFrom=' + dateFrom + ', dateTo=' + dateTo + ', now=' + now + ', i=' + i)
+            dbgprint('HOUR BY HOUR: dateFrom=' + dateFrom + ', dateTo=' + dateTo + ', i=' + i)
             
             if (!foundNow && dateFrom <= now && now <= dateTo) {
                 dbgprint('foundNow setting to true')
@@ -236,7 +239,7 @@ Item {
             if (foundNow) {
                 nearFutureWeather.iconName = timeObj.iconName
                 nearFutureWeather.temperature = timeObj.temperature
-                dbgprint('setting near future - ' + nearFutureWeather.iconName)
+                dbgprint('setting near future - ' + nearFutureWeather.iconName + ', temp: ' + nearFutureWeather.temperature)
                 break
             }
         }
@@ -246,26 +249,133 @@ Item {
         
     }
     
-    function updateNextDaysModel(xmlModelLongTerm) {
+    function updateNextDaysModel() {
         
         var nextDaysFixedCount = nextDaysCount
         
-        var now = new Date()
-        var nextDayStart = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() + ModelUtils.wholeDayDurationMs)
-        dbgprint('next day start: ' + nextDayStart)
+        dbgprint('updating NEXT DAYS MODEL...')
         
-        dbgprint('orig: ' + xmlModelLongTerm.count)
+        var now = new Date()
+        dbgprint('now: ' + now)
+
+        dbgprint('orig hourByHour model count: ' + xmlModelHourByHour.count)
+        dbgprint('orig long term model count: ' + xmlModelLongTerm.count)
 
         var newObjectArray = []
-        var addingStarted = false
         
-        var interestingTimeObj = null
-        var nextInterestingTimeObj = null
-        var currentWeatherModelsSet = false
+        var today0000 = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime())
+        var today0600 = new Date(today0000.getTime() + ModelUtils.hourDurationMs * 6)
+        var today1200 = new Date(today0000.getTime() + ModelUtils.hourDurationMs * 12)
+        var today1800 = new Date(today0000.getTime() + ModelUtils.hourDurationMs * 18)
         
-        var time0600 = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() + ModelUtils.hourDurationMs * 6)
-        var time1200 = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() + ModelUtils.hourDurationMs * 12)
-        var time1800 = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() + ModelUtils.hourDurationMs * 18)
+        function composeNextDayTitle(date) {
+            return Qt.locale().dayName(date.getDay(), Locale.ShortFormat) + ' ' + date.getDate() + '.' + (date.getMonth() + 1) + '.'
+        }
+        
+        var lastObjectHourByHour = null
+        var lastDateNumber = now.getDate()
+        var lastDateToSet = today0000
+        var current0000 = today0000
+        var current0600 = today0600
+        var current1200 = today1200
+        var current1800 = today1800
+        var next0000 = new Date(current1800.getTime() + ModelUtils.hourDurationMs * 6)
+        
+        dbgprint('current0000: ' + current0000)
+        dbgprint('current0600: ' + current0600)
+        dbgprint('current1200: ' + current1200)
+        dbgprint('current1800: ' + current1800)
+        dbgprint('next0000: ' + next0000)
+        
+        for (var i = 0; i < xmlModelHourByHour.count; i++) {
+            var timeObj = xmlModelHourByHour.get(i)
+            var dateFrom = parseDate(timeObj.from)
+            var dateTo = parseDate(timeObj.to)
+            dbgprint('HOUR BY HOUR: dateFrom=' + dateFrom + ', dateTo=' + dateTo + ', i=' + i)
+            
+            // encountered old data -> continue to next
+            if (today0000 >= dateFrom) {
+                dbgprint('skipping this timeObj')
+                continue
+            }
+            
+            if (next0000 < dateFrom) {
+                current0000 = next0000
+                current0600 = new Date(current0000.getTime() + ModelUtils.hourDurationMs * 6)
+                current1200 = new Date(current0000.getTime() + ModelUtils.hourDurationMs * 12)
+                current1800 = new Date(current0000.getTime() + ModelUtils.hourDurationMs * 18)
+                next0000 = new Date(current1800.getTime() + ModelUtils.hourDurationMs * 6)
+                dbgprint('current0000: ' + current0000)
+                dbgprint('current0600: ' + current0600)
+                dbgprint('current1200: ' + current1200)
+                dbgprint('current1800: ' + current1800)
+                dbgprint('next0000: ' + next0000)
+            }
+            
+            if (lastObjectHourByHour === null && current0000 <= dateFrom && dateFrom < next0000) {
+                dbgprint('HBH creating new empty next object')
+                lastObjectHourByHour = ModelUtils.createEmptyNextDaysObject()
+                newObjectArray.push(lastObjectHourByHour)
+                
+                // today?
+                if (dateFrom <= now && now <= dateTo) {
+                    dbgprint('setting today')
+                    lastObjectHourByHour.dayTitle = i18n('today')
+                    isToday = true
+                } else {
+                    lastObjectHourByHour.dayTitle = composeNextDayTitle(dateTo)
+                }
+            }
+            
+            if (current0000 < dateFrom && dateTo <= current0600) {
+                dbgprint('found Q1 temp')
+                
+                lastObjectHourByHour.tempInfoArray.push({
+                    temperature: toCelsiaStr(timeObj.temperature),
+                    iconName: timeObj.iconName,
+                    isPast: now > current0600
+                })
+                
+            } else if (current0600 < dateFrom && dateTo <= current1200) {
+                dbgprint('found Q2 temp')
+                
+                lastObjectHourByHour.tempInfoArray.push({
+                    temperature: toCelsiaStr(timeObj.temperature),
+                    iconName: timeObj.iconName,
+                    isPast: now > current1200
+                })
+                
+            } else if (current1200 < dateFrom && dateTo <= current1800) {
+                dbgprint('found Q3 temp')
+                
+                lastObjectHourByHour.tempInfoArray.push({
+                    temperature: toCelsiaStr(timeObj.temperature),
+                    iconName: timeObj.iconName,
+                    isPast: now > current1800
+                })
+                
+            } else if (current1800 < dateFrom && dateTo <= next0000) {
+                dbgprint('found Q4 temp')
+                
+                lastObjectHourByHour.tempInfoArray.push({
+                    temperature: toCelsiaStr(timeObj.temperature),
+                    iconName: timeObj.iconName,
+                    isPast: now > next0000
+                })
+                
+                lastObjectHourByHour = null
+                
+            } else {
+                dbgprint('skipping')
+                continue
+            }
+            
+            lastDateToSet = dateTo
+            dbgprint('lastDateToSet: ' + lastDateToSet)
+            
+        }
+        
+        dbgprint('setting next days from LONG TERM XML')
         
         for (var i = 0; i < xmlModelLongTerm.count; i++) {
             var timeObj = xmlModelLongTerm.get(i)
@@ -273,15 +383,22 @@ Item {
             var dateTo = new Date(dateFrom.getTime())
             dateTo.setDate(dateTo.getDate() + 1);
             dateTo = new Date(dateTo.getTime() - 1)
-            dbgprint('dateFrom=' + dateFrom + ', dateTo=' + dateTo + ', now=' + now + ', i=' + i)
+            dbgprint('LONG TERM: dateFrom=' + dateFrom + ', dateTo=' + dateTo + ', now=' + now + ', i=' + i)
             
             // encountered old data -> continue to next
-            if (now > dateTo) {
+            if (lastDateToSet > dateTo) {
                 dbgprint('skipping this day')
                 continue
             }
             
-            var lastObject = ModelUtils.createEmptyNextDaysObject()
+            var lastObject
+            if (lastObjectHourByHour !== null) {
+                lastObject = lastObjectHourByHour
+                lastObjectHourByHour = null
+            } else {
+                lastObject = ModelUtils.createEmptyNextDaysObject()
+                newObjectArray.push(lastObject)
+            } 
             
             var isToday = false
             if (dateFrom <= now && now <= dateTo) {
@@ -289,31 +406,45 @@ Item {
                 lastObject.dayTitle = i18n('today')
                 isToday = true
             } else {
-                lastObject.dayTitle = Qt.locale().dayName(dateTo.getDay(), Locale.ShortFormat) + ' ' + dateTo.getDate() + '.' + (dateTo.getMonth() + 1) + '.'
+                lastObject.dayTitle = composeNextDayTitle(dateTo)
             }
             
-            newObjectArray.push(lastObject)
-            lastObject.tempInfoArray.push({
-                temperature: toCelsiaStr(timeObj.temperatureMorning),
-                iconName: timeObj.iconName,
-                isPast: isToday && now > time0600
-            })
-            lastObject.tempInfoArray.push({
-                temperature: toCelsiaStr(timeObj.temperatureDay),
-                iconName: timeObj.iconName,
-                isPast: isToday && now > time1200
-            })
-            lastObject.tempInfoArray.push({
-                temperature: toCelsiaStr(timeObj.temperatureEvening),
-                iconName: timeObj.iconName,
-                isPast: isToday && now > time1800
-            })
-            lastObject.tempInfoArray.push({
-                temperature: toCelsiaStr(timeObj.temperatureNight),
-                iconName: timeObj.iconName,
-                isPast: false
-            })
+            if (lastObject.tempInfoArray.length === 0) {
+                dbgprint('setting temperatureMorning')
+                lastObject.tempInfoArray.push({
+                    temperature: toCelsiaStr(timeObj.temperatureMorning),
+                    iconName: timeObj.iconName,
+                    isPast: isToday && now > today0600
+                })
+            }
+            if (lastObject.tempInfoArray.length === 1) {
+                dbgprint('setting temperatureDay')
+                lastObject.tempInfoArray.push({
+                    temperature: toCelsiaStr(timeObj.temperatureDay),
+                    iconName: timeObj.iconName,
+                    isPast: isToday && now > today1200
+                })
+            }
+            if (lastObject.tempInfoArray.length === 2) {
+                dbgprint('setting temperatureEvening')
+                lastObject.tempInfoArray.push({
+                    temperature: toCelsiaStr(timeObj.temperatureEvening),
+                    iconName: timeObj.iconName,
+                    isPast: isToday && now > today1800
+                })
+            }
+            if (lastObject.tempInfoArray.length === 3) {
+                dbgprint('setting temperatureNight')
+                lastObject.tempInfoArray.push({
+                    temperature: toCelsiaStr(timeObj.temperatureNight),
+                    iconName: timeObj.iconName,
+                    isPast: false
+                })
+            }
+            
         }
+        
+        dbgprint('done setting next days from all models, now polishing created newObjectArray')
 
         //
         // set next days model
@@ -322,6 +453,9 @@ Item {
         newObjectArray.forEach(function (objToAdd) {
             if (nextDaysModel.count >= nextDaysFixedCount) {
                 return
+            }
+            while (objToAdd.tempInfoArray.length < 4) {
+                objToAdd.tempInfoArray.unshift(null)
             }
             ModelUtils.populateNextDaysObject(objToAdd)
             nextDaysModel.append(objToAdd)
@@ -333,7 +467,7 @@ Item {
         dbgprint('result nextDaysModel count: ' + nextDaysModel.count)
     }
     
-    function updateMeteogramModel(xmlModelHourByHour) {
+    function updateMeteogramModel() {
         
         meteogramModel.clear()
         
@@ -431,7 +565,7 @@ Item {
         
         DataLoader.fetchXmlFromInternet(urlPrefix + '/weather?id=' + placeIdentifier + appIdAndModeSuffix, successCurrent, failureCallback)
         DataLoader.fetchXmlFromInternet(urlPrefix + '/forecast?id=' + placeIdentifier + appIdAndModeSuffix, successHourByHour, failureCallback)
-        DataLoader.fetchXmlFromInternet(urlPrefix + '/forecast/daily?id=' + placeIdentifier + '&cnt=14' + appIdAndModeSuffix, successLongTerm, failureCallback)
+        DataLoader.fetchXmlFromInternet(urlPrefix + '/forecast/daily?id=' + placeIdentifier + '&cnt=8' + appIdAndModeSuffix, successLongTerm, failureCallback)
     }
     
     function setWeatherContents(cacheContent) {
