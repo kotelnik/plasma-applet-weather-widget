@@ -33,6 +33,7 @@ Item {
     property int graphTopMargin: 20
     property double graphWidth: meteogram.width - graphLeftMargin * 2
     property double graphHeight: meteogram.height - graphTopMargin * 2
+    property double topBottomCanvasMargin: (graphHeight / temperatureSizeY) * 0.5
     
     property int hourModelSize: 0
     
@@ -54,11 +55,13 @@ Item {
     property int precipitationHeightMultiplier: 15
     property int precipitationLabelMargin: 10
     
-    property color pressureColor: textColorLight ? Qt.rgba(0.3, 1.0, 0.3, 1.0) : Qt.rgba(0.0, 0.6, 0.0, 1.0)
-    
     property bool textColorLight: ((theme.textColor.r + theme.textColor.g + theme.textColor.b) / 3) > 0.5
     property color gridColor: textColorLight ? Qt.tint(theme.textColor, '#80000000') : Qt.tint(theme.textColor, '#80FFFFFF')
     property color gridColorHighlight: textColorLight ? Qt.tint(theme.textColor, '#50000000') : Qt.tint(theme.textColor, '#50FFFFFF')
+    
+    property color pressureColor: textColorLight ? Qt.rgba(0.3, 1, 0.3, 1) : Qt.rgba(0.0, 0.6, 0.0, 1)
+    property color temperatureWarmColor: textColorLight ? Qt.rgba(1, 0.3, 0.3, 1) : Qt.rgba(1, 0.0, 0.0, 1)
+    property color temperatureColdColor: textColorLight ? Qt.rgba(0.2, 0.7, 1, 1) : Qt.rgba(0.1, 0.5, 1, 1)
     
     onMeteogramModelChangedChanged: {
         dbgprint('meteogram changed')
@@ -72,7 +75,6 @@ Item {
         dateFrom.setMilliseconds(0)
         dateFrom.setSeconds(0)
         dateFrom.setMinutes(0)
-//         dateFrom = new Date(Math.floor(dateFrom.getTime() / 3600000) * 3600000)
         var dateTo = meteogramModelObj.to
         var differenceHours = Math.round((dateTo.getTime() - dateFrom.getTime()) / oneHourMs)
         dbgprint('differenceHours=' + differenceHours + ', oneHourMs=' + oneHourMs + ', dateFrom=' + dateFrom + ', dateTo=' + dateTo)
@@ -100,9 +102,16 @@ Item {
     }
     
     function clearCanvas() {
-        temperaturePath.pathElements = []
+        temperaturePathWarm.pathElements = []
+        temperaturePathCold.pathElements = []
         pressurePath.pathElements = []
-        meteogramCanvas.requestPaint()
+        repaintCanvas()
+    }
+    
+    function repaintCanvas() {
+        meteogramCanvasWarmTemp.requestPaint()
+        meteogramCanvasColdTemp.requestPaint()
+        meteogramCanvasPressure.requestPaint()
     }
     
     function modelUpdated() {
@@ -175,11 +184,12 @@ Item {
             var temperatureY = rawTempY * temperatureMultiplierY
             
             var rawPressY = pressureSizeY - (dataObj.pressureHpa + pressureAdditiveY)
-            dbgprint('realPress: ' + dataObj.pressureHpa + ', rawTempY: ' + rawPressY)
+            dbgprint('realPress: ' + dataObj.pressureHpa + ', rawPressY: ' + rawPressY)
             var pressureY = rawPressY * pressureMultiplierY
             
             if (i === 0) {
-                temperaturePath.startY = temperatureY
+                temperaturePathWarm.startY = temperatureY
+                temperaturePathCold.startY = temperatureY
                 pressurePath.startY = pressureY
                 continue
             }
@@ -189,10 +199,11 @@ Item {
             newPressureElements.push(Qt.createQmlObject('import QtQuick 2.0; PathCurve { x: ' + (i * sampleWidth) + '; y: ' + pressureY + ' }', meteogram, "dynamicPressure" + i))
         }
         
-        temperaturePath.pathElements = newPathElements
+        temperaturePathWarm.pathElements = newPathElements
+        temperaturePathCold.pathElements = newPathElements
         pressurePath.pathElements = newPressureElements
         
-        meteogramCanvas.requestPaint()
+        repaintCanvas()
         
     }
     
@@ -429,35 +440,86 @@ Item {
             }
         }
         
-        Canvas {
-            id: meteogramCanvas
+        Item {
+            id: canvases
             anchors.fill: parent
-            anchors.topMargin: (horizontalLines.height / temperatureSizeY) * 0.5
-            anchors.bottomMargin: (horizontalLines.height / temperatureSizeY) * 0.5
-            contextType: '2d'
+            anchors.topMargin: topBottomCanvasMargin
+            
+            Canvas {
+                id: meteogramCanvasPressure
+                anchors.fill: parent
+                contextType: '2d'
 
-            Path {
-                id: pressurePath
-                startX: 0
+                Path {
+                    id: pressurePath
+                    startX: 0
+                }
+                
+                onPaint: {
+                    context.clearRect(0, 0, width, height)
+                    
+                    context.strokeStyle = pressureColor
+                    context.lineWidth = 1;
+                    context.path = pressurePath
+                    context.stroke()
+                }
             }
             
-            Path {
-                id: temperaturePath
-                startX: 0
+            Canvas {
+                id: meteogramCanvasWarmTemp
+                anchors.top: parent.top
+                width: parent.width
+                height: parent.height - temperatureMultiplierY * (temperatureAdditiveY - 1)
+                
+                onWidthChanged: {
+                    meteogramCanvasWarmTemp.requestPaint()
+                }
+            
+                contextType: '2d'
+
+                Path {
+                    id: temperaturePathWarm
+                    startX: 0
+                }
+                
+                onPaint: {
+                    context.clearRect(0, 0, width, height)
+                    
+                    context.strokeStyle = temperatureWarmColor
+                    context.lineWidth = 2;
+                    context.path = temperaturePathWarm
+                    context.stroke()
+                }
             }
             
-            onPaint: {
-                context.clearRect(0, 0, meteogramCanvas.width, meteogramCanvas.height)
+            Item {
                 
-                context.strokeStyle = pressureColor
-                context.lineWidth = 1;
-                context.path = pressurePath
-                context.stroke()
+                anchors.fill: parent
+                anchors.topMargin: meteogramCanvasWarmTemp.height
+                clip: true
                 
-                context.strokeStyle = Qt.rgba(1.0, 0.1, 0.1, 1.0)
-                context.lineWidth = 2;
-                context.path = temperaturePath
-                context.stroke()
+                Canvas {
+                    id: meteogramCanvasColdTemp
+                    anchors.top: parent.top
+                    width: graphWidth
+                    height: graphHeight
+                    anchors.topMargin: - parent.anchors.topMargin
+                    contextType: '2d'
+
+                    Path {
+                        id: temperaturePathCold
+                        startX: 0
+                    }
+                    
+                    onPaint: {
+                        context.clearRect(0, 0, width, height)
+                        
+                        context.strokeStyle = temperatureColdColor
+                        context.lineWidth = 2;
+                        context.path = temperaturePathCold
+                        context.stroke()
+                    }
+                }
             }
         }
     }

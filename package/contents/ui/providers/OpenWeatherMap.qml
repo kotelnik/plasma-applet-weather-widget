@@ -312,7 +312,7 @@ Item {
                 dbgprint('next0000: ' + next0000)
             }
             
-            if (lastObjectHourByHour === null && current0000 <= dateFrom && dateFrom < next0000) {
+            if (lastObjectHourByHour === null && current0000 < dateFrom && dateFrom < next0000) {
                 dbgprint('HBH creating new empty next object')
                 lastObjectHourByHour = ModelUtils.createEmptyNextDaysObject()
                 newObjectArray.push(lastObjectHourByHour)
