@@ -19,6 +19,7 @@ import QtQuick.Layouts 1.1
 import QtGraphicalEffects 1.0
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import "../code/unit-utils.js" as UnitUtils
+import "../code/icons.js" as IconTools
 
 Item {
     id: meteogram
@@ -36,7 +37,6 @@ Item {
     property double topBottomCanvasMargin: (graphHeight / temperatureSizeY) * 0.5
     
     property int hourModelSize: 0
-    
     
     property var dataArray: []
     
@@ -81,10 +81,13 @@ Item {
         if (differenceHours > 20) {
             return
         }
+        var differenceHoursMid = Math.ceil(differenceHours / 2)
         for (var i = 0; i < differenceHours; i++) {
             var preparedDate = new Date(dateFrom.getTime() + i * oneHourMs)
             hourGridModel.append({
                 dateFrom: UnitUtils.convertDate(preparedDate, timezoneType),
+                iconName: meteogramModelObj.iconName,
+                temperature: meteogramModelObj.temperature,
                 precipitationAvg: meteogramModelObj.precipitationAvg,
                 precipitationMin: meteogramModelObj.precipitationMin,
                 precipitationMax: meteogramModelObj.precipitationMax,
@@ -186,6 +189,8 @@ Item {
             var rawPressY = pressureSizeY - (dataObj.pressureHpa + pressureAdditiveY)
             dbgprint('realPress: ' + dataObj.pressureHpa + ', rawPressY: ' + rawPressY)
             var pressureY = rawPressY * pressureMultiplierY
+            
+            dbgprint('icon: ' + dataObj.iconName)
             
             if (i === 0) {
                 temperaturePathWarm.startY = temperatureY
@@ -329,6 +334,7 @@ Item {
                 property bool dayBegins: hourFrom === 0
                 property bool hourVisible: hourFrom % 2 === 0
                 property bool textVisible: hourVisible && index < hourGridModel.count-1
+                property int timePeriod: hourFrom >= 6 && hourFrom <= 18 ? 0 : 1
                 
                 property double precAvg: parseFloat(precipitationAvg) || 0
                 property double precMax: parseFloat(precipitationMax) || 0
@@ -384,6 +390,20 @@ Item {
                     visible: textVisible
                 }
                 
+                /*
+                PlasmaComponents.Label {
+                    font.pixelSize: 11
+                    font.pointSize: -1
+                    
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: (temperatureSizeY - (temperature + temperatureAdditiveY)) * temperatureMultiplierY - font.pixelSize * 2
+                    
+                    font.family: 'weathericons'
+                    text: textVisible || index === 0 ? '' : IconTools.getIconCode(iconName, currentProvider.providerId, timePeriod)
+                }
+                */
+                
                 Item {
                     visible: canShowPrec
                     anchors.fill: parent
@@ -433,10 +453,6 @@ Item {
                     }
                 }
                 
-                Component.onCompleted: {
-                    dbgprint('avg=' + precAvgStr + ', max=' + precMaxStr + ', min=' + precipitationMin)
-                }
-                
             }
         }
         
@@ -469,7 +485,7 @@ Item {
                 id: meteogramCanvasWarmTemp
                 anchors.top: parent.top
                 width: parent.width
-                height: parent.height - temperatureMultiplierY * (temperatureAdditiveY - 1)
+                height: parent.height - temperatureMultiplierY * (temperatureAdditiveY - 1) + topBottomCanvasMargin
                 
                 onWidthChanged: {
                     meteogramCanvasWarmTemp.requestPaint()
@@ -537,7 +553,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             anchors.top: parent.top
             anchors.topMargin: headingHeight
-            text: loadingError ? 'Offline mode' : 'Loading image...'
+            text: loadingError ? i18n('Offline mode') : i18n('Loading image...')
         }
         
         Image {

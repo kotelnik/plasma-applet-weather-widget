@@ -203,7 +203,7 @@ Item {
                 windDirection: obj.windDirection,
                 windSpeedMps: parseFloat(obj.windSpeedMps),
                 pressureHpa: parseFloat(obj.pressureHpa),
-                iconNumber: obj.iconNumber
+                iconName: obj.iconNumber
             })
         }
         
