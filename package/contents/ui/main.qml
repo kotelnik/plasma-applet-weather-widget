@@ -93,7 +93,7 @@ Item {
     Plasmoid.compactRepresentation: cr
     Plasmoid.fullRepresentation: fr
     
-    property bool debugLogging: false
+    property bool debugLogging: true
     
     function dbgprint(msg) {
         if (!debugLogging) {

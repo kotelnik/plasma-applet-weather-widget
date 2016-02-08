@@ -81,6 +81,7 @@ function fetchXmlFromInternet(getUrl, successCallback, failureCallback) {
         
         // success
         dbgprint('successfully loaded from the internet')
+        dbgprint('successfully of url-call: ' + getUrl)
         
         var xmlString = xhr.responseText;
         if (!DataLoader.isXmlStringValid(xmlString)) {

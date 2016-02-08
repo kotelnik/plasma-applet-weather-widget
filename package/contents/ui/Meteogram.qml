@@ -81,18 +81,20 @@ Item {
         if (differenceHours > 20) {
             return
         }
-        var differenceHoursMid = Math.ceil(differenceHours / 2)
+        var differenceHoursMid = Math.ceil(differenceHours / 2) - 1
+        dbgprint('differenceHoursMid=' + differenceHoursMid)
         for (var i = 0; i < differenceHours; i++) {
             var preparedDate = new Date(dateFrom.getTime() + i * oneHourMs)
             hourGridModel.append({
                 dateFrom: UnitUtils.convertDate(preparedDate, timezoneType),
-                iconName: meteogramModelObj.iconName,
+                iconName: i === differenceHoursMid ? meteogramModelObj.iconName : '',
                 temperature: meteogramModelObj.temperature,
                 precipitationAvg: meteogramModelObj.precipitationAvg,
                 precipitationMin: meteogramModelObj.precipitationMin,
                 precipitationMax: meteogramModelObj.precipitationMax,
                 canShowDay: true,
-                canShowPrec: true
+                canShowPrec: true,
+                differenceHours: differenceHours
             })
         }
     }
@@ -390,19 +392,18 @@ Item {
                     visible: textVisible
                 }
                 
-                /*
                 PlasmaComponents.Label {
-                    font.pixelSize: 11
+                    font.pixelSize: 14
                     font.pointSize: -1
                     
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
-                    anchors.topMargin: (temperatureSizeY - (temperature + temperatureAdditiveY)) * temperatureMultiplierY - font.pixelSize * 2
+                    anchors.topMargin: (temperatureSizeY - (temperature + temperatureAdditiveY)) * temperatureMultiplierY - font.pixelSize * 2.5
                     
                     font.family: 'weathericons'
-                    text: textVisible || index === 0 ? '' : IconTools.getIconCode(iconName, currentProvider.providerId, timePeriod)
+                    //text: textVisible || index === 0 || iconName === '' ? '' : IconTools.getIconCode(iconName, currentProvider.providerId, timePeriod)
+                    text: (differenceHours === 1 && textVisible) || index === hourGridModel.count-1 || index === 0 || iconName === '' ? '' : IconTools.getIconCode(iconName, currentProvider.providerId, timePeriod)
                 }
-                */
                 
                 Item {
                     visible: canShowPrec
