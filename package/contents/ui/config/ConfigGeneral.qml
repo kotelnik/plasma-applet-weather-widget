@@ -198,6 +198,12 @@ Item {
         anchors.right: parent.right
         
         Label {
+            text: i18n('Version ') + '1.6.4'
+            Layout.alignment: Qt.AlignRight
+            Layout.columnSpan: 2
+        }
+        
+        Label {
             text: i18n('Location')
             font.bold: true
             Layout.alignment: Qt.AlignLeft
