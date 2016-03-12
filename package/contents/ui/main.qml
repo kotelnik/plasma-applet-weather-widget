@@ -41,7 +41,8 @@ Item {
     property int windSpeedType: plasmoid.configuration.windSpeedType
     property int timezoneType: plasmoid.configuration.timezoneType
     property bool twelveHourClockEnabled: Qt.locale().timeFormat(Locale.ShortFormat).toString().indexOf('AP') > -1
-    property bool placesJsonStr: plasmoid.configuration.places
+    property string placesJsonStr: plasmoid.configuration.places
+    property bool onlyOnePlace: true
     
     property string datetimeFormat: 'yyyy-MM-dd\'T\'hh:mm:ss'
     property var xmlLocale: Qt.locale('en_GB')
@@ -93,7 +94,7 @@ Item {
     Plasmoid.compactRepresentation: cr
     Plasmoid.fullRepresentation: fr
     
-    property bool debugLogging: false
+    property bool debugLogging: true
     
     function dbgprint(msg) {
         if (!debugLogging) {
@@ -188,6 +189,7 @@ Item {
     
     onPlacesJsonStrChanged: {
         setNextPlace(true)
+        onlyOnePlace = ConfigUtils.getPlacesArray().length === 1
     }
     
     function showData() {

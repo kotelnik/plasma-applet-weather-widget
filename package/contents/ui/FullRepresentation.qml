@@ -54,6 +54,7 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         verticalAlignment: Text.AlignTop
+        visible: !onlyOnePlace
         
         text: 'Next Location'
     }

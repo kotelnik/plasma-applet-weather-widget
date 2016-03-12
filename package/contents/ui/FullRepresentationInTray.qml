@@ -53,6 +53,7 @@ Item {
         
         anchors.right: parent.right
         anchors.top: parent.top
+        visible: !onlyOnePlace
         
         text: 'Next Location'
     }

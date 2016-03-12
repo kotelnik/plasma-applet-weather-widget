@@ -541,32 +541,24 @@ Item {
             longTerm: null
         }
         
-        function checkIfDone() {
-            loadedCounter++
-            if (loadedCounter === 3) {
-                successCallback(loadedData)
-            }
-        }
+        var versionParam = '&v=' + new Date().getTime()
+        
+        DataLoader.fetchXmlFromInternet(urlPrefix + '/weather?id=' + placeIdentifier + appIdAndModeSuffix + versionParam, successCurrent, failureCallback)
         
         function successCurrent(xmlString) {
             loadedData.current = xmlString
-            checkIfDone()
+            DataLoader.fetchXmlFromInternet(urlPrefix + '/forecast?id=' + placeIdentifier + appIdAndModeSuffix + versionParam, successHourByHour, failureCallback)
         }
         
         function successHourByHour(xmlString) {
             loadedData.hourByHour = xmlString
-            checkIfDone()
+            DataLoader.fetchXmlFromInternet(urlPrefix + '/forecast/daily?id=' + placeIdentifier + '&cnt=8' + appIdAndModeSuffix + versionParam, successLongTerm, failureCallback)
         }
         
         function successLongTerm(xmlString) {
             loadedData.longTerm = xmlString
-            checkIfDone()
+            successCallback(loadedData)
         }
-        
-        var versionParam = '&v=' + new Date().getTime()
-        DataLoader.fetchXmlFromInternet(urlPrefix + '/weather?id=' + placeIdentifier + appIdAndModeSuffix + versionParam, successCurrent, failureCallback)
-        DataLoader.fetchXmlFromInternet(urlPrefix + '/forecast?id=' + placeIdentifier + appIdAndModeSuffix + versionParam, successHourByHour, failureCallback)
-        DataLoader.fetchXmlFromInternet(urlPrefix + '/forecast/daily?id=' + placeIdentifier + '&cnt=8' + appIdAndModeSuffix + versionParam, successLongTerm, failureCallback)
     }
     
     function setWeatherContents(cacheContent) {

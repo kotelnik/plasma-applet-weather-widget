@@ -75,6 +75,8 @@ function fetchXmlFromInternet(getUrl, successCallback, failureCallback) {
         }
         
         if (xhr.status !== 200) {
+            dbgprint('ERROR - status: ' + xhr.status)
+            dbgprint('ERROR - responseText: ' + xhr.responseText)
             failureCallback()
             return
         }
@@ -82,6 +84,7 @@ function fetchXmlFromInternet(getUrl, successCallback, failureCallback) {
         // success
         dbgprint('successfully loaded from the internet')
         dbgprint('successfully of url-call: ' + getUrl)
+//         dbgprint('responseText: ' + xhr.responseText)
         
         var xmlString = xhr.responseText;
         if (!DataLoader.isXmlStringValid(xmlString)) {

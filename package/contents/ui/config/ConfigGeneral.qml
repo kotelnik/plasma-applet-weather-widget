@@ -109,7 +109,7 @@ Item {
             placesModel.append({
                 providerId: 'owm',
                 placeIdentifier: resultString,
-                placeAlias: resultString
+                placeAlias: newOwmCityAlias.text
             })
             placesModelChanged()
             close()
@@ -121,9 +121,17 @@ Item {
             width: parent.width
         }
         
+        TextField {
+            id: newOwmCityAlias
+            anchors.top: newOwmCityIdField.bottom
+            anchors.topMargin: 10
+            placeholderText: 'City alias'
+            width: parent.width
+        }
+        
         Label {
             id: owmInfo
-            anchors.top: newOwmCityIdField.bottom
+            anchors.top: newOwmCityAlias.bottom
             anchors.topMargin: 10
             font.italic: true
             text: 'Find your city ID by searching here:'
@@ -165,7 +173,7 @@ Item {
     
     Dialog {
         id: changePlaceAliasDialog
-        title: 'Change Alias'
+        title: 'Change Displayed As'
         
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         
@@ -238,7 +246,7 @@ Item {
             
             TableViewColumn {
                 role: 'placeAlias'
-                title: i18n('Alias')
+                title: i18n('Displayed as')
                 width: parent.width * 0.2
                 
                 delegate: MouseArea {
@@ -253,6 +261,16 @@ Item {
                         anchors.leftMargin: 5
                         anchors.right: parent.right
                         anchors.rightMargin: 5
+                    }
+                    
+                    PlasmaCore.IconItem {
+                        id: noAliasWarningIcon
+                        anchors.left: parent.left
+                        anchors.leftMargin: 5
+                        visible: placeAliasText.text === ''
+                        height: parent.height
+                        width: height
+                        source: 'document-edit'
                     }
                     
                     cursorShape: Qt.PointingHandCursor
@@ -336,6 +354,7 @@ Item {
                 onClicked: {
                     addOwmCityIdDialog.open()
                     newOwmCityIdField.text = ''
+                    newOwmCityAlias.text = ''
                     newOwmCityIdField.focus = true
                 }
             }
