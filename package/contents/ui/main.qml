@@ -340,7 +340,7 @@ Item {
     
     function updateLastReloadedText() {
         var lastReloadedMs = getLastReloadedMs()
-        lastReloadedText = '⬇ ' + DataLoader.getLastReloadedTimeText(lastReloadedMs) + ' ago'
+        lastReloadedText = '⬇ ' + i18n('%1 ago', DataLoader.getLastReloadedTimeText(lastReloadedMs))
         plasmoid.status = DataLoader.getPlasmoidStatus(lastReloadedMs, inTrayActiveTimeoutSec)
     }
     
@@ -370,12 +370,12 @@ Item {
             subText += '<font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, windSpeedType) + '</font>'
             subText += '<br /><font size="4">' + UnitUtils.getPressureText(actualWeatherModel.get(0).pressureHpa, pressureType) + '</font>'
             if (typeof(actualWeatherModel.get(0).humidity) === 'string' && typeof(actualWeatherModel.get(0).cloudiness) === 'string') {
-                subText += '<br /><font size="4">' + actualWeatherModel.get(0).humidity + '% humidity</font>'
-                subText += '<br /><font size="4">' + actualWeatherModel.get(0).cloudiness + '% clouds</font>'
+                subText += '<br /><font size="4">' + actualWeatherModel.get(0).humidity + '% ' + i18n('humidity') + '</font>'
+                subText += '<br /><font size="4">' + actualWeatherModel.get(0).cloudiness + '% ' + i18n('clouds') + '</font>'
             }
             subText += '<br /><font size="4">⬆&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;⬇&nbsp;' + additionalWeatherInfo.sunSetTime + '</font>'
             subText += '<br />'
-            subText += '<font size="3">near future</font>'
+            subText += '<font size="3">' + i18n('near future') + '</font>'
             subText += '<b>'
             subText += '<font size="6">&nbsp;&nbsp;' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, temperatureType) + UnitUtils.getTemperatureEnding(temperatureType) + '</font>'
             subText += '</b>'
@@ -397,7 +397,7 @@ Item {
             subText += '</table>'
             
             subText += '<br /><br />'
-            subText += '<font size="3">near future</font>'
+            subText += '<font size="3">' + i18n('near future') + '</font>'
             subText += '<b>'
             subText += '<font size="6">&nbsp;&nbsp;&nbsp;' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, temperatureType) + UnitUtils.getTemperatureEnding(temperatureType)
             subText += '&nbsp;&nbsp;&nbsp;<font style="font-family: weathericons">' + futureWeatherIcon + '</font></font>'

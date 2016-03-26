@@ -134,7 +134,7 @@ Item {
     
     states: [
         State {
-            name: "loading"
+            name: 'loading'
             when: loadingData
             
             PropertyChanges {

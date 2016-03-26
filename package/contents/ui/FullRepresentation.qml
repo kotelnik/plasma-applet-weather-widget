@@ -56,7 +56,7 @@ Item {
         verticalAlignment: Text.AlignTop
         visible: !onlyOnePlace
         
-        text: 'Next Location'
+        text: i18n('Next Location')
     }
     
     MouseArea {

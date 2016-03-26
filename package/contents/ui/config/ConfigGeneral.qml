@@ -42,7 +42,7 @@ Item {
     
     Dialog {
         id: addYrNoTownStringDialog
-        title: 'Add yr.no Place'
+        title: i18n('Add yr.no Place')
         
         width: 500
         
@@ -73,7 +73,7 @@ Item {
         
         TextField {
             id: newYrNoTownStringField
-            placeholderText: 'Paste URL here'
+            placeholderText: i18n('Paste URL here')
             width: parent.width
         }
         
@@ -88,7 +88,7 @@ Item {
     
     Dialog {
         id: addOwmCityIdDialog
-        title: 'Add Open Weather Map Place'
+        title: i18n('Add Open Weather Map Place')
         
         width: 500
         
@@ -117,7 +117,7 @@ Item {
         
         TextField {
             id: newOwmCityIdField
-            placeholderText: 'Paste URL here'
+            placeholderText: i18n('Paste URL here')
             width: parent.width
         }
         
@@ -125,7 +125,7 @@ Item {
             id: newOwmCityAlias
             anchors.top: newOwmCityIdField.bottom
             anchors.topMargin: 10
-            placeholderText: 'City alias'
+            placeholderText: i18n('City alias')
             width: parent.width
         }
         
@@ -134,7 +134,7 @@ Item {
             anchors.top: newOwmCityAlias.bottom
             anchors.topMargin: 10
             font.italic: true
-            text: 'Find your city ID by searching here:'
+            text: i18n('Find your city ID by searching here:')
         }
         
         Label {
@@ -166,14 +166,14 @@ Item {
         Label {
             anchors.top: owmLink.bottom
             font.italic: true
-            text: '...and paste here the whole URL\ne.g. http://openweathermap.org/city/2946447 for Bonn, Germany.'
+            text: i18n('...and paste here the whole URL\ne.g. http://openweathermap.org/city/2946447 for Bonn, Germany.')
         }
         
     }
     
     Dialog {
         id: changePlaceAliasDialog
-        title: 'Change Displayed As'
+        title: i18n('Change Displayed As')
         
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         
@@ -187,7 +187,7 @@ Item {
         
         TextField {
             id: newPlaceAliasField
-            placeholderText: 'Enter place alias'
+            placeholderText: i18n('Enter place alias')
             width: parent.width
         }
     }
@@ -198,7 +198,7 @@ Item {
         anchors.right: parent.right
         
         Label {
-            text: i18n('Version ') + '1.6.4'
+            text: i18n('Plasmoid version: ') + '1.6.4'
             Layout.alignment: Qt.AlignRight
             Layout.columnSpan: 2
         }
@@ -291,7 +291,7 @@ Item {
             }
             
             TableViewColumn {
-                title: "Action"
+                title: i18n('Action')
                 width: parent.width * 0.2
                 
                 delegate: Item {
