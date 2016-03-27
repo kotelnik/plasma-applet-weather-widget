@@ -235,7 +235,6 @@ msgid "clouds"
 msgstr "zachmurzenie"
 
 #: ../package/contents/ui/main.qml:378 ../package/contents/ui/main.qml:400
-#, fuzzy
 msgid "near future"
 msgstr "w najbliższym czasie"
 
