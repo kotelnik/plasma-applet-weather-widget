@@ -12,7 +12,7 @@ extract-messages.sh
 sed -e "s,Report-Msgid-Bugs-To: http://bugs.kde.org,Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-widget/issues," -i "po/$NAME.pot"
 
 echo "Merging translations"
-catalogs=`find . -name '*.po'`
+catalogs=`find ./po -name '*.po'`
 for cat in $catalogs; do
   echo $cat
   msgmerge -o $cat.new $cat po/$NAME.pot
