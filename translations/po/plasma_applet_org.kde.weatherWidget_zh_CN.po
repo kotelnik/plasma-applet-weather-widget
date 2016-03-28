@@ -9,66 +9,66 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-"
 "widget/issues\n"
 "POT-Creation-Date: 2016-03-28 10:47+0200\n"
-"PO-Revision-Date: 2016-03-26 21:59+0100\n"
-"Last-Translator: Martin Kotelnik <clearmartin@seznam.cz>\n"
-"Language-Team: Martin Kotelnik <clearmartin@seznam.cz>\n"
-"Language: cs\n"
+"PO-Revision-Date: 2016-03-28 12:06+0800\n"
+"Last-Translator: 吴相东 <wuxiangdong156@gmail.com>\n"
+"Language-Team: 吴相东 <wuxiangdong156@gmail.com>\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../package/contents/config/config.qml:6
 msgid "General"
-msgstr "Obecné"
+msgstr "常规"
 
 #: ../package/contents/config/config.qml:11
 msgid "Appearance"
-msgstr "Vzhled"
+msgstr "外观"
 
 #: ../package/contents/config/config.qml:16
 msgid "Units"
-msgstr "Jednotky"
+msgstr "单位"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:41
 msgid "Render meteogram for yr.no"
-msgstr "Použít renderovaný meteogram pro yr.no"
+msgstr "绘制 yr.no 天气图表"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:52
 msgid "Layout"
-msgstr "Zobrazení"
+msgstr "布局"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:58
 msgid "Layout type:"
-msgstr "Typ zobrazení:"
+msgstr "布局类型:"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:64
 msgid "Horizontal"
-msgstr "Horizontální"
+msgstr "水平"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:68
 msgid "NOTE: Setting layout type for in-tray plasmoid has no effect."
-msgstr "Pozn.: Aplet v liště toto nastavení ignoruje."
+msgstr "注意:对在系统托盘里的部件无效."
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:81
 msgid "Vertical"
-msgstr "Vertikální"
+msgstr "垂直"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:87
 msgid "Compact"
-msgstr "Kompaktní"
+msgstr "紧凑"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:99
 msgid "In-Tray Settings"
-msgstr "Nastavení pro lištu"
+msgstr "托盘部件设置"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:105
 msgid "Active timeout:"
-msgstr "Skrýt po:"
+msgstr "显示时间:"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:114
 msgctxt "Abbreviation for seconds"
 msgid "sec"
-msgstr ""
+msgstr "秒"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:117
 msgid ""
@@ -76,18 +76,17 @@ msgid ""
 "refreshed. You can always set the widget to be always \"Shown\" in system "
 "tray \"Entries\" settings."
 msgstr ""
-"Pozn.: Po tomto čase bude aplet skryt dokud nedojde k jeho aktualizaci. Vždy "
-"je však možné aplet nastavit tak, aby byl stále viditelný tím, že u něj "
-"nastavíte \"Zobrazeno\" v sekci \"Položky\" v nastavení lišty."
+"注意: 过了此时间后部件将会被隐藏,直到天气更新后重新显示.你可以通过系统托盘 "
+"\"项目\"设置其为总是显示."
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:45
 msgid "Add yr.no Place"
-msgstr "Přidat lokaci yr.no"
+msgstr "添加 yr.no"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:76
 #: ../package/contents/ui/config/ConfigGeneral.qml:120
 msgid "Paste URL here"
-msgstr "Vložte URL"
+msgstr "在此粘贴网址"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:84
 msgid ""
@@ -95,78 +94,75 @@ msgid ""
 "and use the URL from your browser to add a new location. E.g. paste this:\n"
 "http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/"
 msgstr ""
-"Najděte svou lokalitu na stránkách yr.no (zvolte anglickou verzi)\n"
-"a použijte plnou URL k přidání nové lokality. Tzn. vložte např. toto:\n"
-"http://www.yr.no/place/Czech_Republic/Prague/Prague/"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:91
 msgid "Add Open Weather Map Place"
-msgstr "Přidat lokaci Open Weather Map"
+msgstr "添加 Open Weather Map"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:128
 msgid "City alias"
-msgstr "Alias lokace"
+msgstr "城市名称"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:137
 msgid "Find your city ID by searching here:"
-msgstr "Najděte své city ID pomocí vyhledávání zde:"
+msgstr "搜索这里找到你的城市ID:"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:169
 msgid ""
 "...and paste here the whole URL\n"
 "e.g. http://openweathermap.org/city/2946447 for Bonn, Germany."
 msgstr ""
-"...a sem vložte celé URL\n"
-"např. http://openweathermap.org/city/3065328 pro Prahu, ČR."
+"在此粘贴网址\n"
+"例如: http://openweathermap.org/city/1816670 中国,北京."
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:176
 msgid "Change Displayed As"
-msgstr "Změnit alias"
+msgstr "显示名称"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:190
 msgid "Enter place alias"
-msgstr "Napište alias lokace"
+msgstr "输入城市名称"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:201
 msgid "Plasmoid version: "
-msgstr "Verze apletu: "
+msgstr "部件版本:"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:207
 msgid "Location"
-msgstr "Lokace"
+msgstr "位置"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:224
 msgid "Source"
-msgstr "Zdroj"
+msgstr "来源"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:240
 msgid "Place Identifier"
-msgstr "ID lokace"
+msgstr "地区ID"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:255
 msgid "Displayed as"
-msgstr "Alias"
+msgstr "显示名称"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:294
 msgid "Action"
-msgstr "Akce"
+msgstr "动作"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:382
 msgid "Miscellaneous"
-msgstr "Ostatní"
+msgstr "杂项"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:393
 msgid "Reload interval:"
-msgstr "Obnovovací interval:"
+msgstr "载入间隔:"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:403
 msgctxt "Abbreviation for minutes"
 msgid "min"
-msgstr ""
+msgstr "分钟"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:90
 msgid "Temperature:"
-msgstr "Teplota:"
+msgstr "温度:"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:96
 msgid "°C"
@@ -178,7 +174,7 @@ msgstr ""
 
 #: ../package/contents/ui/config/ConfigUnits.qml:118
 msgid "Pressure:"
-msgstr "Tlak:"
+msgstr "气压:"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:124
 msgid "hPa"
@@ -194,7 +190,7 @@ msgstr ""
 
 #: ../package/contents/ui/config/ConfigUnits.qml:152
 msgid "Wind speed:"
-msgstr "Ryhlost větru:"
+msgstr "风速"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:158
 msgid "m/s"
@@ -206,11 +202,11 @@ msgstr ""
 
 #: ../package/contents/ui/config/ConfigUnits.qml:180
 msgid "Timezone:"
-msgstr "Časová zóna:"
+msgstr "时区:"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:186
 msgid "My local-time"
-msgstr "Můj místní čas"
+msgstr "本地时间"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:197
 msgid "UTC"
@@ -219,42 +215,42 @@ msgstr ""
 #: ../package/contents/ui/FullRepresentation.qml:59
 #: ../package/contents/ui/FullRepresentationInTray.qml:58
 msgid "Next Location"
-msgstr "Další lokace"
+msgstr "下一个位置"
 
 #: ../package/contents/ui/main.qml:132
 msgid "Resume Updating"
-msgstr "Povolit obnovování"
+msgstr "恢复"
 
 #: ../package/contents/ui/main.qml:132
 msgid "Pause Updating"
-msgstr "Zakázat obnovování"
+msgstr "暂停"
 
 #: ../package/contents/ui/main.qml:343
 msgid "%1 ago"
-msgstr "před %1"
+msgstr "%1 前"
 
 #: ../package/contents/ui/main.qml:373
 msgid "humidity"
-msgstr "vlhkost"
+msgstr "湿度"
 
 #: ../package/contents/ui/main.qml:374
 msgid "clouds"
-msgstr "oblačnost"
+msgstr "云"
 
 #: ../package/contents/ui/main.qml:378 ../package/contents/ui/main.qml:400
 msgid "near future"
-msgstr "brzy bude"
+msgstr "现在"
 
 #: ../package/contents/ui/Meteogram.qml:557
 msgid "Offline mode"
-msgstr "Offline režim"
+msgstr "离线模式"
 
 #: ../package/contents/ui/Meteogram.qml:557
 msgid "Loading image..."
-msgstr "Načítání obrázku..."
+msgstr "载入图片中..."
 
 #: ../package/contents/ui/providers/OpenWeatherMap.qml:323
 #: ../package/contents/ui/providers/OpenWeatherMap.qml:406
 #: ../package/contents/ui/providers/YrNo.qml:258
 msgid "today"
-msgstr "dnes"
+msgstr "今天"

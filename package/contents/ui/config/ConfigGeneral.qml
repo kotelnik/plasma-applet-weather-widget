@@ -81,7 +81,7 @@ Item {
             anchors.top: newYrNoTownStringField.bottom
             anchors.topMargin: 10
             font.italic: true
-            text: 'Find your town string in yr.no (english version)\nand use the URL from your browser to add a new location. E.g. paste this:\nhttp://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/'
+            text: i18n('Find your town string in yr.no (english version)\nand use the URL from your browser to add a new location. E.g. paste this:\nhttp://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/')
             Layout.columnSpan: 2
         }
     }
