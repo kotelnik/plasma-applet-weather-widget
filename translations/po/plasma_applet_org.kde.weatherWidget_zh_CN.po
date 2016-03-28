@@ -31,7 +31,7 @@ msgstr "单位"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:41
 msgid "Render meteogram for yr.no"
-msgstr "为yr.no渲染天气图表"
+msgstr "绘制 yr.no 天气图表"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:52
 msgid "Layout"
@@ -39,7 +39,7 @@ msgstr "布局"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:58
 msgid "Layout type:"
-msgstr "布局类别"
+msgstr "布局类型:"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:64
 msgid "Horizontal"
@@ -47,7 +47,7 @@ msgstr "水平"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:68
 msgid "NOTE: Setting layout type for in-tray plasmoid has no effect."
-msgstr "注意:对系统托盘部件无效."
+msgstr "注意:对在系统托盘里的部件无效."
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:81
 msgid "Vertical"
@@ -59,7 +59,7 @@ msgstr "紧凑"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:99
 msgid "In-Tray Settings"
-msgstr "托盘设置"
+msgstr "托盘部件设置"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:105
 msgid "Active timeout:"
@@ -76,8 +76,8 @@ msgid ""
 "refreshed. You can always set the widget to be always \"Shown\" in system "
 "tray \"Entries\" settings."
 msgstr ""
-"注意: 此时间后部件将会被隐藏,天气更新后重新显示.你可以通过系统托盘 \"项目\"设"
-"置总是显示."
+"注意: 过了此时间后部件将会被隐藏,直到天气更新后重新显示.你可以通过系统托盘 \"项目\"设"
+"置其为总是显示."
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:45
 msgid "Add yr.no Place"
@@ -118,11 +118,11 @@ msgstr "输入城市名称"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:201
 msgid "Plasmoid version: "
-msgstr "版本:"
+msgstr "部件版本:"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:207
 msgid "Location"
-msgstr "地区"
+msgstr "位置"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:224
 msgid "Source"
@@ -130,7 +130,7 @@ msgstr "来源"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:240
 msgid "Place Identifier"
-msgstr "城市ID"
+msgstr "地区ID"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:255
 msgid "Displayed as"
@@ -146,12 +146,12 @@ msgstr "杂项"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:393
 msgid "Reload interval:"
-msgstr "刷新间隔:"
+msgstr "载入间隔:"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:403
 msgctxt "Abbreviation for minutes"
 msgid "min"
-msgstr "分"
+msgstr "分钟"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:90
 msgid "Temperature:"
@@ -208,7 +208,7 @@ msgstr ""
 #: ../package/contents/ui/FullRepresentation.qml:59
 #: ../package/contents/ui/FullRepresentationInTray.qml:58
 msgid "Next Location"
-msgstr "下一个"
+msgstr "下一个位置"
 
 #: ../package/contents/ui/main.qml:132
 msgid "Resume Updating"
@@ -220,7 +220,7 @@ msgstr "暂停"
 
 #: ../package/contents/ui/main.qml:343
 msgid "%1 ago"
-msgstr "%1前"
+msgstr "%1 前"
 
 #: ../package/contents/ui/main.qml:373
 msgid "humidity"
@@ -236,11 +236,11 @@ msgstr "现在"
 
 #: ../package/contents/ui/Meteogram.qml:557
 msgid "Offline mode"
-msgstr "离线"
+msgstr "离线模式"
 
 #: ../package/contents/ui/Meteogram.qml:557
 msgid "Loading image..."
-msgstr "载入中..."
+msgstr "载入图片中..."
 
 #: ../package/contents/ui/providers/OpenWeatherMap.qml:323
 #: ../package/contents/ui/providers/OpenWeatherMap.qml:406
