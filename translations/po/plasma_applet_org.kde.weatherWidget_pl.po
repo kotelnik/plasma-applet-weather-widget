@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
-"Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-widget"
-"/issues\n"
-"POT-Creation-Date: 2016-03-27 13:30+0200\n"
+"Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-"
+"widget/issues\n"
+"POT-Creation-Date: 2016-03-28 10:47+0200\n"
 "PO-Revision-Date: 2016-03-27 14:29+0100\n"
 "Last-Translator: Tomasz Przybył <fademind@gmail.com>\n"
 "Language-Team: Polish <kde-i18n-doc@kde.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10"
-" || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 2.0\n"
 
 #: ../package/contents/config/config.qml:6
@@ -49,7 +49,8 @@ msgstr "Poziomy"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:68
 msgid "NOTE: Setting layout type for in-tray plasmoid has no effect."
-msgstr "UWAGA: Ustawienie rozmieszczenia dla ikony w zasobniku nie ma zastosowania. "
+msgstr ""
+"UWAGA: Ustawienie rozmieszczenia dla ikony w zasobniku nie ma zastosowania. "
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:81
 msgid "Vertical"
@@ -78,15 +79,12 @@ msgid ""
 "refreshed. You can always set the widget to be always \"Shown\" in system "
 "tray \"Entries\" settings."
 msgstr ""
-"UWAGA: Po upływie czasu ikona Weather Widget zostanie ukryta w zasobniku do"
-"czasu aktualizacji statusu. Możesz zmienić parametr \"Widoczność\" na"
-" \"Pokazywany\"  w ustawieniach"
-"Plasma 5 \"Tacka systemowa  > Elementy > Weather Widget\"  aby ikona w"
-" zasobniku była"
-"zawsze widoczna. Opcja działa dla ikony \"Weather Widget\" wyświetlanej za"
-" pomocą ustawień"
-"\"Dodatkowe Elementy\" we właściwościach Tacki Systemowej Plasma 5 i nie ma"
-" zastosowania "
+"UWAGA: Po upływie czasu ikona Weather Widget zostanie ukryta w zasobniku "
+"doczasu aktualizacji statusu. Możesz zmienić parametr \"Widoczność\" na "
+"\"Pokazywany\"  w ustawieniachPlasma 5 \"Tacka systemowa  > Elementy > "
+"Weather Widget\"  aby ikona w zasobniku była zawsze widoczna. Opcja działa "
+"dla ikony \"Weather Widget\" wyświetlanej za pomocą ustawień\"Dodatkowe "
+"Elementy\" we właściwościach Tacki Systemowej Plasma 5 i nie ma zastosowania "
 "dla samodzielnego plasmoidu dodanego jako osobny element Panelu. "
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:45
@@ -97,6 +95,13 @@ msgstr "Dodaj miejscowość z yr.no"
 #: ../package/contents/ui/config/ConfigGeneral.qml:120
 msgid "Paste URL here"
 msgstr "Wklej URL tutaj"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:84
+msgid ""
+"Find your town string in yr.no (english version)\n"
+"and use the URL from your browser to add a new location. E.g. paste this:\n"
+"http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/"
+msgstr ""
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:91
 msgid "Add Open Weather Map Place"
@@ -257,5 +262,3 @@ msgstr "Wczytuję obraz... "
 #: ../package/contents/ui/providers/YrNo.qml:258
 msgid "today"
 msgstr "dzisiaj"
-
-

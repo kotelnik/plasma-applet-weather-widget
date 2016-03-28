@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-"
 "widget/issues\n"
-"POT-Creation-Date: 2016-03-27 13:30+0200\n"
+"POT-Creation-Date: 2016-03-28 10:47+0200\n"
 "PO-Revision-Date: 2016-03-26 21:59+0100\n"
 "Last-Translator: Jacobtey <jacobtey@gmail.com>\n"
 "Language-Team: Jacobtey <jacobtey@gmail.com>\n"
@@ -88,6 +88,13 @@ msgstr "Добавить место yr.no"
 #: ../package/contents/ui/config/ConfigGeneral.qml:120
 msgid "Paste URL here"
 msgstr "Вставьте URL сюда"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:84
+msgid ""
+"Find your town string in yr.no (english version)\n"
+"and use the URL from your browser to add a new location. E.g. paste this:\n"
+"http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/"
+msgstr ""
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:91
 msgid "Add Open Weather Map Place"

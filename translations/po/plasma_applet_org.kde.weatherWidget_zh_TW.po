@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-widget"
-"/issues\n"
-"POT-Creation-Date: 2016-03-27 13:30+0200\n"
+"Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-"
+"widget/issues\n"
+"POT-Creation-Date: 2016-03-28 10:47+0200\n"
 "PO-Revision-Date: 2016-03-27 22:03+0800\n"
 "Last-Translator: Jeff Huang <s8321414@gmail.com>\n"
 "Language-Team: Chinese <chinese-l10n@googlegroups.com>\n"
@@ -77,9 +77,8 @@ msgid ""
 "refreshed. You can always set the widget to be always \"Shown\" in system "
 "tray \"Entries\" settings."
 msgstr ""
-"注意：過了此逾時時間後，這個小工具將會隱藏至系統匣中，"
-"直到重新整理為止。您還是可以在系統匣「項目」設定中將其"
-"設定為總是「顯示」。"
+"注意：過了此逾時時間後，這個小工具將會隱藏至系統匣中，直到重新整理為止。您還"
+"是可以在系統匣「項目」設定中將其設定為總是「顯示」。"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:45
 msgid "Add yr.no Place"
@@ -89,6 +88,13 @@ msgstr "新增 yr.no 位置"
 #: ../package/contents/ui/config/ConfigGeneral.qml:120
 msgid "Paste URL here"
 msgstr "在此貼上 URL"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:84
+msgid ""
+"Find your town string in yr.no (english version)\n"
+"and use the URL from your browser to add a new location. E.g. paste this:\n"
+"http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/"
+msgstr ""
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:91
 msgid "Add Open Weather Map Place"
@@ -249,4 +255,3 @@ msgstr "正在載入圖片..."
 #: ../package/contents/ui/providers/YrNo.qml:258
 msgid "today"
 msgstr "今天"
-
