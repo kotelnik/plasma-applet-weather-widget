@@ -44,6 +44,9 @@ Item {
         case 1:
             windSpeedTypeGroup.current = windSpeedTypeRadioMph;
             break;
+        case 2:
+            windSpeedTypeGroup.current = windSpeedTypeRadioKmh;
+            break;
         default:
         }
     }
@@ -161,13 +164,19 @@ Item {
         Item {
             width: 2
             height: 2
-            Layout.rowSpan: 1
+            Layout.rowSpan: 2
         }
         RadioButton {
             id: windSpeedTypeRadioMph
             exclusiveGroup: windSpeedTypeGroup
             text: i18n("mph")
             onCheckedChanged: if (checked) cfg_windSpeedType = 1
+        }
+        RadioButton {
+            id: windSpeedTypeRadioKmh
+            exclusiveGroup: windSpeedTypeGroup
+            text: i18n("km/h")
+            onCheckedChanged: if (checked) cfg_windSpeedType = 2
         }
         
         Item {

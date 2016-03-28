@@ -23,7 +23,7 @@ function kelvinToCelsia(kelvin) {
 }
 
 function getTemperatureEnding(temperatureType) {
-    return temperatureType === TemperatureType.FAHRENHEIT ? '°F' : '°C'
+    return temperatureType === TemperatureType.FAHRENHEIT ? i18n('°F') : i18n('°C')
 }
 
 /*
@@ -51,12 +51,12 @@ function getPressureText(hpa, pressureType) {
 
 function getPressureEnding(pressureType) {
     if (pressureType === PressureType.INHG) {
-        return 'inHg'
+        return i18n('inHg')
     }
     if (pressureType === PressureType.MMHG) {
-        return 'mmHg'
+        return i18n('mmHg')
     }
-    return 'hPa'
+    return i18n('hPa')
 }
 
 /*
@@ -64,12 +64,15 @@ function getPressureEnding(pressureType) {
  */
 var WindSpeedType = {
     MPS: 0,
-    MPH: 1
+    MPH: 1,
+    KMH: 2
 }
 
 function getWindSpeedNumber(mps, windSpeedType) {
     if (windSpeedType === WindSpeedType.MPH) {
         return Math.round(mps * 2.2369362920544 * 10) / 10
+    } else if (windSpeedType === WindSpeedType.KMH) {
+        return Math.round(mps * 3.6 * 10) / 10
     }
     return mps
 }
@@ -79,7 +82,12 @@ function getWindSpeedText(mps, windSpeedType) {
 }
 
 function getWindSpeedEnding(windSpeedType) {
-    return windSpeedType === WindSpeedType.MPH ? 'mph' : 'm/s'
+    if (windSpeedType === WindSpeedType.MPH) {
+        return i18n('mph')
+    } else if (windSpeedType === WindSpeedType.KMH) {
+        return i18n('km/h')
+    }
+    return i18n('m/s')
 }
 
 function getHourText(hourNumber, twelveHourClockEnabled) {

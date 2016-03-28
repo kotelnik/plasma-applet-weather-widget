@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
-"Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-widget"
-"/issues\n"
-"POT-Creation-Date: 2016-03-28 10:47+0200\n"
+"Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-"
+"widget/issues\n"
+"POT-Creation-Date: 2016-03-28 11:43+0200\n"
 "PO-Revision-Date: 2016-03-28 11:24+0100\n"
 "Last-Translator: Tomasz Przybył <fademind@gmail.com>\n"
 "Language-Team: Polish <kde-i18n-doc@kde.org>\n"
@@ -15,9 +15,49 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10"
-" || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 2.0\n"
+
+#: ../package/contents/code/unit-utils.js:26
+#: ../package/contents/ui/config/ConfigUnits.qml:99
+msgid "°C"
+msgstr "°C"
+
+#: ../package/contents/code/unit-utils.js:26
+#: ../package/contents/ui/config/ConfigUnits.qml:110
+msgid "°F"
+msgstr "°F"
+
+#: ../package/contents/code/unit-utils.js:54
+#: ../package/contents/ui/config/ConfigUnits.qml:138
+msgid "inHg"
+msgstr "inHg"
+
+#: ../package/contents/code/unit-utils.js:57
+#: ../package/contents/ui/config/ConfigUnits.qml:144
+msgid "mmHg"
+msgstr "mmHg"
+
+#: ../package/contents/code/unit-utils.js:59
+#: ../package/contents/ui/config/ConfigUnits.qml:127
+msgid "hPa"
+msgstr "hPa"
+
+#: ../package/contents/code/unit-utils.js:86
+#: ../package/contents/ui/config/ConfigUnits.qml:172
+msgid "mph"
+msgstr "mph"
+
+#: ../package/contents/code/unit-utils.js:88
+#: ../package/contents/ui/config/ConfigUnits.qml:178
+msgid "km/h"
+msgstr ""
+
+#: ../package/contents/code/unit-utils.js:90
+#: ../package/contents/ui/config/ConfigUnits.qml:161
+msgid "m/s"
+msgstr "m/s"
 
 #: ../package/contents/config/config.qml:6
 msgid "General"
@@ -79,13 +119,13 @@ msgid ""
 "refreshed. You can always set the widget to be always \"Shown\" in system "
 "tray \"Entries\" settings."
 msgstr ""
-"UWAGA: Po upływie czasu ikona Weather Widget zostanie ukryta w zasobniku do"
-" czasu aktualizacji statusu. Możesz zmienić parametr \"Widoczność\" na"
-" \"Pokazywany\"  w ustawieniach Plasma 5 \"Tacka systemowa  > Elementy >"
-" Weather Widget\"  aby ikona w zasobniku była zawsze widoczna. Opcja działa"
-" dla ikony \"Weather Widget\" wyświetlanej za pomocą ustawień\"Dodatkowe"
-" Elementy\" we właściwościach Tacki Systemowej Plasma 5 i nie ma zastosowania"
-" dla samodzielnego plasmoidu dodanego jako osobny element Panelu. "
+"UWAGA: Po upływie czasu ikona Weather Widget zostanie ukryta w zasobniku do "
+"czasu aktualizacji statusu. Możesz zmienić parametr \"Widoczność\" na "
+"\"Pokazywany\"  w ustawieniach Plasma 5 \"Tacka systemowa  > Elementy > "
+"Weather Widget\"  aby ikona w zasobniku była zawsze widoczna. Opcja działa "
+"dla ikony \"Weather Widget\" wyświetlanej za pomocą ustawień\"Dodatkowe "
+"Elementy\" we właściwościach Tacki Systemowej Plasma 5 i nie ma zastosowania "
+"dla samodzielnego plasmoidu dodanego jako osobny element Panelu. "
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:45
 msgid "Add yr.no Place"
@@ -171,55 +211,27 @@ msgctxt "Abbreviation for minutes"
 msgid "min"
 msgstr "min"
 
-#: ../package/contents/ui/config/ConfigUnits.qml:90
+#: ../package/contents/ui/config/ConfigUnits.qml:93
 msgid "Temperature:"
 msgstr "Temperatura:"
 
-#: ../package/contents/ui/config/ConfigUnits.qml:96
-msgid "°C"
-msgstr "°C"
-
-#: ../package/contents/ui/config/ConfigUnits.qml:107
-msgid "°F"
-msgstr "°F"
-
-#: ../package/contents/ui/config/ConfigUnits.qml:118
+#: ../package/contents/ui/config/ConfigUnits.qml:121
 msgid "Pressure:"
 msgstr "Ciśnienie"
 
-#: ../package/contents/ui/config/ConfigUnits.qml:124
-msgid "hPa"
-msgstr "hPa"
-
-#: ../package/contents/ui/config/ConfigUnits.qml:135
-msgid "inHg"
-msgstr "inHg"
-
-#: ../package/contents/ui/config/ConfigUnits.qml:141
-msgid "mmHg"
-msgstr "mmHg"
-
-#: ../package/contents/ui/config/ConfigUnits.qml:152
+#: ../package/contents/ui/config/ConfigUnits.qml:155
 msgid "Wind speed:"
 msgstr "Prędkość wiatru:"
 
-#: ../package/contents/ui/config/ConfigUnits.qml:158
-msgid "m/s"
-msgstr "m/s"
-
-#: ../package/contents/ui/config/ConfigUnits.qml:169
-msgid "mph"
-msgstr "mph"
-
-#: ../package/contents/ui/config/ConfigUnits.qml:180
+#: ../package/contents/ui/config/ConfigUnits.qml:189
 msgid "Timezone:"
 msgstr "Strefa czasowa:"
 
-#: ../package/contents/ui/config/ConfigUnits.qml:186
+#: ../package/contents/ui/config/ConfigUnits.qml:195
 msgid "My local-time"
 msgstr "Czas lokalny"
 
-#: ../package/contents/ui/config/ConfigUnits.qml:197
+#: ../package/contents/ui/config/ConfigUnits.qml:206
 msgid "UTC"
 msgstr "UTC"
 
@@ -265,5 +277,3 @@ msgstr "Wczytuję obraz... "
 #: ../package/contents/ui/providers/YrNo.qml:258
 msgid "today"
 msgstr "dzisiaj"
-
-

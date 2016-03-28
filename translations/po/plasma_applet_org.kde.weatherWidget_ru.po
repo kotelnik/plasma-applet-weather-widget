@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-"
 "widget/issues\n"
-"POT-Creation-Date: 2016-03-28 10:47+0200\n"
+"POT-Creation-Date: 2016-03-28 11:43+0200\n"
 "PO-Revision-Date: 2016-03-26 21:59+0100\n"
 "Last-Translator: Jacobtey <jacobtey@gmail.com>\n"
 "Language-Team: Jacobtey <jacobtey@gmail.com>\n"
@@ -16,6 +16,46 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../package/contents/code/unit-utils.js:26
+#: ../package/contents/ui/config/ConfigUnits.qml:99
+msgid "°C"
+msgstr ""
+
+#: ../package/contents/code/unit-utils.js:26
+#: ../package/contents/ui/config/ConfigUnits.qml:110
+msgid "°F"
+msgstr ""
+
+#: ../package/contents/code/unit-utils.js:54
+#: ../package/contents/ui/config/ConfigUnits.qml:138
+msgid "inHg"
+msgstr ""
+
+#: ../package/contents/code/unit-utils.js:57
+#: ../package/contents/ui/config/ConfigUnits.qml:144
+msgid "mmHg"
+msgstr "мм рт.ст."
+
+#: ../package/contents/code/unit-utils.js:59
+#: ../package/contents/ui/config/ConfigUnits.qml:127
+msgid "hPa"
+msgstr "гПа"
+
+#: ../package/contents/code/unit-utils.js:86
+#: ../package/contents/ui/config/ConfigUnits.qml:172
+msgid "mph"
+msgstr ""
+
+#: ../package/contents/code/unit-utils.js:88
+#: ../package/contents/ui/config/ConfigUnits.qml:178
+msgid "km/h"
+msgstr ""
+
+#: ../package/contents/code/unit-utils.js:90
+#: ../package/contents/ui/config/ConfigUnits.qml:161
+msgid "m/s"
+msgstr "м/с"
 
 #: ../package/contents/config/config.qml:6
 msgid "General"
@@ -161,55 +201,27 @@ msgctxt "Abbreviation for minutes"
 msgid "min"
 msgstr "мин"
 
-#: ../package/contents/ui/config/ConfigUnits.qml:90
+#: ../package/contents/ui/config/ConfigUnits.qml:93
 msgid "Temperature:"
 msgstr "Температура:"
 
-#: ../package/contents/ui/config/ConfigUnits.qml:96
-msgid "°C"
-msgstr ""
-
-#: ../package/contents/ui/config/ConfigUnits.qml:107
-msgid "°F"
-msgstr ""
-
-#: ../package/contents/ui/config/ConfigUnits.qml:118
+#: ../package/contents/ui/config/ConfigUnits.qml:121
 msgid "Pressure:"
 msgstr "Давление:"
 
-#: ../package/contents/ui/config/ConfigUnits.qml:124
-msgid "hPa"
-msgstr "гПа"
-
-#: ../package/contents/ui/config/ConfigUnits.qml:135
-msgid "inHg"
-msgstr ""
-
-#: ../package/contents/ui/config/ConfigUnits.qml:141
-msgid "mmHg"
-msgstr "мм рт.ст."
-
-#: ../package/contents/ui/config/ConfigUnits.qml:152
+#: ../package/contents/ui/config/ConfigUnits.qml:155
 msgid "Wind speed:"
 msgstr "Скорость ветра:"
 
-#: ../package/contents/ui/config/ConfigUnits.qml:158
-msgid "m/s"
-msgstr "м/с"
-
-#: ../package/contents/ui/config/ConfigUnits.qml:169
-msgid "mph"
-msgstr ""
-
-#: ../package/contents/ui/config/ConfigUnits.qml:180
+#: ../package/contents/ui/config/ConfigUnits.qml:189
 msgid "Timezone:"
 msgstr "Часовой пояс"
 
-#: ../package/contents/ui/config/ConfigUnits.qml:186
+#: ../package/contents/ui/config/ConfigUnits.qml:195
 msgid "My local-time"
 msgstr "Местное время"
 
-#: ../package/contents/ui/config/ConfigUnits.qml:197
+#: ../package/contents/ui/config/ConfigUnits.qml:206
 msgid "UTC"
 msgstr ""
 
