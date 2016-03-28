@@ -5,10 +5,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-"
-"widget/issues\n"
+"Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-widget"
+"/issues\n"
 "POT-Creation-Date: 2016-03-28 11:43+0200\n"
-"PO-Revision-Date: 2016-03-27 22:03+0800\n"
+"PO-Revision-Date: 2016-03-28 22:35+0800\n"
 "Last-Translator: Jeff Huang <s8321414@gmail.com>\n"
 "Language-Team: Chinese <chinese-l10n@googlegroups.com>\n"
 "Language: zh_TW\n"
@@ -51,7 +51,7 @@ msgstr "mph"
 #: ../package/contents/code/unit-utils.js:88
 #: ../package/contents/ui/config/ConfigUnits.qml:178
 msgid "km/h"
-msgstr ""
+msgstr "公里／秒"
 
 #: ../package/contents/code/unit-utils.js:90
 #: ../package/contents/ui/config/ConfigUnits.qml:161
@@ -135,6 +135,9 @@ msgid ""
 "and use the URL from your browser to add a new location. E.g. paste this:\n"
 "http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/"
 msgstr ""
+"在 yr.no 中找到您的城市字串（英文版）\n"
+"以及從您的瀏覽器使用該 URL 以加入新位置。例如：貼上這個：\n"
+"http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:91
 msgid "Add Open Weather Map Place"
@@ -267,3 +270,4 @@ msgstr "正在載入圖片..."
 #: ../package/contents/ui/providers/YrNo.qml:258
 msgid "today"
 msgstr "今天"
+
