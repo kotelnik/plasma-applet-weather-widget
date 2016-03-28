@@ -4,7 +4,7 @@ import org.kde.plasma.configuration 2.0
 ConfigModel {
     ConfigCategory {
          name: i18n('General')
-         icon: Qt.resolvedUrl('../images/weather-widget.svg')
+         icon: 'weather-widget'
          source: 'config/ConfigGeneral.qml'
     }
     ConfigCategory {
