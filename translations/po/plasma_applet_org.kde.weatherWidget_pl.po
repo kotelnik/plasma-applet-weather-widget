@@ -5,18 +5,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
-"Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-"
-"widget/issues\n"
+"Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-widget"
+"/issues\n"
 "POT-Creation-Date: 2016-03-27 13:30+0200\n"
-"PO-Revision-Date: 2016-03-27 10:38+0100\n"
+"PO-Revision-Date: 2016-03-27 14:29+0100\n"
 "Last-Translator: Tomasz Przybył <fademind@gmail.com>\n"
 "Language-Team: Polish <kde-i18n-doc@kde.org>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10"
+" || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 2.0\n"
 
 #: ../package/contents/config/config.qml:6
@@ -49,8 +49,7 @@ msgstr "Poziomy"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:68
 msgid "NOTE: Setting layout type for in-tray plasmoid has no effect."
-msgstr ""
-"UWAGA: Ustawienie rozmieszczenia dla ikony w zasobniku nie ma zastosowania. "
+msgstr "UWAGA: Ustawienie rozmieszczenia dla ikony w zasobniku nie ma zastosowania. "
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:81
 msgid "Vertical"
@@ -79,9 +78,16 @@ msgid ""
 "refreshed. You can always set the widget to be always \"Shown\" in system "
 "tray \"Entries\" settings."
 msgstr ""
-"UWAGA: Po upływie czasu widget zostanie ukryty do ikony w zasobniku.\n"
-"Możesz włączyć opcję \"zawsze na wierzchu\"  w ustawieniach aby widget był "
-"zawsze widoczny."
+"UWAGA: Po upływie czasu ikona Weather Widget zostanie ukryta w zasobniku do"
+"czasu aktualizacji statusu. Możesz zmienić parametr \"Widoczność\" na"
+" \"Pokazywany\"  w ustawieniach"
+"Plasma 5 \"Tacka systemowa  > Elementy > Weather Widget\"  aby ikona w"
+" zasobniku była"
+"zawsze widoczna. Opcja działa dla ikony \"Weather Widget\" wyświetlanej za"
+" pomocą ustawień"
+"\"Dodatkowe Elementy\" we właściwościach Tacki Systemowej Plasma 5 i nie ma"
+" zastosowania "
+"dla samodzielnego plasmoidu dodanego jako osobny element Panelu. "
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:45
 msgid "Add yr.no Place"
@@ -109,8 +115,8 @@ msgid ""
 "...and paste here the whole URL\n"
 "e.g. http://openweathermap.org/city/2946447 for Bonn, Germany."
 msgstr ""
-"... i wklej tutaj cały URL\n"
-"np. http://openweathermap.org/city/756135 dla Warszawy, Polska."
+"i wklej tutaj URL\n"
+"np. http://openweathermap.org/city/756135 dla Warszawa, Polska."
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:176
 msgid "Change Displayed As"
@@ -138,7 +144,7 @@ msgstr "ID miejsca"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:255
 msgid "Displayed as"
-msgstr "Wyświetlane jako"
+msgstr "Alias"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:294
 msgid "Action"
@@ -203,7 +209,7 @@ msgstr "Strefa czasowa:"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:186
 msgid "My local-time"
-msgstr "Mój czas lokalny"
+msgstr "Czas lokalny"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:197
 msgid "UTC"
@@ -251,3 +257,5 @@ msgstr "Wczytuję obraz... "
 #: ../package/contents/ui/providers/YrNo.qml:258
 msgid "today"
 msgstr "dzisiaj"
+
+
