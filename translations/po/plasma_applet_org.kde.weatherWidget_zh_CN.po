@@ -20,42 +20,42 @@ msgstr ""
 #: ../package/contents/code/unit-utils.js:26
 #: ../package/contents/ui/config/ConfigUnits.qml:99
 msgid "°C"
-msgstr ""
+msgstr "摄氏度 °C"
 
 #: ../package/contents/code/unit-utils.js:26
 #: ../package/contents/ui/config/ConfigUnits.qml:110
 msgid "°F"
-msgstr ""
+msgstr "华氏度 °F"
 
 #: ../package/contents/code/unit-utils.js:54
 #: ../package/contents/ui/config/ConfigUnits.qml:138
 msgid "inHg"
-msgstr ""
+msgstr "英寸汞柱 inHg"
 
 #: ../package/contents/code/unit-utils.js:57
 #: ../package/contents/ui/config/ConfigUnits.qml:144
 msgid "mmHg"
-msgstr ""
+msgstr "毫米汞柱 mmHg"
 
 #: ../package/contents/code/unit-utils.js:59
 #: ../package/contents/ui/config/ConfigUnits.qml:127
 msgid "hPa"
-msgstr ""
+msgstr "百帕 hPa"
 
 #: ../package/contents/code/unit-utils.js:86
 #: ../package/contents/ui/config/ConfigUnits.qml:172
 msgid "mph"
-msgstr ""
+msgstr "英里/时 mph"
 
 #: ../package/contents/code/unit-utils.js:88
 #: ../package/contents/ui/config/ConfigUnits.qml:178
 msgid "km/h"
-msgstr ""
+msgstr "公里/时 km/h"
 
 #: ../package/contents/code/unit-utils.js:90
 #: ../package/contents/ui/config/ConfigUnits.qml:161
 msgid "m/s"
-msgstr ""
+msgstr "米/秒 m/s"
 
 #: ../package/contents/config/config.qml:6
 msgid "General"
@@ -134,6 +134,9 @@ msgid ""
 "and use the URL from your browser to add a new location. E.g. paste this:\n"
 "http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/"
 msgstr ""
+"在 yr.no 中找到您城市的英文字串\n"
+"并从您的浏览器中使用该 URL 加入新位置。例如:\n"
+"http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:91
 msgid "Add Open Weather Map Place"
@@ -153,7 +156,7 @@ msgid ""
 "e.g. http://openweathermap.org/city/2946447 for Bonn, Germany."
 msgstr ""
 "在此粘贴网址\n"
-"例如: http://openweathermap.org/city/1816670 中国,北京."
+"例如: http://openweathermap.org/city/2946447 德国,波恩."
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:176
 msgid "Change Displayed As"
