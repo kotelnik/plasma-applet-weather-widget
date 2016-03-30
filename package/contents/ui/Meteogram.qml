@@ -276,7 +276,7 @@ Item {
                     horizontalAlignment: Text.AlignRight
                     anchors.left: parent.left
                     anchors.leftMargin: -graphLeftMargin
-                    font.pixelSize: theme.defaultFont.pixelSize
+                    font.pixelSize: 11 * units.devicePixelRatio
                     font.pointSize: -1
                 }
                 
@@ -287,7 +287,7 @@ Item {
                     horizontalAlignment: Text.AlignLeft
                     anchors.right: parent.right
                     anchors.rightMargin: -graphLeftMargin
-                    font.pixelSize: theme.defaultFont.pixelSize
+                    font.pixelSize: 11 * units.devicePixelRatio
                     font.pointSize: -1
                     color: pressureColor
                 }
@@ -299,7 +299,7 @@ Item {
                     horizontalAlignment: Text.AlignLeft
                     anchors.right: parent.right
                     anchors.rightMargin: -graphLeftMargin
-                    font.pixelSize: theme.defaultFont.pixelSize
+                    font.pixelSize: 11 * units.devicePixelRatio
                     font.pointSize: -1
                     color: pressureColor
                     anchors.top: parent.top
@@ -354,7 +354,7 @@ Item {
                     anchors.topMargin: -graphTopMargin
                     anchors.left: parent.left
                     anchors.leftMargin: parent.width / 2
-                    font.pixelSize: theme.defaultFont.pixelSize
+                    font.pixelSize: 11 * units.devicePixelRatio
                     font.pointSize: -1
                     visible: dayBegins && canShowDay
                 }
@@ -376,7 +376,7 @@ Item {
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: -graphTopMargin
                     anchors.horizontalCenter: parent.horizontalCenter
-                    font.pixelSize: theme.defaultFont.pixelSize
+                    font.pixelSize: 11 * units.devicePixelRatio
                     font.pointSize: -1
                     visible: textVisible
                 }
@@ -387,13 +387,13 @@ Item {
                     horizontalAlignment: Text.AlignLeft
                     anchors.top: hourText.top
                     anchors.left: hourText.right
-                    font.pixelSize: theme.smallestFont.pixelSize
+                    font.pixelSize: 7 * units.devicePixelRatio
                     font.pointSize: -1
                     visible: textVisible
                 }
                 
                 PlasmaComponents.Label {
-                    font.pixelSize: theme.desktopFont.pixelSize
+                    font.pixelSize: 14 * units.devicePixelRatio
                     font.pointSize: -1
                     
                     anchors.horizontalCenter: parent.horizontalCenter
