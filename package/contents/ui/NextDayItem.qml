@@ -21,7 +21,7 @@ import org.kde.plasma.components 2.0 as PlasmaComponents
 
 Item {
     
-    property int itemRowSpacing: 5
+    property int itemRowSpacing: 5 * units.devicePixelRatio
     property double periodFontSize: theme.defaultFont.pixelSize
     property double periodHeight: (height - periodFontSize - itemRowSpacing * 4) / 4
     property color lineColor: theme.textColor
@@ -37,7 +37,7 @@ Item {
     Item {
         id: dayTitleLine
         width: parent.width
-        height: 1
+        height: 1 * units.devicePixelRatio
         anchors.top: parent.top
         anchors.topMargin: periodFontSize * 0.8
         
@@ -67,7 +67,7 @@ Item {
         anchors.topMargin: periodFontSize
         
         columns: 1
-        rowSpacing: 5
+        rowSpacing: 5 * units.devicePixelRatio
         
         height: parent.height - anchors.topMargin
         width: parent.width

@@ -25,13 +25,13 @@ Item {
     id: meteogram
     
     property bool enableRendering: renderMeteogram || currentProvider.providerId !== 'yrno'
-    
+
     property int temperatureSizeY: 21
     property int pressureSizeY: 101
     property int pressureMultiplier: Math.round((pressureSizeY - 1) / (temperatureSizeY - 1))
     
-    property int graphLeftMargin: 28
-    property int graphTopMargin: 20
+    property int graphLeftMargin: 28 * units.devicePixelRatio
+    property int graphTopMargin: 20 * units.devicePixelRatio
     property double graphWidth: meteogram.width - graphLeftMargin * 2
     property double graphHeight: meteogram.height - graphTopMargin * 2
     property double topBottomCanvasMargin: (graphHeight / temperatureSizeY) * 0.5
@@ -51,9 +51,9 @@ Item {
     
     property bool meteogramModelChanged: main.meteogramModelChanged
     
-    property int precipitationFontPixelSize: 7
-    property int precipitationHeightMultiplier: 15
-    property int precipitationLabelMargin: 10
+    property int precipitationFontPixelSize: theme.smallestFont.pixelSize
+    property int precipitationHeightMultiplier: 15 * units.devicePixelRatio
+    property int precipitationLabelMargin: 10 * units.devicePixelRatio
     
     property bool textColorLight: ((theme.textColor.r + theme.textColor.g + theme.textColor.b) / 3) > 0.5
     property color gridColor: textColorLight ? Qt.tint(theme.textColor, '#80000000') : Qt.tint(theme.textColor, '#80FFFFFF')
@@ -264,7 +264,7 @@ Item {
                 
                 Rectangle {
                     width: parent.width
-                    height: 1
+                    height: 1 * units.devicePixelRatio
                     color: gridColor
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -272,22 +272,22 @@ Item {
                 PlasmaComponents.Label {
                     text: UnitUtils.getTemperatureNumber(-temperatureAdditiveY + (temperatureSizeY - num), temperatureType) + '°'
                     height: parent.height
-                    width: graphLeftMargin - 2
+                    width: graphLeftMargin - 2 * units.devicePixelRatio
                     horizontalAlignment: Text.AlignRight
                     anchors.left: parent.left
                     anchors.leftMargin: -graphLeftMargin
-                    font.pixelSize: 10
+                    font.pixelSize: theme.defaultFont.pixelSize
                     font.pointSize: -1
                 }
                 
                 PlasmaComponents.Label {
                     text: String(UnitUtils.getPressureNumber(-pressureAdditiveY + (pressureSizeY - 1 - num * pressureMultiplier), pressureType))
                     height: parent.height
-                    width: graphLeftMargin - 2
+                    width: graphLeftMargin - 2 * units.devicePixelRatio
                     horizontalAlignment: Text.AlignLeft
                     anchors.right: parent.right
                     anchors.rightMargin: -graphLeftMargin
-                    font.pixelSize: 10
+                    font.pixelSize: theme.defaultFont.pixelSize
                     font.pointSize: -1
                     color: pressureColor
                 }
@@ -295,15 +295,15 @@ Item {
                 PlasmaComponents.Label {
                     text: UnitUtils.getPressureEnding(pressureType)
                     height: parent.height
-                    width: graphLeftMargin - 2
+                    width: graphLeftMargin - 2 * units.devicePixelRatio
                     horizontalAlignment: Text.AlignLeft
                     anchors.right: parent.right
                     anchors.rightMargin: -graphLeftMargin
-                    font.pixelSize: 10
+                    font.pixelSize: theme.defaultFont.pixelSize
                     font.pointSize: -1
                     color: pressureColor
                     anchors.top: parent.top
-                    anchors.topMargin: -14
+                    anchors.topMargin: -14 * units.devicePixelRatio
                     visible: num === 0
                 }
             }
@@ -349,7 +349,7 @@ Item {
                 PlasmaComponents.Label {
                     id: dayTest
                     text: Qt.locale().dayName(dateFrom.getDay(), Locale.LongFormat)
-                    height: graphTopMargin - 2
+                    height: graphTopMargin - 2 * units.devicePixelRatio
                     anchors.top: parent.top
                     anchors.topMargin: -graphTopMargin
                     anchors.left: parent.left
@@ -372,11 +372,11 @@ Item {
                     text: hourFromStr
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignHCenter
-                    height: graphTopMargin - 2
+                    height: graphTopMargin - 2 * units.devicePixelRatio
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: -graphTopMargin
                     anchors.horizontalCenter: parent.horizontalCenter
-                    font.pixelSize: 10
+                    font.pixelSize: theme.defaultFont.pixelSize
                     font.pointSize: -1
                     visible: textVisible
                 }
@@ -387,13 +387,13 @@ Item {
                     horizontalAlignment: Text.AlignLeft
                     anchors.top: hourText.top
                     anchors.left: hourText.right
-                    font.pixelSize: 7
+                    font.pixelSize: theme.smallestFont.pixelSize
                     font.pointSize: -1
                     visible: textVisible
                 }
                 
                 PlasmaComponents.Label {
-                    font.pixelSize: 14
+                    font.pixelSize: theme.desktopFont.pixelSize
                     font.pointSize: -1
                     
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -476,7 +476,7 @@ Item {
                     context.clearRect(0, 0, width, height)
                     
                     context.strokeStyle = pressureColor
-                    context.lineWidth = 1;
+                    context.lineWidth = 1 * units.devicePixelRatio;
                     context.path = pressurePath
                     context.stroke()
                 }
@@ -503,7 +503,7 @@ Item {
                     context.clearRect(0, 0, width, height)
                     
                     context.strokeStyle = temperatureWarmColor
-                    context.lineWidth = 2;
+                    context.lineWidth = 2 * units.devicePixelRatio;
                     context.path = temperaturePathWarm
                     context.stroke()
                 }
@@ -532,7 +532,7 @@ Item {
                         context.clearRect(0, 0, width, height)
                         
                         context.strokeStyle = temperatureColdColor
-                        context.lineWidth = 2;
+                        context.lineWidth = 2 * units.devicePixelRatio;
                         context.path = temperaturePathCold
                         context.stroke()
                     }
