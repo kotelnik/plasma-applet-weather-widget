@@ -30,7 +30,7 @@ Item {
     property double defaultFontPixelSize: theme.defaultFont.pixelSize
     property double footerHeight: defaultFontPixelSize * 3.5
     
-    property int nextDaysSpacing: 5
+    property int nextDaysSpacing: 5 * units.devicePixelRatio
     property int nextDayHeight: defaultFontPixelSize * 4.9
     property int headingHeight: defaultFontPixelSize * 3
     property int nextDayItemSpacing: defaultFontPixelSize * 0.7

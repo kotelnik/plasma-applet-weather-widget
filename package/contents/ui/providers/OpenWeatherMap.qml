@@ -269,7 +269,7 @@ Item {
         var today1800 = new Date(today0000.getTime() + ModelUtils.hourDurationMs * 18)
         
         function composeNextDayTitle(date) {
-            return Qt.locale().dayName(date.getDay(), Locale.ShortFormat) + ' ' + date.getDate() + '.' + (date.getMonth() + 1) + '.'
+            return Qt.locale().dayName(date.getDay(), Locale.ShortFormat) + ' ' + date.getDate() + '/' + (date.getMonth() + 1)
         }
         
         var lastObjectHourByHour = null

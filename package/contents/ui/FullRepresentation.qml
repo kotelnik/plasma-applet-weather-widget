@@ -21,10 +21,10 @@ import org.kde.plasma.components 2.0 as PlasmaComponents
 Item {
     id: fullRepresentation
     
-    property int imageWidth: 828
-    property int imageHeight: 302
+    property int imageWidth: 828 * units.devicePixelRatio // Makes yr.no images grainy,
+    property int imageHeight: 302 * units.devicePixelRatio // prefer rendering meteograms
     
-    property double defaultFontPixelSize: 13
+    property double defaultFontPixelSize: theme.defaultFont.pixelSize
     property double footerHeight: defaultFontPixelSize
     
     property int nextDayItemSpacing: defaultFontPixelSize * 0.5
@@ -116,7 +116,7 @@ Item {
         id: hourLegend
         anchors.bottom: parent.bottom
         anchors.bottomMargin: footerHeight + nextDaysVerticalMargin
-        spacing: 1
+        spacing: 1 * units.devicePixelRatio
         width: hourLegendMargin
         height: nextDaysHeight - defaultFontPixelSize
         

@@ -276,7 +276,7 @@ Item {
                     break
                 }
                 lastObject = ModelUtils.createEmptyNextDaysObject()
-                lastObject.dayTitle = Qt.locale().dayName(dateTo.getDay(), Locale.ShortFormat) + ' ' + dateTo.getDate() + '.' + (dateTo.getMonth() + 1) + '.'
+                lastObject.dayTitle = Qt.locale().dayName(dateTo.getDay(), Locale.ShortFormat) + ' ' + dateTo.getDate() + '/' + (dateTo.getMonth() + 1) 
                 newObjectArray.push(lastObject)
             }
             
