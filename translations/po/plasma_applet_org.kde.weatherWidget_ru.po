@@ -135,6 +135,9 @@ msgid ""
 "and use the URL from your browser to add a new location. E.g. paste this:\n"
 "http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/"
 msgstr ""
+"Найдите свой населенный пункт на yr.no (по английски)\n"
+"и используйте строку с адресом из браузера, чтобы добавить новое место. Например:\n"
+"http://www.yr.no/place/Russia/Moscow/Moscow/"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:91
 msgid "Add Open Weather Map Place"
@@ -153,8 +156,8 @@ msgid ""
 "...and paste here the whole URL\n"
 "e.g. http://openweathermap.org/city/2946447 for Bonn, Germany."
 msgstr ""
-"...и вставьте сюда адрес интернет страницы целикомнапр., http://"
-"openweathermap.org/city/524901 для Москвы, Россия."
+"...и вставьте сюда адрес интернет-страницы целиком\n"
+"напр., http://openweathermap.org/city/524901 для Москвы, Россия."
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:176
 msgid "Change Displayed As"
