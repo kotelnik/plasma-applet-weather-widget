@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-"
 "widget/issues\n"
 "POT-Creation-Date: 2016-03-28 11:43+0200\n"
-"PO-Revision-Date: 2016-03-28 19:12+0800\n"
+"PO-Revision-Date: 2016-06-27 14:24+0800\n"
 "Last-Translator: 吴相东 <wuxiangdong156@gmail.com>\n"
 "Language-Team: 吴相东 <wuxiangdong156@gmail.com>\n"
 "Language: zh_CN\n"
@@ -20,42 +20,42 @@ msgstr ""
 #: ../package/contents/code/unit-utils.js:26
 #: ../package/contents/ui/config/ConfigUnits.qml:99
 msgid "°C"
-msgstr "摄氏度 °C"
+msgstr "摄氏度"
 
 #: ../package/contents/code/unit-utils.js:26
 #: ../package/contents/ui/config/ConfigUnits.qml:110
 msgid "°F"
-msgstr "华氏度 °F"
+msgstr "华氏度"
 
 #: ../package/contents/code/unit-utils.js:54
 #: ../package/contents/ui/config/ConfigUnits.qml:138
 msgid "inHg"
-msgstr "英寸汞柱 inHg"
+msgstr "英寸汞柱"
 
 #: ../package/contents/code/unit-utils.js:57
 #: ../package/contents/ui/config/ConfigUnits.qml:144
 msgid "mmHg"
-msgstr "毫米汞柱 mmHg"
+msgstr "毫米汞柱"
 
 #: ../package/contents/code/unit-utils.js:59
 #: ../package/contents/ui/config/ConfigUnits.qml:127
 msgid "hPa"
-msgstr "百帕 hPa"
+msgstr "百帕"
 
 #: ../package/contents/code/unit-utils.js:86
 #: ../package/contents/ui/config/ConfigUnits.qml:172
 msgid "mph"
-msgstr "英里/时 mph"
+msgstr "英里/时"
 
 #: ../package/contents/code/unit-utils.js:88
 #: ../package/contents/ui/config/ConfigUnits.qml:178
 msgid "km/h"
-msgstr "公里/时 km/h"
+msgstr "公里/时"
 
 #: ../package/contents/code/unit-utils.js:90
 #: ../package/contents/ui/config/ConfigUnits.qml:161
 msgid "m/s"
-msgstr "米/秒 m/s"
+msgstr "米/秒"
 
 #: ../package/contents/config/config.qml:6
 msgid "General"
@@ -87,7 +87,7 @@ msgstr "水平"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:68
 msgid "NOTE: Setting layout type for in-tray plasmoid has no effect."
-msgstr "注意:对在系统托盘里的部件无效."
+msgstr "注意:设置布局类型对系统托盘里的部件无效."
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:81
 msgid "Vertical"
@@ -116,8 +116,8 @@ msgid ""
 "refreshed. You can always set the widget to be always \"Shown\" in system "
 "tray \"Entries\" settings."
 msgstr ""
-"注意: 过了此时间后部件将会被隐藏,直到天气更新后重新显示.你可以通过系统托盘 "
-"\"项目\"设置其为总是显示."
+"注意: 过了此时间后部件将会被隐藏至托盘中,直到天气更新后重新显示.你可以通过系统托盘 "
+"\"项目\"设置中将其设置为总是显示."
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:45
 msgid "Add yr.no Place"
@@ -225,7 +225,7 @@ msgstr "本地时间"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:206
 msgid "UTC"
-msgstr ""
+msgstr "UTC"
 
 #: ../package/contents/ui/FullRepresentation.qml:59
 #: ../package/contents/ui/FullRepresentationInTray.qml:58
@@ -254,7 +254,7 @@ msgstr "云"
 
 #: ../package/contents/ui/main.qml:378 ../package/contents/ui/main.qml:400
 msgid "near future"
-msgstr "现在"
+msgstr "不久后"
 
 #: ../package/contents/ui/Meteogram.qml:557
 msgid "Offline mode"
