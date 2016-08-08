@@ -51,7 +51,7 @@ Item {
     
     property bool meteogramModelChanged: main.meteogramModelChanged
     
-    property int precipitationFontPixelSize: theme.smallestFont.pixelSize
+    property int precipitationFontPixelSize: 8 * units.devicePixelRatio
     property int precipitationHeightMultiplier: 15 * units.devicePixelRatio
     property int precipitationLabelMargin: 10 * units.devicePixelRatio
     

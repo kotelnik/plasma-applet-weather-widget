@@ -20,6 +20,7 @@ import org.kde.plasma.plasmoid 2.0
 Item {
     id: weatherCache
 
+    property var cacheId
     property var cacheBackend: null
     property bool cacheBackendFailedToInitialize: false
     
@@ -44,7 +45,7 @@ Item {
         dbgprint('writing cache')
         var backend = getCacheBackend()
         if (backend) {
-            backend.writeCache(cacheContent, plasmoid.id)
+            backend.writeCache(cacheContent, cacheId)
         } else {
             dbgprint('cacheBackend N/A')
         }
@@ -54,7 +55,7 @@ Item {
         dbgprint('reading cache')
         var backend = getCacheBackend()
         if (backend) {
-            return backend.readCache(plasmoid.id)
+            return backend.readCache(cacheId)
         } else {
             dbgprint('cacheBackend N/A')
             return ''

@@ -63,7 +63,8 @@ Item {
     property string tooltipSubText: ''
     
     property bool vertical: (plasmoid.formFactor == PlasmaCore.Types.Vertical)
-    property bool inTray: (plasmoid.parent === null || plasmoid.parent.objectName === 'taskItemContainer')
+    property bool inTray: false
+    property string plasmoidCacheId: plasmoid.id
     
     property int inTrayActiveTimeoutSec: plasmoid.configuration.inTrayActiveTimeoutSec
     
@@ -134,10 +135,15 @@ Item {
     
     WeatherCache {
         id: weatherCache
+        cacheId: plasmoidCacheId
     }
     
     Component.onCompleted: {
         
+        inTray = (plasmoid.parent !== null && (plasmoid.parent.pluginName === 'org.kde.plasma.private.systemtray' || plasmoid.parent.objectName === 'taskItemContainer'))
+        plasmoidCacheId = inTray ? plasmoid.parent.id : plasmoid.id
+        dbgprint('inTray=' + inTray + ', plasmoidCacheId=' + plasmoidCacheId)
+
         additionalWeatherInfo = {
             sunRise: new Date('2000-01-01T00:00:00'),
             sunSet: new Date('2000-01-01T00:00:00'),
@@ -194,6 +200,7 @@ Item {
     
     function showData() {
         dbgprint('init: plasmoid.configuration.lastReloadedMs = ' + getLastReloadedMs())
+
         var ok = loadFromCache()
         if (!ok) {
             reloadData()
@@ -366,44 +373,28 @@ Item {
         var windDirectionIcon = IconTools.getWindDirectionIconCode(actualWeatherModel.get(0).windDirection)
         var subText = ''
         
-        if (inTray) {
-            subText += '<font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, windSpeedType) + '</font>'
-            subText += '<br /><font size="4">' + UnitUtils.getPressureText(actualWeatherModel.get(0).pressureHpa, pressureType) + '</font>'
-            if (typeof(actualWeatherModel.get(0).humidity) === 'string' && typeof(actualWeatherModel.get(0).cloudiness) === 'string') {
-                subText += '<br /><font size="4">' + actualWeatherModel.get(0).humidity + '% ' + i18n('humidity') + '</font>'
-                subText += '<br /><font size="4">' + actualWeatherModel.get(0).cloudiness + '% ' + i18n('clouds') + '</font>'
-            }
-            subText += '<br /><font size="4">⬆&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;⬇&nbsp;' + additionalWeatherInfo.sunSetTime + '</font>'
-            subText += '<br />'
-            subText += '<font size="3">' + i18n('near future') + '</font>'
-            subText += '<b>'
-            subText += '<font size="6">&nbsp;&nbsp;' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, temperatureType) + UnitUtils.getTemperatureEnding(temperatureType) + '</font>'
-            subText += '</b>'
-        } else {
-            subText += '<br /><font size="4" style="font-family: weathericons">' + windDirectionIcon + '</font><font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, windSpeedType) + '</font>'
-            subText += '<br /><font size="4">' + UnitUtils.getPressureText(actualWeatherModel.get(0).pressureHpa, pressureType) + '</font>'
-            subText += '<br /><table>'
-            if (typeof(actualWeatherModel.get(0).humidity) === 'string' && typeof(actualWeatherModel.get(0).cloudiness) === 'string') {
-                subText += '<tr>'
-                subText += '<td><font size="4"><font style="font-family: weathericons">\uf07a</font>&nbsp;' + actualWeatherModel.get(0).humidity + '%</font></td>'
-                subText += '<td><font size="4"><font style="font-family: weathericons">\uf013</font>&nbsp;' + actualWeatherModel.get(0).cloudiness + '%</font></td>'
-                subText += '</tr>'
-                subText += '<tr><td>&nbsp;</td><td></td></tr>'
-            }
+        subText += '<br /><font size="4" style="font-family: weathericons">' + windDirectionIcon + '</font><font size="4"> ' + UnitUtils.getWindSpeedText(actualWeatherModel.get(0).windSpeedMps, windSpeedType) + '</font>'
+        subText += '<br /><font size="4">' + UnitUtils.getPressureText(actualWeatherModel.get(0).pressureHpa, pressureType) + '</font>'
+        subText += '<br /><table>'
+        if (typeof(actualWeatherModel.get(0).humidity) === 'string' && typeof(actualWeatherModel.get(0).cloudiness) === 'string') {
             subText += '<tr>'
-            subText += '<td><font size="4"><font style="font-family: weathericons">\uf051</font>&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;</font></td>'
-            subText += '<td><font size="4"><font style="font-family: weathericons">\uf052</font>&nbsp;' + additionalWeatherInfo.sunSetTime + '</font></td>'
+            subText += '<td><font size="4"><font style="font-family: weathericons">\uf07a</font>&nbsp;' + actualWeatherModel.get(0).humidity + '%</font></td>'
+            subText += '<td><font size="4"><font style="font-family: weathericons">\uf013</font>&nbsp;' + actualWeatherModel.get(0).cloudiness + '%</font></td>'
             subText += '</tr>'
-            subText += '</table>'
-            
-            subText += '<br /><br />'
-            subText += '<font size="3">' + i18n('near future') + '</font>'
-            subText += '<b>'
-            subText += '<font size="6">&nbsp;&nbsp;&nbsp;' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, temperatureType) + UnitUtils.getTemperatureEnding(temperatureType)
-            subText += '&nbsp;&nbsp;&nbsp;<font style="font-family: weathericons">' + futureWeatherIcon + '</font></font>'
-            subText += '</b>'
-            
+            subText += '<tr><td>&nbsp;</td><td></td></tr>'
         }
+        subText += '<tr>'
+        subText += '<td><font size="4"><font style="font-family: weathericons">\uf051</font>&nbsp;' + additionalWeatherInfo.sunRiseTime + '&nbsp;&nbsp;&nbsp;</font></td>'
+        subText += '<td><font size="4"><font style="font-family: weathericons">\uf052</font>&nbsp;' + additionalWeatherInfo.sunSetTime + '</font></td>'
+        subText += '</tr>'
+        subText += '</table>'
+
+        subText += '<br /><br />'
+        subText += '<font size="3">' + i18n('near future') + '</font>'
+        subText += '<b>'
+        subText += '<font size="6">&nbsp;&nbsp;&nbsp;' + UnitUtils.getTemperatureNumber(nearFutureWeather.temperature, temperatureType) + UnitUtils.getTemperatureEnding(temperatureType)
+        subText += '&nbsp;&nbsp;&nbsp;<font style="font-family: weathericons">' + futureWeatherIcon + '</font></font>'
+        subText += '</b>'
         
         tooltipSubText = subText
     }

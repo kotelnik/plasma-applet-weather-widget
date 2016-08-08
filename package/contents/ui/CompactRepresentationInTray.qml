@@ -29,8 +29,7 @@ Item {
     
     Plasmoid.toolTipMainText: placeAlias
     Plasmoid.toolTipSubText: tooltipSubText
-    //TODO why is this not working?
-    //Plasmoid.toolTipTextFormat: Text.RichText
+    Plasmoid.toolTipTextFormat: Text.RichText
     Plasmoid.icon: Qt.resolvedUrl('../images/weather-widget.svg')
     
 }
