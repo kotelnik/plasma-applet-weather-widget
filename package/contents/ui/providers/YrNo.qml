@@ -360,9 +360,10 @@ Item {
             }
         }
         
-        DataLoader.fetchXmlFromInternet(urlPrefix + placeIdentifier + '/forecast.xml', successLongTerm, failureCallback)
-        DataLoader.fetchXmlFromInternet(urlPrefix + placeIdentifier + '/forecast_hour_by_hour.xml', successHourByHour, failureCallback)
+        var xhr1 = DataLoader.fetchXmlFromInternet(urlPrefix + placeIdentifier + '/forecast.xml', successLongTerm, failureCallback)
+        var xhr2 = DataLoader.fetchXmlFromInternet(urlPrefix + placeIdentifier + '/forecast_hour_by_hour.xml', successHourByHour, failureCallback)
         
+        return [xhr1, xhr2]
     }
     
     function setWeatherContents(cacheContent) {

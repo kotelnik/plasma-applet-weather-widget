@@ -55,6 +55,9 @@ Item {
     property int reloadIntervalMs: reloadIntervalMin * 60 * 1000
     
     property bool loadingData: false
+    property double loadingDataSinceTime: 0
+    property int loadingDataTimeoutMs: 15000
+    property var loadingXhrs: []
     property bool loadingError: false
     property bool imageLoadingError: true
     property bool alreadyLoadedFromCache: false
@@ -269,11 +272,14 @@ Item {
     }
     
     function reloadData() {
+        var nowTime = (new Date()).getTime();
+        
         if (loadingData) {
             dbgprint('still loading')
             return
         }
         
+        loadingDataSinceTime = nowTime
         loadingData = true
         
         function failureCallback() {
@@ -281,7 +287,7 @@ Item {
             handleLoadError()
         }
         
-        currentProvider.loadDataFromInternet(dataLoadedFromInternet, failureCallback, { placeIdentifier: placeIdentifier })
+        loadingXhrs = currentProvider.loadDataFromInternet(dataLoadedFromInternet, failureCallback, { placeIdentifier: placeIdentifier })
         
         dbgprint('reload called, cacheKey is: ' + cacheKey)
     }
@@ -404,6 +410,23 @@ Item {
         return additionalWeatherInfo.sunRise < now && now < additionalWeatherInfo.sunSet ? 0 : 1
     }
     
+    function abortTooLongConnection() {
+        if (!loadingData) {
+            return
+        }
+        var nowTime = (new Date()).getTime();
+        dbgprint('loadingDataSinceTime=' + loadingDataSinceTime + ', loadingDataTimeoutMs=' + loadingDataTimeoutMs + ', now=' + nowTime)
+        if (loadingDataSinceTime + loadingDataTimeoutMs < nowTime) {
+            dbgprint('timeout reached, aborting existing xhrs')
+            loadingXhrs.forEach(function (xhr) {
+                xhr.abort()
+            })
+        } else {
+            dbgprint('regular loading, no aborting yet')
+            return
+        }
+    }
+    
     function tryReload() {
         updateLastReloadedText()
         
@@ -427,6 +450,7 @@ Item {
         repeat: true
         onTriggered: {
             tryReload()
+            abortTooLongConnection()
         }
     }
     

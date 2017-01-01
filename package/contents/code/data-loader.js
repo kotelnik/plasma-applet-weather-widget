@@ -99,4 +99,5 @@ function fetchXmlFromInternet(getUrl, successCallback, failureCallback) {
     xhr.send()
     
     dbgprint('GET called for url: ' + getUrl)
+    return xhr
 }

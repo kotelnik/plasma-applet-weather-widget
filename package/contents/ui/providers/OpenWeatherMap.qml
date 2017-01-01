@@ -543,7 +543,7 @@ Item {
         
         var versionParam = '&v=' + new Date().getTime()
         
-        DataLoader.fetchXmlFromInternet(urlPrefix + '/weather?id=' + placeIdentifier + appIdAndModeSuffix + versionParam, successCurrent, failureCallback)
+        var xhr1 = DataLoader.fetchXmlFromInternet(urlPrefix + '/weather?id=' + placeIdentifier + appIdAndModeSuffix + versionParam, successCurrent, failureCallback)
         
         function successCurrent(xmlString) {
             loadedData.current = xmlString
@@ -559,6 +559,8 @@ Item {
             loadedData.longTerm = xmlString
             successCallback(loadedData)
         }
+        
+        return [xhr1]
     }
     
     function setWeatherContents(cacheContent) {
