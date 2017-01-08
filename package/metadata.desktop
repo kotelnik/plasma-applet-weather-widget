@@ -15,4 +15,4 @@ X-Plasma-API=declarativeappletscript
 X-Plasma-MainScript=ui/main.qml
 X-Plasma-RemoteLocation=
 X-KDE-PluginInfo-Category=Environment and Weather
-Icon=../plasma/plasmoids/org.kde.weatherWidget/contents/images/weather-widget.svg
+Icon=/usr/share/plasma/plasmoids/org.kde.weatherWidget/contents/images/weather-widget.svg
