@@ -21,11 +21,11 @@ import "../../code/data-loader.js" as DataLoader
 
 Item {
     id: yrno
-    
+
     property string providerId: 'yrno'
-    
-    property string urlPrefix: 'http://www.yr.no/place/'
-    
+
+    property string urlPrefix: 'https://www.yr.no/place/'
+
     XmlListModel {
         id: xmlModelLongTerm
         query: '/weatherdata/forecast/tabular/time'

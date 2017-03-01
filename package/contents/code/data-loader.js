@@ -18,22 +18,22 @@ function setReloaded() {
 
 function getLastReloadedTimeText(lastReloaded) {
     var reloadedAgoMs = getReloadedAgoMs(lastReloaded)
-    
+
     var mins = reloadedAgoMs / 60000
     if (mins <= 180) {
         return Math.round(mins) + 'm'
     }
-    
+
     var hours = mins / 60
     if (hours <= 48) {
         return Math.round(hours) + 'h'
     }
-    
+
     var days = hours / 24
     if (days <= 14) {
         return Math.round(days) + 'd'
     }
-    
+
     return 'long'
 }
 
@@ -73,31 +73,33 @@ function fetchXmlFromInternet(getUrl, successCallback, failureCallback) {
         if (xhr.readyState !== XMLHttpRequest.DONE) {
             return
         }
-        
+
         if (xhr.status !== 200) {
             dbgprint('ERROR - status: ' + xhr.status)
             dbgprint('ERROR - responseText: ' + xhr.responseText)
             failureCallback()
             return
         }
-        
+
         // success
         dbgprint('successfully loaded from the internet')
         dbgprint('successfully of url-call: ' + getUrl)
 //         dbgprint('responseText: ' + xhr.responseText)
-        
+
         var xmlString = xhr.responseText;
         if (!DataLoader.isXmlStringValid(xmlString)) {
             dbgprint('incomming xmlString is not valid: ' + xmlString)
             return
         }
         dbgprint('incomming text seems to be valid')
-        
+
         successCallback(xmlString)
     }
+    dbgprint('GET url opening: ' + getUrl)
     xhr.open('GET', getUrl)
+    dbgprint('GET url sending: ' + getUrl)
     xhr.send()
-    
+
     dbgprint('GET called for url: ' + getUrl)
     return xhr
 }
