@@ -270,7 +270,7 @@ Item {
                 }
                 
                 PlasmaComponents.Label {
-                    text: UnitUtils.getTemperatureNumber(-temperatureAdditiveY + (temperatureSizeY - num), temperatureType) + '°'
+                    text: UnitUtils.getTemperatureNumberExt(-temperatureAdditiveY + (temperatureSizeY - num), temperatureType)
                     height: parent.height
                     width: graphLeftMargin - 2 * units.devicePixelRatio
                     horizontalAlignment: Text.AlignRight

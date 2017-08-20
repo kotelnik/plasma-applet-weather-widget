@@ -52,7 +52,7 @@ Item {
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
             
-            text: hidden ? '' : UnitUtils.getTemperatureNumber(temperature, temperatureType) + '°'
+            text: hidden ? '' : UnitUtils.getTemperatureNumberExt(temperature, temperatureType)
         }
     }
     

@@ -46,6 +46,7 @@
             <choices>
                 <choice name="celsius"/>
                 <choice name="fahrenheit"/>
+                <choice name="kelvin"/>
             </choices>
             <default>0</default>
         </entry>

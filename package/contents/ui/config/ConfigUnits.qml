@@ -17,6 +17,9 @@ Item {
         case 1:
             temperatureTypeGroup.current = temperatureTypeRadioFahrenheit;
             break;
+        case 2:
+            temperatureTypeGroup.current = temperatureTypeRadioKelvin;
+            break;
         default:
         }
     }
@@ -109,6 +112,17 @@ Item {
             exclusiveGroup: temperatureTypeGroup
             text: i18n("°F")
             onCheckedChanged: if (checked) cfg_temperatureType = 1
+        }
+        Item {
+            width: 2
+            height: 2
+            Layout.rowSpan: 1
+        }
+        RadioButton {
+            id: temperatureTypeRadioKelvin
+            exclusiveGroup: temperatureTypeGroup
+            text: i18n("K")
+            onCheckedChanged: if (checked) cfg_temperatureType = 2
         }
         
         Item {

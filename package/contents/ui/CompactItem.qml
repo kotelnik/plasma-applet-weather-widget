@@ -75,7 +75,7 @@ Item {
     property double fontPixelSize: partHeight * (layoutType === 2 ? 0.7 : 0.7)
     
     property string iconNameStr:    actualWeatherModel.count > 0 ? IconTools.getIconCode(actualWeatherModel.get(0).iconName, currentProvider.providerId, getPartOfDayIndex()) : ''
-    property string temperatureStr: actualWeatherModel.count > 0 ? UnitUtils.getTemperatureNumber(actualWeatherModel.get(0).temperature, temperatureType) + '°' : ''
+    property string temperatureStr: actualWeatherModel.count > 0 ? UnitUtils.getTemperatureNumberExt(actualWeatherModel.get(0).temperature, temperatureType) : ''
     
     PlasmaComponents.Label {
         
@@ -110,7 +110,7 @@ Item {
         verticalAlignment: layoutType === 2 ? Text.AlignBottom : Text.AlignVCenter
         
         text: temperatureStr
-        font.pixelSize: fontPixelSize * (layoutType === 2 ? 0.5 : (temperatureType === UnitUtils.TemperatureType.FAHRENHEIT ? 6/7 : 1))
+        font.pixelSize: fontPixelSize * (layoutType === 2 ? 0.5 : (temperatureType !== UnitUtils.TemperatureType.CELSIUS ? 6/7 : 1))
         font.pointSize: -1
     }
     
