@@ -28,8 +28,6 @@ import "providers"
 Item {
     id: main
     
-    property string yrnoUrlPreifx: 'http://www.yr.no/place/'
-    
     property string placeIdentifier
     property string placeAlias
     property string cacheKey
@@ -66,6 +64,7 @@ Item {
     property string tooltipSubText: ''
     
     property bool vertical: (plasmoid.formFactor == PlasmaCore.Types.Vertical)
+    property bool onDesktop: (plasmoid.location == PlasmaCore.Types.Desktop || plasmoid.location == PlasmaCore.Types.Floating)
     property bool inTray: false
     property string plasmoidCacheId: plasmoid.id
     

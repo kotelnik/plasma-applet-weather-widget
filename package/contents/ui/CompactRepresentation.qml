@@ -33,9 +33,9 @@ Item {
     property double partHeight: compactItem.partHeight
     
     Layout.preferredWidth: compactItem.widgetWidth
-    Layout.maximumWidth: compactItem.widgetWidth
+    Layout.maximumWidth: onDesktop ? undefined : compactItem.widgetWidth
     Layout.preferredHeight: compactItem.widgetHeight
-    Layout.maximumHeight: compactItem.widgetHeight
+    Layout.maximumHeight: onDesktop ? undefined : compactItem.widgetHeight
     
     PlasmaComponents.Label {
         id: lastReloadedNotifier

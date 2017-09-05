@@ -390,7 +390,7 @@ Item {
     function reloadMeteogramImage(placeIdentifier) {
         dbgprint('reloading image')
         main.overviewImageSource = ''
-        main.overviewImageSource = yrnoUrlPreifx + placeIdentifier + '/avansert_meteogram.png'
+        main.overviewImageSource = urlPrefix + placeIdentifier + '/avansert_meteogram.png'
     }
     
 }
