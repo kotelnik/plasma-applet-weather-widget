@@ -22,12 +22,12 @@ import "../../code/unit-utils.js" as UnitUtils
 
 Item {
     id: owm
-    
+
     property string providerId: 'owm'
-    
+
     property string urlPrefix: 'http://api.openweathermap.org/data/2.5'
     property string appIdAndModeSuffix: '&units=metric&mode=xml&appid=5819a34c58f8f07bc282820ca08948f1'
-    
+
     XmlListModel {
         id: xmlModelLongTerm
         query: '/weatherdata/forecast/time'
@@ -69,7 +69,7 @@ Item {
             query: 'pressure/@value/string()'
         }
     }
-    
+
     XmlListModel {
         id: xmlModelHourByHour
         query: '/weatherdata/forecast/time'
@@ -107,7 +107,7 @@ Item {
             query: 'precipitation/@value/string()'
         }
     }
-    
+
     XmlListModel {
         id: xmlModelCurrent
         query: '/current'
@@ -153,31 +153,29 @@ Item {
             query: 'city/sun/@set/string()'
         }
     }
-    
+
     property var xmlModelLongTermStatus: xmlModelLongTerm.status
     property var xmlModelCurrentStatus: xmlModelCurrent.status
     property var xmlModelHourByHourStatus: xmlModelHourByHour.status
-    
+
     function parseDate(dateString) {
         return new Date(dateString + '.000Z')
     }
-    
+
     onXmlModelCurrentStatusChanged: {
         if (xmlModelCurrent.status != XmlListModel.Ready) {
             return
         }
         dbgprint('xmlModelCurrent ready')
-        updateTodayModel()
-        updateAdditionalWeatherInfoText()
+        xmlModelReady()
     }
-    
+
     onXmlModelHourByHourStatusChanged: {
         if (xmlModelHourByHour.status != XmlListModel.Ready) {
             return
         }
         dbgprint('xmlModelHourByHour ready')
-        updateTodayModels()
-        updateMeteogramModel()
+        xmlModelReady()
     }
 
     onXmlModelLongTermStatusChanged: {
@@ -185,6 +183,24 @@ Item {
             return
         }
         dbgprint('xmlModelLongTerm ready')
+        xmlModelReady()
+    }
+
+    function xmlModelReady() {
+        if (xmlModelCurrent.status != XmlListModel.Ready) {
+            return
+        }
+        if (xmlModelHourByHour.status != XmlListModel.Ready) {
+            return
+        }
+        if (xmlModelLongTerm.status != XmlListModel.Ready) {
+            return
+        }
+        dbgprint('all xml models ready')
+        updateTodayModel()
+        updateAdditionalWeatherInfoText()
+        updateTodayModels()
+        updateMeteogramModel()
         updateNextDaysModel()
         refreshTooltipSubText()
     }
@@ -331,7 +347,7 @@ Item {
                 dbgprint('found Q1 temp')
                 
                 lastObjectHourByHour.tempInfoArray.push({
-                    temperature: toCelsiaStr(timeObj.temperature),
+                    temperature: timeObj.temperature,
                     iconName: timeObj.iconName,
                     isPast: now > current0600
                 })
@@ -340,7 +356,7 @@ Item {
                 dbgprint('found Q2 temp')
                 
                 lastObjectHourByHour.tempInfoArray.push({
-                    temperature: toCelsiaStr(timeObj.temperature),
+                    temperature: timeObj.temperature,
                     iconName: timeObj.iconName,
                     isPast: now > current1200
                 })
@@ -349,7 +365,7 @@ Item {
                 dbgprint('found Q3 temp')
                 
                 lastObjectHourByHour.tempInfoArray.push({
-                    temperature: toCelsiaStr(timeObj.temperature),
+                    temperature: timeObj.temperature,
                     iconName: timeObj.iconName,
                     isPast: now > current1800
                 })
@@ -358,7 +374,7 @@ Item {
                 dbgprint('found Q4 temp')
                 
                 lastObjectHourByHour.tempInfoArray.push({
-                    temperature: toCelsiaStr(timeObj.temperature),
+                    temperature: timeObj.temperature,
                     iconName: timeObj.iconName,
                     isPast: now > next0000
                 })
@@ -412,7 +428,7 @@ Item {
             if (lastObject.tempInfoArray.length === 0) {
                 dbgprint('setting temperatureMorning')
                 lastObject.tempInfoArray.push({
-                    temperature: toCelsiaStr(timeObj.temperatureMorning),
+                    temperature: timeObj.temperatureMorning,
                     iconName: timeObj.iconName,
                     isPast: isToday && now > today0600
                 })
@@ -420,7 +436,7 @@ Item {
             if (lastObject.tempInfoArray.length === 1) {
                 dbgprint('setting temperatureDay')
                 lastObject.tempInfoArray.push({
-                    temperature: toCelsiaStr(timeObj.temperatureDay),
+                    temperature: timeObj.temperatureDay,
                     iconName: timeObj.iconName,
                     isPast: isToday && now > today1200
                 })
@@ -428,7 +444,7 @@ Item {
             if (lastObject.tempInfoArray.length === 2) {
                 dbgprint('setting temperatureEvening')
                 lastObject.tempInfoArray.push({
-                    temperature: toCelsiaStr(timeObj.temperatureEvening),
+                    temperature: timeObj.temperatureEvening,
                     iconName: timeObj.iconName,
                     isPast: isToday && now > today1800
                 })
@@ -436,7 +452,7 @@ Item {
             if (lastObject.tempInfoArray.length === 3) {
                 dbgprint('setting temperatureNight')
                 lastObject.tempInfoArray.push({
-                    temperature: toCelsiaStr(timeObj.temperatureNight),
+                    temperature: timeObj.temperatureNight,
                     iconName: timeObj.iconName,
                     isPast: false
                 })
@@ -520,11 +536,6 @@ Item {
         main.meteogramModelChanged = !main.meteogramModelChanged
     }
     
-    function toCelsiaStr(kelvinStr) {
-        //return String(UnitUtils.kelvinToCelsia(parseFloat(kelvinStr)))
-        return kelvinStr
-    }
-    
     /**
      * successCallback(contentToCache)
      * failureCallback()
@@ -543,11 +554,9 @@ Item {
         
         var versionParam = '&v=' + new Date().getTime()
         
-        var xhr1 = DataLoader.fetchXmlFromInternet(urlPrefix + '/weather?id=' + placeIdentifier + appIdAndModeSuffix + versionParam, successCurrent, failureCallback)
-        
-        function successCurrent(xmlString) {
-            loadedData.current = xmlString
-            DataLoader.fetchXmlFromInternet(urlPrefix + '/forecast?id=' + placeIdentifier + appIdAndModeSuffix + versionParam, successHourByHour, failureCallback)
+        function successLongTerm(xmlString) {
+            loadedData.longTerm = xmlString
+            successCallback(loadedData)
         }
         
         function successHourByHour(xmlString) {
@@ -555,10 +564,12 @@ Item {
             DataLoader.fetchXmlFromInternet(urlPrefix + '/forecast/daily?id=' + placeIdentifier + '&cnt=8' + appIdAndModeSuffix + versionParam, successLongTerm, failureCallback)
         }
         
-        function successLongTerm(xmlString) {
-            loadedData.longTerm = xmlString
-            successCallback(loadedData)
+        function successCurrent(xmlString) {
+            loadedData.current = xmlString
+            DataLoader.fetchXmlFromInternet(urlPrefix + '/forecast?id=' + placeIdentifier + appIdAndModeSuffix + versionParam, successHourByHour, failureCallback)
         }
+        
+        var xhr1 = DataLoader.fetchXmlFromInternet(urlPrefix + '/weather?id=' + placeIdentifier + appIdAndModeSuffix + versionParam, successCurrent, failureCallback)
         
         return [xhr1]
     }
