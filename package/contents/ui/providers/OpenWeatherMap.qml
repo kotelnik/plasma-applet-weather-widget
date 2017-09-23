@@ -197,15 +197,14 @@ Item {
             return
         }
         dbgprint('all xml models ready')
-        updateTodayModel()
-        updateAdditionalWeatherInfoText()
-        updateTodayModels()
+        var todayTimeObj = createTodayTimeObj()
+        updateTodayModels(todayTimeObj)
         updateMeteogramModel()
         updateNextDaysModel()
-        refreshTooltipSubText()
+        updateAdditionalWeatherInfoText()
     }
     
-    function updateTodayModel() {
+    function createTodayTimeObj() {
         var currentTimeObj = xmlModelCurrent.get(0)
         additionalWeatherInfo.sunRise = parseDate(currentTimeObj.rise)
         additionalWeatherInfo.sunSet = parseDate(currentTimeObj.set)
@@ -213,25 +212,21 @@ Item {
         dbgprint('sunRise: ' + additionalWeatherInfo.sunRise)
         dbgprint('sunSet:  ' + additionalWeatherInfo.sunSet)
         dbgprint('current: ' + currentTimeObj.temperature)
-        actualWeatherModel.clear()
-        actualWeatherModel.append(currentTimeObj)
+        return currentTimeObj;
     }
-    
-    function updateTodayModels() {
-        
+
+    function updateTodayModels(todayTimeObj) {
+
         dbgprint('updating today models')
-        
+
         var now = new Date()
         dbgprint('now: ' + now)
         var tooOldCurrentDataLimit = new Date(now.getTime() - (2 * 60 * 60 * 1000))
         var nearFutureWeather = additionalWeatherInfo.nearFutureWeather
-        
-        // check if actual weather is not too old or empty
-        if (actualWeatherModel.count > 0 && parseDate(actualWeatherModel.get(0).updated) < tooOldCurrentDataLimit) {
-            dbgprint('actual weather model is too old or empty - clearing')
-            actualWeatherModel.clear()
-        }
-        
+
+        actualWeatherModel.clear()
+        actualWeatherModel.append(todayTimeObj)
+
         // set current models
         nearFutureWeather.iconName = null
         nearFutureWeather.temperature = null
@@ -241,7 +236,7 @@ Item {
             var dateFrom = parseDate(timeObj.from)
             var dateTo = parseDate(timeObj.to)
             dbgprint('HOUR BY HOUR: dateFrom=' + dateFrom + ', dateTo=' + dateTo + ', i=' + i)
-            
+
             if (!foundNow && dateFrom <= now && now <= dateTo) {
                 dbgprint('foundNow setting to true')
                 foundNow = true
@@ -251,7 +246,7 @@ Item {
                 }
                 continue
             }
-            
+
             if (foundNow) {
                 nearFutureWeather.iconName = timeObj.iconName
                 nearFutureWeather.temperature = timeObj.temperature
@@ -259,12 +254,12 @@ Item {
                 break
             }
         }
-        
+
         dbgprint('result actualWeatherModel count: ' + actualWeatherModel.count)
         dbgprint('result nearFutureWeather.iconName: ' + nearFutureWeather.iconName)
-        
+
     }
-    
+
     function updateNextDaysModel() {
         
         var nextDaysFixedCount = nextDaysCount

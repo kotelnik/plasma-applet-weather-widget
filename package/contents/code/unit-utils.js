@@ -34,7 +34,7 @@ function kelvinToCelsia(kelvin) {
 }
 
 function getTemperatureEnding(temperatureType) {
-    if (temperatureType === TemperatureType.FAHRENHEIT) {
+    if (temperatureType === TemperatureType.CELSIUS) {
         return i18n('°C')
     } else if (temperatureType === TemperatureType.FAHRENHEIT) {
         return i18n('°F')

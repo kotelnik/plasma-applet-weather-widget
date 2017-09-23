@@ -97,7 +97,7 @@ Item {
     Plasmoid.compactRepresentation: cr
     Plasmoid.fullRepresentation: fr
     
-    property bool debugLogging: false
+    property bool debugLogging: true
     
     function dbgprint(msg) {
         if (!debugLogging) {
@@ -132,6 +132,7 @@ Item {
     
     function action_toggleUpdatingPaused() {
         updatingPaused = !updatingPaused
+        abortTooLongConnection(true)
         plasmoid.setAction('toggleUpdatingPaused', updatingPaused ? i18n('Resume Updating') : i18n('Pause Updating'), updatingPaused ? 'media-playback-start' : 'media-playback-pause');
     }
     
@@ -270,6 +271,11 @@ Item {
         loadFromCache()
     }
     
+    function reloadDataFailureCallback() {
+        main.loadingData = false
+        handleLoadError()
+    }
+
     function reloadData() {
         var nowTime = (new Date()).getTime();
         
@@ -281,12 +287,7 @@ Item {
         loadingDataSinceTime = nowTime
         loadingData = true
         
-        function failureCallback() {
-            main.loadingData = false
-            handleLoadError()
-        }
-        
-        loadingXhrs = currentProvider.loadDataFromInternet(dataLoadedFromInternet, failureCallback, { placeIdentifier: placeIdentifier })
+        loadingXhrs = currentProvider.loadDataFromInternet(dataLoadedFromInternet, reloadDataFailureCallback, { placeIdentifier: placeIdentifier })
         
         dbgprint('reload called, cacheKey is: ' + cacheKey)
     }
@@ -409,17 +410,18 @@ Item {
         return additionalWeatherInfo.sunRise < now && now < additionalWeatherInfo.sunSet ? 0 : 1
     }
     
-    function abortTooLongConnection() {
+    function abortTooLongConnection(forceAbort) {
         if (!loadingData) {
             return
         }
         var nowTime = (new Date()).getTime();
-        dbgprint('loadingDataSinceTime=' + loadingDataSinceTime + ', loadingDataTimeoutMs=' + loadingDataTimeoutMs + ', now=' + nowTime)
-        if (loadingDataSinceTime + loadingDataTimeoutMs < nowTime) {
+        dbgprint('loadingDataSinceTime=' + loadingDataSinceTime + ', loadingDataTimeoutMs=' + loadingDataTimeoutMs + ', now=' + nowTime + ', forceAbort=' + forceAbort)
+        if (forceAbort || (loadingDataSinceTime + loadingDataTimeoutMs < nowTime)) {
             dbgprint('timeout reached, aborting existing xhrs')
             loadingXhrs.forEach(function (xhr) {
                 xhr.abort()
             })
+            reloadDataFailureCallback()
         } else {
             dbgprint('regular loading, no aborting yet')
             return
