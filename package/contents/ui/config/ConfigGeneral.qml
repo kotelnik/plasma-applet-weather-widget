@@ -198,7 +198,7 @@ Item {
         anchors.right: parent.right
         
         Label {
-            text: i18n('Plasmoid version: ') + '1.6.9'
+            text: i18n('Plasmoid version: ') + '1.6.10'
             Layout.alignment: Qt.AlignRight
             Layout.columnSpan: 2
         }
