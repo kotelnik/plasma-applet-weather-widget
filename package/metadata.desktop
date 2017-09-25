@@ -1,6 +1,8 @@
 [Desktop Entry]
 Name=Weather Widget
+Name[lt]=Orų valdiklis
 Comment=Plasmoid showing weather information from yr.no server
+Comment[lt]=Plasma valdiklis, rodantis orų informaciją iš yr.no serverio
 Type=Service
 X-KDE-ParentApp=
 X-KDE-PluginInfo-Author=Kotelnik
