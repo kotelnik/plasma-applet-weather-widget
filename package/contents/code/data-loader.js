@@ -51,11 +51,15 @@ function getReloadedAgoMs(lastReloaded) {
 }
 
 function getPlasmoidStatus(lastReloaded, inTrayActiveTimeoutSec) {
-    var reloadedAgoMs = getReloadedAgoMs(lastReloaded)
-    if (reloadedAgoMs < inTrayActiveTimeoutSec*1000) {
-        return PlasmaCore.Types.ActiveStatus
+    if (plasmoid.expanded) {
+        return PlasmaCore.Types.NeedsAttentionStatus
     } else {
-        return PlasmaCore.Types.PassiveStatus
+        var reloadedAgoMs = getReloadedAgoMs(lastReloaded)
+        if (reloadedAgoMs < inTrayActiveTimeoutSec*1000) {
+            return PlasmaCore.Types.ActiveStatus
+        } else {
+            return PlasmaCore.Types.PassiveStatus
+        }
     }
 }
 
