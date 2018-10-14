@@ -1,0 +1,275 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: https://github.com/kotelnik/plasma-applet-weather-"
+"widget/issues\n"
+"POT-Creation-Date: 2016-03-28 11:43+0200\n"
+"PO-Revision-Date: 2018-10-14 11:51+0200\n"
+"Language-Team: Dutch <vistausss@outlook.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.1.1\n"
+"Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: nl_NL\n"
+
+#: ../package/contents/code/unit-utils.js:26
+#: ../package/contents/ui/config/ConfigUnits.qml:99
+msgid "°C"
+msgstr "°C"
+
+#: ../package/contents/code/unit-utils.js:26
+#: ../package/contents/ui/config/ConfigUnits.qml:110
+msgid "°F"
+msgstr "°F"
+
+#: ../package/contents/code/unit-utils.js:54
+#: ../package/contents/ui/config/ConfigUnits.qml:138
+msgid "inHg"
+msgstr "inHg"
+
+#: ../package/contents/code/unit-utils.js:57
+#: ../package/contents/ui/config/ConfigUnits.qml:144
+msgid "mmHg"
+msgstr "mmHg"
+
+#: ../package/contents/code/unit-utils.js:59
+#: ../package/contents/ui/config/ConfigUnits.qml:127
+msgid "hPa"
+msgstr "hPa"
+
+#: ../package/contents/code/unit-utils.js:86
+#: ../package/contents/ui/config/ConfigUnits.qml:172
+msgid "mph"
+msgstr "mpu"
+
+#: ../package/contents/code/unit-utils.js:88
+#: ../package/contents/ui/config/ConfigUnits.qml:178
+msgid "km/h"
+msgstr "km/u"
+
+#: ../package/contents/code/unit-utils.js:90
+#: ../package/contents/ui/config/ConfigUnits.qml:161
+msgid "m/s"
+msgstr "m/s"
+
+#: ../package/contents/config/config.qml:6
+msgid "General"
+msgstr "Algemeen"
+
+#: ../package/contents/config/config.qml:11
+msgid "Appearance"
+msgstr "Uiterlijk"
+
+#: ../package/contents/config/config.qml:16
+msgid "Units"
+msgstr "Eenheden"
+
+#: ../package/contents/ui/config/ConfigAppearance.qml:41
+msgid "Render meteogram for yr.no"
+msgstr "Weergrafiek tonen voor yr.no"
+
+#: ../package/contents/ui/config/ConfigAppearance.qml:52
+msgid "Layout"
+msgstr "Indeling"
+
+#: ../package/contents/ui/config/ConfigAppearance.qml:58
+msgid "Layout type:"
+msgstr "Soort indeling:"
+
+#: ../package/contents/ui/config/ConfigAppearance.qml:64
+msgid "Horizontal"
+msgstr "Horizontaal"
+
+#: ../package/contents/ui/config/ConfigAppearance.qml:68
+msgid "NOTE: Setting layout type for in-tray plasmoid has no effect."
+msgstr "Let op: dit heeft geen effect op de systeemvak-plasmoid."
+
+#: ../package/contents/ui/config/ConfigAppearance.qml:81
+msgid "Vertical"
+msgstr "Verticaal"
+
+#: ../package/contents/ui/config/ConfigAppearance.qml:87
+msgid "Compact"
+msgstr "Compact"
+
+#: ../package/contents/ui/config/ConfigAppearance.qml:99
+msgid "In-Tray Settings"
+msgstr "Systeemvakinstellingen"
+
+#: ../package/contents/ui/config/ConfigAppearance.qml:105
+msgid "Active timeout:"
+msgstr "Actieve time-out:"
+
+#: ../package/contents/ui/config/ConfigAppearance.qml:114
+msgctxt "Abbreviation for seconds"
+msgid "sec"
+msgstr "sec"
+
+#: ../package/contents/ui/config/ConfigAppearance.qml:117
+msgid ""
+"NOTE: After this timeout widget will be hidden in system tray until "
+"refreshed. You can always set the widget to be always \"Shown\" in system "
+"tray \"Entries\" settings."
+msgstr ""
+"Let op: na deze time-out wordt de widget verborgen in het systeemvak "
+"totdat deze wordt ververst. Je kunt instellen dat de widget altijd wordt "
+"getoond in de systeemvakinstellingen op het tabblad \"Items\"."
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:45
+msgid "Add yr.no Place"
+msgstr "yr.no-locatie toevoegen"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:76
+#: ../package/contents/ui/config/ConfigGeneral.qml:120
+msgid "Paste URL here"
+msgstr "Plak hier de URL"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:84
+msgid ""
+"Find your town string in yr.no (english version)\n"
+"and use the URL from your browser to add a new location. E.g. paste "
+"this:\n"
+"http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/"
+msgstr ""
+"Vind de ID-code van je stad op yr.no (Engelse versie)\n"
+"en gebruik de URL om een nieuwe locatie toe te voegen. Plak bijv. dit:\n"
+"https://www.yr.no/place/Netherlands/North_Holland/Amsterdam/"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:91
+msgid "Add Open Weather Map Place"
+msgstr "OpenWeatherMap-locatie toevoegen"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:128
+msgid "City alias"
+msgstr "Alias"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:137
+msgid "Find your city ID by searching here:"
+msgstr "Vind de ID-code van je stad door hier te zoeken:"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:169
+msgid ""
+"...and paste here the whole URL\n"
+"e.g. http://openweathermap.org/city/2946447 for Bonn, Germany."
+msgstr ""
+"...en plak hier de volledige URL\n"
+"bijv. https://openweathermap.org/city/2759794 voor Amsterdam, Nederland."
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:176
+msgid "Change Displayed As"
+msgstr "'Getoond als' wijzigen"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:190
+msgid "Enter place alias"
+msgstr "Voer de alias in"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:201
+msgid "Plasmoid version: "
+msgstr "Plasmoid-versie: "
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:207
+msgid "Location"
+msgstr "Locatie"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:224
+msgid "Source"
+msgstr "Bron"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:240
+msgid "Place Identifier"
+msgstr "Locatie-identificatie"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:255
+msgid "Displayed as"
+msgstr "Getoond als"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:294
+msgid "Action"
+msgstr "Actie"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:382
+msgid "Miscellaneous"
+msgstr "Diversen"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:393
+msgid "Reload interval:"
+msgstr "Ververstussenpoos:"
+
+#: ../package/contents/ui/config/ConfigGeneral.qml:403
+msgctxt "Abbreviation for minutes"
+msgid "min"
+msgstr "min"
+
+#: ../package/contents/ui/config/ConfigUnits.qml:93
+msgid "Temperature:"
+msgstr "Temperatuur:"
+
+#: ../package/contents/ui/config/ConfigUnits.qml:121
+msgid "Pressure:"
+msgstr "Luchtdruk:"
+
+#: ../package/contents/ui/config/ConfigUnits.qml:155
+msgid "Wind speed:"
+msgstr "Windsnelheid:"
+
+#: ../package/contents/ui/config/ConfigUnits.qml:189
+msgid "Timezone:"
+msgstr "Tijdzone:"
+
+#: ../package/contents/ui/config/ConfigUnits.qml:195
+msgid "My local-time"
+msgstr "Mijn lokale tijd"
+
+#: ../package/contents/ui/config/ConfigUnits.qml:206
+msgid "UTC"
+msgstr "UTC"
+
+#: ../package/contents/ui/FullRepresentation.qml:59
+#: ../package/contents/ui/FullRepresentationInTray.qml:58
+msgid "Next Location"
+msgstr "Volgende locatie"
+
+#: ../package/contents/ui/main.qml:132
+msgid "Resume Updating"
+msgstr "Bijwerken hervatten"
+
+#: ../package/contents/ui/main.qml:132
+msgid "Pause Updating"
+msgstr "Bijwerken onderbreken"
+
+#: ../package/contents/ui/main.qml:343
+msgid "%1 ago"
+msgstr "%1 geleden"
+
+#: ../package/contents/ui/main.qml:373
+msgid "humidity"
+msgstr "luchtvochtigheid"
+
+#: ../package/contents/ui/main.qml:374
+msgid "clouds"
+msgstr "wolken"
+
+#: ../package/contents/ui/main.qml:378 ../package/contents/ui/main.qml:400
+msgid "near future"
+msgstr "nabije toekomst"
+
+#: ../package/contents/ui/Meteogram.qml:557
+msgid "Offline mode"
+msgstr "Offline-modus"
+
+#: ../package/contents/ui/Meteogram.qml:557
+msgid "Loading image..."
+msgstr "Bezig met laden van afbeelding..."
+
+#: ../package/contents/ui/providers/OpenWeatherMap.qml:323
+#: ../package/contents/ui/providers/OpenWeatherMap.qml:406
+#: ../package/contents/ui/providers/YrNo.qml:258
+msgid "today"
+msgstr "vandaag"
