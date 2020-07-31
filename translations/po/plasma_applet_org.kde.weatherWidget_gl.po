@@ -20,95 +20,95 @@ msgstr ""
 #: ../package/contents/code/unit-utils.js:26
 #: ../package/contents/ui/config/ConfigUnits.qml:99
 msgid "°C"
-msgstr ""
+msgstr "ºC"
 
 #: ../package/contents/code/unit-utils.js:26
 #: ../package/contents/ui/config/ConfigUnits.qml:110
 msgid "°F"
-msgstr ""
+msgstr "ºF"
 
 #: ../package/contents/code/unit-utils.js:54
 #: ../package/contents/ui/config/ConfigUnits.qml:138
 msgid "inHg"
-msgstr ""
+msgstr "inHg"
 
 #: ../package/contents/code/unit-utils.js:57
 #: ../package/contents/ui/config/ConfigUnits.qml:144
 msgid "mmHg"
-msgstr ""
+msgstr "mmHg"
 
 #: ../package/contents/code/unit-utils.js:59
 #: ../package/contents/ui/config/ConfigUnits.qml:127
 msgid "hPa"
-msgstr ""
+msgstr "hPa"
 
 #: ../package/contents/code/unit-utils.js:86
 #: ../package/contents/ui/config/ConfigUnits.qml:172
 msgid "mph"
-msgstr ""
+msgstr "mph"
 
 #: ../package/contents/code/unit-utils.js:88
 #: ../package/contents/ui/config/ConfigUnits.qml:178
 msgid "km/h"
-msgstr ""
+msgstr "km/h"
 
 #: ../package/contents/code/unit-utils.js:90
 #: ../package/contents/ui/config/ConfigUnits.qml:161
 msgid "m/s"
-msgstr ""
+msgstr "m/s"
 
 #: ../package/contents/config/config.qml:6
 msgid "General"
-msgstr ""
+msgstr "Xeral"
 
 #: ../package/contents/config/config.qml:11
 msgid "Appearance"
-msgstr ""
+msgstr "Aparencia"
 
 #: ../package/contents/config/config.qml:16
 msgid "Units"
-msgstr ""
+msgstr "Unidades"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:41
 msgid "Render meteogram for yr.no"
-msgstr ""
+msgstr "Mostra meteograma desde yr.no"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:52
 msgid "Layout"
-msgstr ""
+msgstr "Disposición"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:58
 msgid "Layout type:"
-msgstr ""
+msgstr "Tipo de disposición:"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:64
 msgid "Horizontal"
-msgstr ""
+msgstr "Horizontal"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:68
 msgid "NOTE: Setting layout type for in-tray plasmoid has no effect."
-msgstr ""
+msgstr "NOTA: Establecer ó tipo plasmoide na bandexa non ten efecto."
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:81
 msgid "Vertical"
-msgstr ""
+msgstr "Vertical"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:87
 msgid "Compact"
-msgstr ""
+msgstr "Compacta"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:99
 msgid "In-Tray Settings"
-msgstr ""
+msgstr "Axustes na bandexa"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:105
 msgid "Active timeout:"
-msgstr ""
+msgstr "Manter activo:"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:114
 msgctxt "Abbreviation for seconds"
 msgid "sec"
-msgstr ""
+msgstr "seg"
 
 #: ../package/contents/ui/config/ConfigAppearance.qml:117
 msgid ""
@@ -116,15 +116,18 @@ msgid ""
 "refreshed. You can always set the widget to be always \"Shown\" in system "
 "tray \"Entries\" settings."
 msgstr ""
+"NOTA: Tras este período de caducidade o widget quedará agochado na bandexa do sistema "
+"ata que se actualice. Podes facer que o widget se  \"Mostre\" sempre no axuste \"Entradas\" da "
+"bandexa do sistema."
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:45
 msgid "Add yr.no Place"
-msgstr ""
+msgstr "Engadir lugar yr.no"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:76
 #: ../package/contents/ui/config/ConfigGeneral.qml:120
 msgid "Paste URL here"
-msgstr ""
+msgstr "Pegar aquí URL"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:84
 msgid ""
@@ -132,133 +135,138 @@ msgid ""
 "and use the URL from your browser to add a new location. E.g. paste this:\n"
 "http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/"
 msgstr ""
+"Atopa o código da túa localidade en yr.no (versión inglesa)\n"
+"e usa o URL do navegador para engadir a nova localización. Ex. pega isto:\n"
+"http://www.yr.no/place/Germany/North_Rhine-Westphalia/Bonn/"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:91
 msgid "Add Open Weather Map Place"
-msgstr ""
+msgstr "Engadir lugar Open Weather Map"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:128
 msgid "City alias"
-msgstr ""
+msgstr "Alias da cidade"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:137
 msgid "Find your city ID by searching here:"
-msgstr ""
+msgstr "Atopa aquí o ID da túa cidade:"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:169
 msgid ""
 "...and paste here the whole URL\n"
 "e.g. http://openweathermap.org/city/2946447 for Bonn, Germany."
 msgstr ""
+"...e pega aquí o URL completo\n"
+"ex. http://openweathermap.org/city/2946447 for Bonn, Germany."
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:176
 msgid "Change Displayed As"
-msgstr ""
+msgstr "Cambiar Mostrado como"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:190
 msgid "Enter place alias"
-msgstr ""
+msgstr "Escribe o alias do lugar"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:201
 msgid "Plasmoid version: "
-msgstr ""
+msgstr "Versión do plasmoide:"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:207
 msgid "Location"
-msgstr ""
+msgstr "Localización"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:224
 msgid "Source"
-msgstr ""
+msgstr "Fonte"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:240
 msgid "Place Identifier"
-msgstr ""
+msgstr "Identificador do lugar"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:255
 msgid "Displayed as"
-msgstr ""
+msgstr "Mostrado como"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:294
 msgid "Action"
-msgstr ""
+msgstr "Acción"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:382
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Varios"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:393
 msgid "Reload interval:"
-msgstr ""
+msgstr "Actualización:"
 
 #: ../package/contents/ui/config/ConfigGeneral.qml:403
 msgctxt "Abbreviation for minutes"
 msgid "min"
-msgstr ""
+msgstr "min"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:93
 msgid "Temperature:"
-msgstr ""
+msgstr "Temperatura:"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:121
 msgid "Pressure:"
-msgstr ""
+msgstr "Presión:"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:155
 msgid "Wind speed:"
-msgstr ""
+msgstr "Vel. do vento:"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:189
 msgid "Timezone:"
-msgstr ""
+msgstr "Zona horaria:"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:195
 msgid "My local-time"
-msgstr ""
+msgstr "Hora local"
 
 #: ../package/contents/ui/config/ConfigUnits.qml:206
 msgid "UTC"
-msgstr ""
+msgstr "UTC"
 
 #: ../package/contents/ui/FullRepresentation.qml:59
 #: ../package/contents/ui/FullRepresentationInTray.qml:58
 msgid "Next Location"
-msgstr ""
+msgstr "Seguinte loc."
 
 #: ../package/contents/ui/main.qml:132
 msgid "Resume Updating"
-msgstr ""
+msgstr "Retomar actualización"
 
 #: ../package/contents/ui/main.qml:132
 msgid "Pause Updating"
-msgstr ""
+msgstr "Pausar actualización"
 
 #: ../package/contents/ui/main.qml:343
 msgid "%1 ago"
-msgstr ""
+msgstr "hai %1"
 
 #: ../package/contents/ui/main.qml:373
 msgid "humidity"
-msgstr ""
+msgstr "humidade"
 
 #: ../package/contents/ui/main.qml:374
 msgid "clouds"
-msgstr ""
+msgstr "nubes"
 
 #: ../package/contents/ui/main.qml:378 ../package/contents/ui/main.qml:400
 msgid "near future"
-msgstr ""
+msgstr "próximamente"
 
 #: ../package/contents/ui/Meteogram.qml:557
 msgid "Offline mode"
-msgstr ""
+msgstr "Modo desconectado"
 
 #: ../package/contents/ui/Meteogram.qml:557
 msgid "Loading image..."
-msgstr ""
+msgstr "Cargando imaxe..."
 
 #: ../package/contents/ui/providers/OpenWeatherMap.qml:323
 #: ../package/contents/ui/providers/OpenWeatherMap.qml:406
 #: ../package/contents/ui/providers/YrNo.qml:258
 msgid "today"
-msgstr ""
+msgstr "hoxe"
