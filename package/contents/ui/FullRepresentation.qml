@@ -35,8 +35,8 @@ Item {
     property int headingHeight: defaultFontPixelSize * 2
     property double hourLegendBottomMargin: defaultFontPixelSize * 0.2
     
-    width: imageWidth
-    height: headingHeight + imageHeight + footerHeight + nextDaysHeight + nextDaysVerticalMargin * 2
+    implicitWidth: imageWidth
+    implicitHeight: headingHeight + imageHeight + footerHeight + nextDaysHeight + nextDaysVerticalMargin * 2
     
     PlasmaComponents.Label {
         id: currentLocationText
